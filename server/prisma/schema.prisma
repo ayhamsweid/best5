@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CONTENT_WRITER
+}
+
+enum PostStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+enum AuditActionType {
+  LOGIN
+  CREATE
+  UPDATE
+  DELETE
+  PUBLISH
+  ARCHIVE
+  ROLE_CHANGE
+}
+
+enum AuditEntityType {
+  USER
+  POST
+  CATEGORY
+  TAG
+  SETTINGS
+}
+
+model User {
+  id            String   @id @default(uuid())
+  full_name     String
+  email         String   @unique
+  password_hash String
+  role          UserRole @default(CONTENT_WRITER)
+  is_active     Boolean  @default(true)
+  last_login_at DateTime?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  posts         Post[]
+  audit_logs    AuditLog[] @relation("ActorLogs")
+}
+
+model Post {
+  id              String     @id @default(uuid())
+  title_ar        String
+  title_en        String
+  slug_ar         String     @unique
+  slug_en         String     @unique
+  excerpt_ar      String
+  excerpt_en      String
+  content_ar      String
+  content_en      String
+  content_blocks_json Json?
+  cover_image_url String?
+  status          PostStatus @default(DRAFT)
+  published_at    DateTime?
+  scheduled_at    DateTime?
+  author_id       String
+  category_id     String?
+  seo_title_ar    String?
+  seo_title_en    String?
+  seo_desc_ar     String?
+  seo_desc_en     String?
+  canonical_url   String?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  author    User      @relation(fields: [author_id], references: [id])
+  category  Category? @relation(fields: [category_id], references: [id])
+  tags      PostTag[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name_ar   String
+  name_en   String
+  slug_ar   String   @unique
+  slug_en   String   @unique
+  posts     Post[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name_ar   String
+  name_en   String
+  slug_ar   String   @unique
+  slug_en   String   @unique
+  posts     PostTag[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model PostTag {
+  post_id String
+  tag_id  String
+  post    Post @relation(fields: [post_id], references: [id])
+  tag     Tag  @relation(fields: [tag_id], references: [id])
+
+  @@id([post_id, tag_id])
+}
+
+model AuditLog {
+  id            String           @id @default(uuid())
+  actor_user_id String?
+  action_type   AuditActionType
+  entity_type   AuditEntityType
+  entity_id     String?
+  before_json   Json?
+  after_json    Json?
+  ip            String?
+  user_agent    String?
+  created_at    DateTime         @default(now())
+
+  actor_user User? @relation("ActorLogs", fields: [actor_user_id], references: [id])
+}
+
+model Settings {
+  id                 String   @id @default("singleton")
+  ga4_measurement_id String?
+  site_name_ar       String?
+  site_name_en       String?
+  default_language   String?  @default("ar")
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+}
