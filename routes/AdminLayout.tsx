@@ -26,6 +26,7 @@ const AdminLayout: React.FC = () => {
             <nav className="space-y-2">
               <NavLink to="/admin/dashboard" className={navItem()}>Dashboard</NavLink>
               <NavLink to="/admin/posts" className={navItem()}>Posts</NavLink>
+              <NavLink to="/admin/media" className={navItem()}>Media</NavLink>
               <NavLink to="/admin/categories" className={navItem()}>Categories</NavLink>
               <NavLink to="/admin/tags" className={navItem()}>Tags</NavLink>
             </nav>

@@ -31,6 +31,26 @@ export const fetchPosts = () => request('/posts');
 export const fetchPost = (id: string) => request(`/posts/${id}`);
 export const fetchPublicPosts = (lang: 'ar' | 'en') => request(`/posts/public?lang=${lang}`);
 export const fetchPublicPost = (lang: 'ar' | 'en', slug: string) => request(`/posts/public/${slug}?lang=${lang}`);
+
+export const uploadImage = async (file: File) => {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(`${API_BASE}/uploads/images`, {
+    method: 'POST',
+    credentials: 'include',
+    body: form
+  });
+  if (!res.ok) {
+    const message = await res.text();
+    throw new Error(message || res.statusText);
+  }
+  return res.json() as Promise<{ url: string }>;
+};
+
+export const fetchUploads = () => request<{ name: string; url: string }[]>('/uploads/images');
+
+export const deleteUpload = (name: string) =>
+  request<{ ok: boolean }>(`/uploads/images/${encodeURIComponent(name)}`, { method: 'DELETE' });
 export const createPost = (payload: Record<string, unknown>) =>
   request('/posts', { method: 'POST', body: JSON.stringify(payload) });
 export const updatePost = (id: string, payload: Record<string, unknown>) =>

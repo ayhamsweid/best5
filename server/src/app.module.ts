@@ -8,6 +8,7 @@ import { TagsModule } from './modules/tags/tags.module';
 import { LogsModule } from './modules/logs/logs.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
     TagsModule,
     LogsModule,
     SettingsModule,
-    AnalyticsModule
+    AnalyticsModule,
+    UploadsModule
   ]
 })
 export class AppModule {}

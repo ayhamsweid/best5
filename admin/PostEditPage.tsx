@@ -6,6 +6,7 @@ import { fetchPost, updatePost } from '../services/api';
 const PostEditPage: React.FC = () => {
   const { id } = useParams();
   const [values, setValues] = useState<Record<string, any>>({});
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -14,9 +15,14 @@ const PostEditPage: React.FC = () => {
 
   const onSave = async (override?: Record<string, any>) => {
     if (!id) return;
-    const payload = { ...values, ...override };
-    const post = await updatePost(id, payload);
-    setValues(post);
+    setError(null);
+    try {
+      const payload = { ...values, ...override };
+      const post = await updatePost(id, payload);
+      setValues(post);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save');
+    }
   };
 
   const onPreview = () => {
@@ -53,6 +59,7 @@ const PostEditPage: React.FC = () => {
           </button>
         </div>
       </div>
+      {error && <div className="text-xs text-red-300 mb-3">{error}</div>}
       <PostEditor values={values} onChange={setValues} />
     </div>
   );

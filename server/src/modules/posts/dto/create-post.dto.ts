@@ -14,11 +14,13 @@ export class CreatePostDto {
   @IsString()
   excerpt_en!: string;
 
+  @IsOptional()
   @IsString()
-  content_ar!: string;
+  content_ar?: string;
 
+  @IsOptional()
   @IsString()
-  content_en!: string;
+  content_en?: string;
 
   @IsOptional()
   @IsEnum(PostStatus)

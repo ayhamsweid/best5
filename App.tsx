@@ -21,6 +21,7 @@ import PostEditPage from './admin/PostEditPage';
 import CategoriesPage from './admin/CategoriesPage';
 import TagsPage from './admin/TagsPage';
 import SettingsPage from './admin/SettingsPage';
+import MediaPage from './admin/MediaPage';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
               <Route path="posts" element={<PostsListPage />} />
               <Route path="posts/create" element={<PostCreatePage />} />
               <Route path="posts/edit/:id" element={<PostEditPage />} />
+              <Route path="media" element={<MediaPage />} />
               <Route path="categories" element={<CategoriesPage />} />
               <Route path="tags" element={<TagsPage />} />
               <Route path="settings" element={<SettingsPage />} />

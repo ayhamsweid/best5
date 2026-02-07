@@ -66,7 +66,12 @@ export class PostsController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: process.env.UPLOAD_DIR || 'uploads',
+        destination: (_req, _file, cb) => {
+          const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+          const fs = require('fs');
+          fs.mkdirSync(uploadDir, { recursive: true });
+          cb(null, uploadDir);
+        },
         filename: (_req, file, cb) => {
           const ext = path.extname(file.originalname);
           cb(null, `${Date.now()}${ext}`);

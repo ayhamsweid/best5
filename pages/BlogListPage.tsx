@@ -43,7 +43,7 @@ const BlogListPage: React.FC = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {filtered.map((post) => {
-          const slug = lang === 'ar' ? post.slug_ar : post.slug_en;
+          const slug = (lang === 'ar' ? post.slug_ar : post.slug_en) || post.slug_en || post.slug_ar;
           const title = lang === 'ar' ? post.title_ar : post.title_en;
           const excerpt = lang === 'ar' ? post.excerpt_ar : post.excerpt_en;
           return (

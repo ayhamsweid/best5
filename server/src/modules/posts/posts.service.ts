@@ -7,7 +7,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 const slugify = (value: string) =>
   value
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .trim()
     .replace(/\s+/g, '-')
     .slice(0, 80);
@@ -27,11 +27,18 @@ export class PostsService {
     });
   }
 
-  publicBySlug(lang: 'ar' | 'en', slug: string) {
-    return this.prisma.post.findFirst({
+  async publicBySlug(lang: 'ar' | 'en', slug: string) {
+    const primary = await this.prisma.post.findFirst({
       where: {
         status: PostStatus.PUBLISHED,
         ...(lang === 'ar' ? { slug_ar: slug } : { slug_en: slug })
+      }
+    });
+    if (primary) return primary;
+    return this.prisma.post.findFirst({
+      where: {
+        status: PostStatus.PUBLISHED,
+        ...(lang === 'ar' ? { slug_en: slug } : { slug_ar: slug })
       }
     });
   }
@@ -53,7 +60,9 @@ export class PostsService {
         author_id: authorId,
         published_at: publishedAt,
         scheduled_at: scheduledAt,
-        content_blocks_json: data.content_blocks_json ?? undefined
+        content_blocks_json: data.content_blocks_json ?? undefined,
+        content_ar: data.content_ar ?? '',
+        content_en: data.content_en ?? ''
       }
     });
   }
