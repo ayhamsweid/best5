@@ -12,11 +12,11 @@ const QuickPicks: React.FC<QuickPicksProps> = ({ picks, onPick }) => {
         <button
           key={pick.itemId}
           onClick={() => onPick(pick.itemId)}
-          className="text-start rounded-2xl bg-white shadow-sm border border-[#E5E7EB] p-5 hover:shadow-md transition"
+          className="text-start rounded-2xl bg-white dark:bg-[#111827] shadow-sm border border-[#E5E7EB] dark:border-white/10 p-5 hover:shadow-md transition"
         >
           <div className="text-xs text-[#22C55E] font-bold mb-2">{pick.label}</div>
-          <div className="font-black text-lg text-[#111827]">{pick.title}</div>
-          {pick.note && <div className="text-xs text-gray-500 mt-2">{pick.note}</div>}
+          <div className="font-black text-lg text-[#111827] dark:text-white">{pick.title}</div>
+          {pick.note && <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">{pick.note}</div>}
         </button>
       ))}
     </div>

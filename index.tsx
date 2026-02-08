@@ -13,3 +13,7 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+requestAnimationFrame(() => {
+  document.body.classList.add('app-ready');
+});

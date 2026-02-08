@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
@@ -42,6 +42,20 @@ export class UploadsController {
   @Post('images')
   @UseInterceptors(
     FileInterceptor('file', {
+      limits: {
+        fileSize: 1024 * 1024 * Number(process.env.MAX_UPLOAD_MB || 5)
+      },
+      fileFilter: (_req, file, cb) => {
+        const allowed = (process.env.ALLOWED_UPLOAD_MIME || 'image/png,image/jpeg,image/webp,image/gif')
+          .split(',')
+          .map((value) => value.trim())
+          .filter(Boolean);
+        if (allowed.includes(file.mimetype)) {
+          cb(null, true);
+          return;
+        }
+        cb(new BadRequestException('Unsupported file type'), false);
+      },
       storage: diskStorage({
         destination: (_req, _file, cb) => {
           const uploadDir = process.env.UPLOAD_DIR || 'uploads';

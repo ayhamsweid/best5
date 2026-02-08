@@ -101,14 +101,14 @@ const GuidePage: React.FC = () => {
 
   if (!guide) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
-        <div className="text-gray-500">Guide not found</div>
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#0b1224] flex items-center justify-center">
+        <div className="text-gray-500 dark:text-gray-300">Guide not found</div>
       </div>
     );
   }
 
   return (
-    <div dir={lang === 'ar' ? 'rtl' : 'ltr'} className="min-h-screen bg-[#F9FAFB] text-[#111827]">
+    <div dir={lang === 'ar' ? 'rtl' : 'ltr'} className="min-h-screen bg-[#F9FAFB] dark:bg-[#0b1224] text-[#111827] dark:text-white">
       <header className="bg-[#111827] text-white">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="font-black tracking-wide">Besiktas Guide</div>
