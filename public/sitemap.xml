@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://your-domain.com/ar</loc>
+    <loc>https://best5.com.tr/</loc>
   </url>
   <url>
-    <loc>https://your-domain.com/en</loc>
+    <loc>https://best5.com.tr/ar</loc>
   </url>
   <url>
-    <loc>https://your-domain.com/ar/blog</loc>
+    <loc>https://best5.com.tr/en</loc>
   </url>
   <url>
-    <loc>https://your-domain.com/en/blog</loc>
+    <loc>https://best5.com.tr/ar/blog</loc>
+  </url>
+  <url>
+    <loc>https://best5.com.tr/en/blog</loc>
+  </url>
+  <url>
+    <loc>https://best5.com.tr/ar/about</loc>
+  </url>
+  <url>
+    <loc>https://best5.com.tr/en/about</loc>
   </url>
 </urlset>

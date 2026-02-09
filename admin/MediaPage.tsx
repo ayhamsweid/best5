@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { deleteUpload, fetchUploads, uploadImage } from '../services/api';
+import { deleteUpload, fetchUploads, updateUploadTags, uploadImage } from '../services/api';
 
 const MediaPage: React.FC = () => {
-  const [files, setFiles] = useState<{ name: string; url: string }[]>([]);
+  const [files, setFiles] = useState<Array<{ name: string; url: string; tags?: string[]; usage_count?: number; created_at?: string }>>([]);
   const [query, setQuery] = useState('');
+  const [tagQuery, setTagQuery] = useState('');
+  const [unusedOnly, setUnusedOnly] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ name: string; url: string } | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -20,6 +22,16 @@ const MediaPage: React.FC = () => {
     return sorted.filter((file) => file.name.toLowerCase().includes(q));
   }, [files, query]);
 
+  const tagFiltered = useMemo(() => {
+    const base = filtered.filter((file) => {
+      if (!unusedOnly) return true;
+      return (file.usage_count || 0) === 0;
+    });
+    if (!tagQuery.trim()) return base;
+    const t = tagQuery.toLowerCase();
+    return base.filter((file) => (file.tags || []).some((tag) => tag.toLowerCase().includes(t)));
+  }, [filtered, tagQuery, unusedOnly]);
+
   const copyLink = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
@@ -31,9 +43,14 @@ const MediaPage: React.FC = () => {
     }
   };
 
-  const onDelete = async (name: string) => {
+  const onDelete = async (name: string, inUse: boolean) => {
     if (!confirm('Delete this image?')) return;
-    await deleteUpload(name);
+    const result = await deleteUpload(name);
+    if (result?.reason === 'in_use' && inUse) {
+      const force = confirm('This image is used in content. Force delete?');
+      if (!force) return;
+      await deleteUpload(name, true);
+    }
     setFiles((prev) => prev.filter((f) => f.name !== name));
   };
 
@@ -100,12 +117,24 @@ const MediaPage: React.FC = () => {
           <h1 className="text-2xl font-black">Media Library</h1>
           <p className="text-xs text-gray-300 mt-1">All uploaded images.</p>
         </div>
-        <input
-          className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
-          placeholder="Search by filename..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <div className="flex flex-wrap gap-3">
+          <input
+            className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
+            placeholder="Search by filename..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <input
+            className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
+            placeholder="Filter by tag..."
+            value={tagQuery}
+            onChange={(e) => setTagQuery(e.target.value)}
+          />
+          <label className="flex items-center gap-2 text-xs text-gray-300">
+            <input type="checkbox" checked={unusedOnly} onChange={() => setUnusedOnly((prev) => !prev)} />
+            Unused only
+          </label>
+        </div>
       </div>
       <div className="flex items-center gap-3 mb-4">
         <input
@@ -124,11 +153,11 @@ const MediaPage: React.FC = () => {
         </button>
       </div>
       {message && <div className="text-xs text-green-300 mb-3">{message}</div>}
-      {filtered.length === 0 ? (
+      {tagFiltered.length === 0 ? (
         <div className="text-sm text-gray-400">No images uploaded yet.</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {filtered.map((file) => (
+          {tagFiltered.map((file) => (
             <div key={file.url} className="bg-white/5 border border-white/10 rounded-xl p-3">
               <label className="flex items-center gap-2 text-[10px] text-gray-300 mb-2">
                 <input
@@ -143,6 +172,25 @@ const MediaPage: React.FC = () => {
               </button>
               <div className="text-[10px] text-gray-300 mt-2 truncate">{file.name}</div>
               <div className="text-[10px] text-gray-400 mt-1 truncate">{file.url}</div>
+              <div className="text-[10px] text-gray-400 mt-1">Used: {file.usage_count || 0}</div>
+              <div className="text-[10px] text-gray-400 mt-1">
+                Tags: {(file.tags || []).join(', ') || '—'}
+              </div>
+              <input
+                className="mt-2 w-full bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-[10px]"
+                placeholder="Tags (comma separated)"
+                value={(file.tags || []).join(', ')}
+                onChange={(e) => {
+                  const tags = e.target.value.split(',').map((t) => t.trim()).filter(Boolean);
+                  setFiles((prev) =>
+                    prev.map((item) => (item.name === file.name ? { ...item, tags } : item))
+                  );
+                }}
+                onBlur={async (e) => {
+                  const tags = e.target.value.split(',').map((t) => t.trim()).filter(Boolean);
+                  await updateUploadTags(file.name, tags);
+                }}
+              />
               <div className="flex items-center gap-2 mt-2">
                 <button
                   onClick={() => copyLink(file.url)}
@@ -151,7 +199,7 @@ const MediaPage: React.FC = () => {
                   Copy link
                 </button>
                 <button
-                  onClick={() => onDelete(file.name)}
+                  onClick={() => onDelete(file.name, (file.usage_count || 0) > 0)}
                   className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200 hover:bg-red-500/30"
                 >
                   Delete

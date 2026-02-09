@@ -1,13 +1,42 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { GuideCard } from '../types';
 import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 
-const FeaturedGuides: React.FC = () => {
+type Localized = { ar?: string; en?: string };
+type FeaturedGuideCard = {
+  title?: Localized;
+  description?: Localized;
+  image?: string;
+  tag?: Localized;
+  tagColor?: string;
+  slug?: string;
+};
+
+const FeaturedGuides: React.FC<{
+  config?: {
+    title?: Localized;
+    subtitle?: Localized;
+    viewAllLabel?: Localized;
+    cards?: FeaturedGuideCard[];
+  };
+}> = ({ config }) => {
   const { lang } = useLang();
-  const guides: GuideCard[] =
-    lang === 'ar'
+  const guides: GuideCard[] = useMemo(() => {
+    if (config?.cards?.length) {
+      return config.cards.map((card, idx) => ({
+        id: idx + 1,
+        title: (card.title?.[lang] ?? card.title?.ar ?? card.title?.en ?? '—') as string,
+        description: (card.description?.[lang] ?? card.description?.ar ?? card.description?.en ?? '') as string,
+        image: card.image || '',
+        tag: (card.tag?.[lang] ?? card.tag?.ar ?? card.tag?.en ?? '') as string,
+        tagColor: card.tagColor || 'bg-primary',
+        slug: card.slug || ''
+      }));
+    }
+
+    return lang === 'ar'
       ? [
           {
             id: 1,
@@ -66,20 +95,21 @@ const FeaturedGuides: React.FC = () => {
             slug: 'specialty-coffee'
           }
         ];
+  }, [config?.cards, lang]);
 
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-8 mb-24">
       <div className="flex justify-between items-end mb-10 border-r-4 border-primary pr-4">
         <div>
           <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
-            {lang === 'ar' ? 'أحدث أدلة المقارنة' : 'Latest comparison guides'}
+            {config?.title?.[lang] ?? (lang === 'ar' ? 'أحدث أدلة المقارنة' : 'Latest comparison guides')}
           </h2>
           <p className="text-gray-500 dark:text-gray-300">
-            {lang === 'ar' ? 'أدلة مفصلة تم إعدادها بواسطة خبراء محليين' : 'Detailed guides curated by local experts'}
+            {config?.subtitle?.[lang] ?? (lang === 'ar' ? 'أدلة مفصلة تم إعدادها بواسطة خبراء محليين' : 'Detailed guides curated by local experts')}
           </p>
         </div>
         <Link to={`/${lang}/compare/all`} className="hidden md:flex items-center gap-2 text-primary font-bold hover:underline">
-          {lang === 'ar' ? 'عرض الكل' : 'View all'} <ArrowLeft className="w-4 h-4" />
+          {config?.viewAllLabel?.[lang] ?? (lang === 'ar' ? 'عرض الكل' : 'View all')} <ArrowLeft className="w-4 h-4" />
         </Link>
       </div>
 
@@ -117,7 +147,7 @@ const FeaturedGuides: React.FC = () => {
       
       <div className="mt-8 text-center md:hidden">
         <Link to={`/${lang}/compare/all`} className="inline-flex items-center gap-2 text-primary font-bold hover:underline">
-          {lang === 'ar' ? 'عرض الكل' : 'View all'} <ArrowLeft className="w-4 h-4" />
+          {config?.viewAllLabel?.[lang] ?? (lang === 'ar' ? 'عرض الكل' : 'View all')} <ArrowLeft className="w-4 h-4" />
         </Link>
       </div>
     </section>

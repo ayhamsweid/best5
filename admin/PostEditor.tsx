@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { fetchUploads, uploadImage } from '../services/api';
+import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
+import { fetchCategories, fetchUploads, uploadImage } from '../services/api';
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
@@ -62,6 +63,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
   const [showMedia, setShowMedia] = useState(false);
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
   const [mediaTarget, setMediaTarget] = useState<{ type: 'cover' | 'image' | 'gallery'; blockId?: string } | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [builderMode, setBuilderMode] = useState(true);
 
@@ -81,6 +83,10 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     if (!showMedia) return;
     fetchUploads().then(setMediaFiles).catch(() => setMediaFiles([]));
   }, [showMedia]);
+
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => setCategories([]));
+  }, []);
 
   useEffect(() => {
     if (!selectedId && blocks.length) {
@@ -106,7 +112,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     () => [
       { type: 'cards', label: 'Quick Picks' },
       { type: 'comparison', label: 'Comparison Table' },
-      { type: 'restaurant', label: 'Restaurant Card' },
+      { type: 'restaurant', label: 'Restaurant Card / بطاقة مطعم' },
       { type: 'guide', label: 'Guide Section' },
       { type: 'faq', label: 'FAQ' },
       { type: 'paragraph', label: 'Paragraph' },
@@ -565,34 +571,8 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
     if (block.type === 'restaurant') {
       return (
-        <div className="bg-white rounded-3xl border border-[#E5E7EB] shadow-xl overflow-hidden relative dark:bg-[#111827] dark:border-white/10">
-          <div className="p-6 md:p-8">
-            <h2 className="text-2xl md:text-3xl font-black mb-1 text-[#111827] dark:text-white">
-              <EditableText
-                tag="span"
-                value={getLocalized(block.data?.name)}
-                onChange={(next) => updateBlock(block.id, { ...block.data, name: setLocalized(block.data.name, next) })}
-                placeholder="Restaurant name"
-              />
-            </h2>
-            <div className="text-gray-400 text-lg font-medium mb-4">
-              <EditableText
-                tag="span"
-                value={getLocalized(block.data?.location || '')}
-                onChange={(next) => updateBlock(block.id, { ...block.data, location: setLocalized(block.data.location || '', next) })}
-                placeholder="Location"
-              />
-            </div>
-            <div className="bg-[#E8F5EC] border-s-4 border-[#22C55E] p-4 rounded-xl dark:bg-[#0f172a]">
-              <EditableText
-                tag="div"
-                value={getLocalized(block.data?.description || '')}
-                onChange={(next) => updateBlock(block.id, { ...block.data, description: setLocalized(block.data.description || '', next) })}
-                className="text-sm text-[#0f172a]/80 dark:text-white/80"
-                placeholder="Description"
-              />
-            </div>
-          </div>
+        <div className="pointer-events-none">
+          <BlogBlocksRenderer blocks={[block]} lang={contentLang} />
         </div>
       );
     }
@@ -1211,6 +1191,61 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           onChange={(e) => update('scheduled_at', e.target.value)}
         />
       </div>
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+        <div className="text-xs text-gray-300 mb-3">SEO (optional)</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input
+            className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="SEO Title (AR)"
+            value={values.seo_title_ar || ''}
+            onChange={(e) => update('seo_title_ar', e.target.value)}
+          />
+          <input
+            className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="SEO Title (EN)"
+            value={values.seo_title_en || ''}
+            onChange={(e) => update('seo_title_en', e.target.value)}
+          />
+          <textarea
+            className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm min-h-[90px]"
+            placeholder="SEO Description (AR)"
+            value={values.seo_desc_ar || ''}
+            onChange={(e) => update('seo_desc_ar', e.target.value)}
+          />
+          <textarea
+            className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm min-h-[90px]"
+            placeholder="SEO Description (EN)"
+            value={values.seo_desc_en || ''}
+            onChange={(e) => update('seo_desc_en', e.target.value)}
+          />
+          <input
+            className="md:col-span-2 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="OG Image URL (optional)"
+            value={values.og_image_url || ''}
+            onChange={(e) => update('og_image_url', e.target.value)}
+          />
+          <input
+            className="md:col-span-2 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="Canonical URL (optional)"
+            value={values.canonical_url || ''}
+            onChange={(e) => update('canonical_url', e.target.value)}
+          />
+        </div>
+      </div>
+      <div>
+        <select
+          className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm w-full"
+          value={values.category_id || ''}
+          onChange={(e) => update('category_id', e.target.value || null)}
+        >
+          <option value="">No Category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {(cat.name_en || cat.name_ar) ?? 'Untitled'}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="flex items-center gap-3">
         <button
           onClick={() => setContentLang('ar')}
@@ -1387,6 +1422,26 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+            <div className="text-xs text-gray-300 mb-3">Widgets</div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setBlocks(burgerGuideTemplate())}
+                className="px-3 py-2 rounded-lg bg-primary/20 text-xs text-primary border border-primary/30 hover:bg-primary/30 transition"
+              >
+                Apply Burger Guide Template
+              </button>
+              {widgets.map((w) => (
+                <button
+                  key={w.type}
+                  onClick={() => addBlock(w.type as Block['type'])}
+                  className="px-3 py-2 rounded-lg bg-white/10 text-xs hover:bg-white/20 transition"
+                >
+                  + {w.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="space-y-4">
             {blocks.map((block) => (
               <div key={block.id} className="bg-white/5 border border-white/10 rounded-2xl p-4">

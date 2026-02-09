@@ -17,12 +17,26 @@ export class TagsService {
     return this.prisma.tag.findMany({ orderBy: { created_at: 'desc' } });
   }
 
-  create(data: { name_ar: string; name_en: string }) {
+  private async ensureUniqueSlug(field: 'slug_ar' | 'slug_en', base: string) {
+    let candidate = base || `${Date.now()}`;
+    let counter = 2;
+    while (await this.prisma.tag.findFirst({ where: { [field]: candidate } as any })) {
+      candidate = `${base}-${counter}`;
+      counter += 1;
+    }
+    return candidate;
+  }
+
+  async create(data: { name_ar: string; name_en: string }) {
+    const baseAr = slugify(data.name_ar || data.name_en);
+    const baseEn = slugify(data.name_en || data.name_ar);
+    const slug_ar = await this.ensureUniqueSlug('slug_ar', baseAr);
+    const slug_en = await this.ensureUniqueSlug('slug_en', baseEn);
     return this.prisma.tag.create({
       data: {
         ...data,
-        slug_ar: slugify(data.name_ar),
-        slug_en: slugify(data.name_en)
+        slug_ar,
+        slug_en
       }
     });
   }

@@ -1,0 +1,32 @@
+# LLMs.txt for Besiktas City Guide
+# Purpose: Provide a clear, crawlable index for AI systems.
+
+User-agent: *
+Allow: /
+
+Site: https://best5.com.tr
+Sitemap: https://best5.com.tr/sitemap.xml
+
+# Key entry points (Arabic + English)
+Home (AR): https://best5.com.tr/ar
+Home (EN): https://best5.com.tr/en
+Blog (AR): https://best5.com.tr/ar/blog
+Blog (EN): https://best5.com.tr/en/blog
+
+# Static pages
+Privacy (AR): https://best5.com.tr/ar/privacy
+Privacy (EN): https://best5.com.tr/en/privacy
+Contact (AR): https://best5.com.tr/ar/contact
+Contact (EN): https://best5.com.tr/en/contact
+Advertise (AR): https://best5.com.tr/ar/advertise
+Advertise (EN): https://best5.com.tr/en/advertise
+Terms (AR): https://best5.com.tr/ar/terms
+Terms (EN): https://best5.com.tr/en/terms
+Cookies (AR): https://best5.com.tr/ar/cookies
+Cookies (EN): https://best5.com.tr/en/cookies
+FAQ (AR): https://best5.com.tr/ar/faq
+FAQ (EN): https://best5.com.tr/en/faq
+
+# Notes
+# - Articles are listed in the sitemap and under /{lang}/blog
+# - Categories are listed in the sitemap under /{lang}/category/{slug}

@@ -44,6 +44,7 @@ interface PostBuilderProps {
   values: Record<string, any>;
   onChange: (next: Record<string, any>) => void;
   onPreview: (payload: { values: Record<string, any>; lang: Lang; blocks: Block[] }) => void;
+  onPreviewPublic?: (payload: { values: Record<string, any>; lang: Lang; blocks: Block[] }) => void;
   onSaveDraft: () => void;
   onPublish: () => void;
 }
@@ -55,7 +56,7 @@ const defaultBlocks = (): Block[] => [
   { id: makeId(), type: 'paragraph', data: { text: { ar: 'اكتب النص هنا...', en: 'Write here...' } } }
 ];
 
-const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, onSaveDraft, onPublish }) => {
+const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, onPreviewPublic, onSaveDraft, onPublish }) => {
   const historyRef = useRef<{ values: Record<string, any>; blocks: Block[] }[]>([]);
   const historyIndexRef = useRef(-1);
   const isRestoringRef = useRef(false);
@@ -912,6 +913,14 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             <button onClick={() => onPreview({ values: latestValuesRef.current, lang: contentLang, blocks })} className="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs border border-white/10 hover:bg-white/20 transition">
               Preview
             </button>
+            {onPreviewPublic && (
+              <button
+                onClick={() => onPreviewPublic({ values: latestValuesRef.current, lang: contentLang, blocks })}
+                className="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs border border-white/10 hover:bg-white/20 transition"
+              >
+                Preview (Site)
+              </button>
+            )}
             <button onClick={onSaveDraft} className="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs border border-white/10 hover:bg-white/20 transition">
               Save Draft
             </button>

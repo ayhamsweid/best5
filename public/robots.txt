@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://your-domain.com/sitemap.xml
+
+Sitemap: https://best5.com.tr/sitemap.xml

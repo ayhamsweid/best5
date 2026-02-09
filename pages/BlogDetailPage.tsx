@@ -53,9 +53,57 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
 
   const title = lang === 'ar' ? post.title_ar : post.title_en;
   const excerpt = lang === 'ar' ? post.excerpt_ar : post.excerpt_en;
+  const seoTitle = lang === 'ar' ? post.seo_title_ar : post.seo_title_en;
+  const seoDesc = lang === 'ar' ? post.seo_desc_ar : post.seo_desc_en;
+  const canonical = post.canonical_url || `/${lang}/blog/${slug}`;
+  const ogImage = post.og_image_url || post.cover_image_url;
+  const canonicalUrl = canonical?.startsWith('http') ? canonical : `${window.location.origin}${canonical}`;
+  const authorName = post.author?.full_name || 'Besiktas City Guide';
   const content = lang === 'ar' ? post.content_ar : post.content_en;
   const blocks = Array.isArray(post.content_blocks_json) ? post.content_blocks_json : [];
   const publishedAt = post.published_at ? new Date(post.published_at).toLocaleDateString() : '';
+  const faqItems = blocks.filter((block: any) => block.type === 'faq');
+  const faqJsonLd = faqItems.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqItems.flatMap((block: any) =>
+          (block.data?.items || []).map((item: any) => ({
+            '@type': 'Question',
+            name: pick(item?.q) || '',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: pick(item?.a) || ''
+            }
+          }))
+        )
+      }
+    : null;
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: lang === 'ar' ? 'الرئيسية' : 'Home',
+        item: `${window.location.origin}/${lang}`
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: lang === 'ar' ? 'المدونة' : 'Blog',
+        item: `${window.location.origin}/${lang}/blog`
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: canonicalUrl
+      }
+    ]
+  };
   const tocItems = blocks
     .map((block: any) => {
       if (block.type === 'cards') return { id: `block-${block.id}`, label: pick(block.data?.title) || (lang === 'ar' ? 'ملخص سريع للأفضل' : 'Quick Picks') };
@@ -70,7 +118,43 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
 
   return (
     <div className="bg-[#F9FAFB] text-[#111827] dark:bg-[#0b1224] dark:text-white" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      <Seo title={`${title} | Besiktas City Guide`} description={excerpt} canonical={`/${lang}/blog/${slug}`} />
+      <Seo title={`${seoTitle || title} | Besiktas City Guide`} description={seoDesc || excerpt} canonical={canonicalUrl} image={ogImage} type="article" url={canonicalUrl} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: seoTitle || title,
+            description: seoDesc || excerpt,
+            image: ogImage ? [ogImage] : undefined,
+            datePublished: post.published_at || undefined,
+            dateModified: post.updated_at || undefined,
+            author: {
+              '@type': 'Person',
+              name: authorName
+            },
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': canonicalUrl
+            }
+          })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd)
+        }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqJsonLd)
+          }}
+        />
+      )}
 
       <section className="max-w-7xl mx-auto px-6 pt-10">
         <div className="relative overflow-hidden rounded-3xl bg-[#111827] text-white border border-white/10">

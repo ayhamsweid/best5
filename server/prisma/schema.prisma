@@ -10,6 +10,8 @@ datasource db {
 enum UserRole {
   ADMIN
   CONTENT_WRITER
+  EDITOR
+  CHIEF_EDITOR
 }
 
 enum PostStatus {
@@ -51,6 +53,8 @@ model User {
 
   posts         Post[]
   audit_logs    AuditLog[] @relation("ActorLogs")
+  post_revisions PostRevision[] @relation("PostRevisionEditor")
+  notifications Notification[]
 }
 
 model Post {
@@ -75,12 +79,14 @@ model Post {
   seo_desc_ar     String?
   seo_desc_en     String?
   canonical_url   String?
+  og_image_url    String?
   created_at      DateTime   @default(now())
   updated_at      DateTime   @updatedAt
 
   author    User      @relation(fields: [author_id], references: [id])
   category  Category? @relation(fields: [category_id], references: [id])
   tags      PostTag[]
+  revisions PostRevision[]
 }
 
 model Category {
@@ -89,6 +95,7 @@ model Category {
   name_en   String
   slug_ar   String   @unique
   slug_en   String   @unique
+  icon      String?
   posts     Post[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -135,6 +142,57 @@ model Settings {
   site_name_ar       String?
   site_name_en       String?
   default_language   String?  @default("ar")
+  home_json          Json?
+  header_json        Json?
+  footer_json        Json?
+  pages_json         Json?
+  pages_meta_json    Json?
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  user_id    String
+  title      String
+  body       String?
+  href       String?
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model MediaAsset {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  url        String
+  tags       String[] @default([])
+  size       Int?
+  mime       String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model PostRevision {
+  id            String   @id @default(uuid())
+  post_id       String
+  editor_id     String?
+  snapshot_json Json
+  created_at    DateTime @default(now())
+
+  post   Post  @relation(fields: [post_id], references: [id])
+  editor User? @relation("PostRevisionEditor", fields: [editor_id], references: [id])
+}
+
+model PageView {
+  id         String   @id @default(uuid())
+  path       String
+  lang       String?
+  referrer   String?
+  user_agent String?
+  ip         String?
+  is_bot     Boolean  @default(false)
+  bot_name   String?
+  created_at DateTime @default(now())
 }

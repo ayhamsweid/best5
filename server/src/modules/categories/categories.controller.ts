@@ -17,16 +17,19 @@ export class CategoriesController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER)
+  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Get()
   list() {
     return this.categories.list();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER)
+  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Post()
-  async create(@Body() body: { name_ar: string; name_en: string }, @CurrentUser() user: any) {
+  async create(
+    @Body() body: { name_ar: string; name_en: string; icon?: string | null },
+    @CurrentUser() user: any
+  ) {
     const created = await this.categories.create(body);
     await this.logs.log(user.id, 'CREATE', 'CATEGORY', created.id, null, created);
     return created;

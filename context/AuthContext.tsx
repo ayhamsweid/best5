@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getMe, login as apiLogin, logout as apiLogout } from '../services/api';
 
-export type Role = 'ADMIN' | 'CONTENT_WRITER';
+export type Role = 'ADMIN' | 'CONTENT_WRITER' | 'EDITOR' | 'CHIEF_EDITOR';
 
 export interface AuthUser {
   id: string;

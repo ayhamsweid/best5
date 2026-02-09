@@ -17,14 +17,14 @@ export class TagsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER)
+  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Get()
   list() {
     return this.tags.list();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER)
+  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Post()
   async create(@Body() body: { name_ar: string; name_en: string }, @CurrentUser() user: any) {
     const created = await this.tags.create(body);

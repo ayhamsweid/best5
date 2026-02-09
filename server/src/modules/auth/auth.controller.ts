@@ -7,6 +7,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/user.decorator';
 import { PrismaService } from '../../prisma/prisma.service';
 import { LogsService } from '../logs/logs.service';
+import { randomBytes } from 'crypto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,9 +23,11 @@ export class AuthController {
     const user = await this.auth.validateUser(dto.email, dto.password);
     const access = this.auth.signAccessToken(user);
     const refresh = this.auth.signRefreshToken(user);
+    const csrf = randomBytes(24).toString('hex');
 
     res.cookie('access_token', access, this.cookieOptions());
     res.cookie('refresh_token', refresh, { ...this.cookieOptions(), maxAge: 1000 * Number(process.env.JWT_REFRESH_TTL || 604800) });
+    res.cookie('csrf_token', csrf, { ...this.cookieOptions(), httpOnly: false });
 
     await this.prisma.user.update({ where: { id: user.id }, data: { last_login_at: new Date() } });
     await this.logs.log(user.id, 'LOGIN', 'USER', user.id, null, { email: user.email });
@@ -36,6 +39,7 @@ export class AuthController {
   async logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token', this.cookieOptions());
     res.clearCookie('refresh_token', this.cookieOptions());
+    res.clearCookie('csrf_token', { ...this.cookieOptions(), httpOnly: false });
     return { ok: true };
   }
 
@@ -61,7 +65,9 @@ export class AuthController {
     if (!value) return { ok: false };
     const payload = this.jwt.verify(value, { secret: process.env.JWT_REFRESH_SECRET || 'dev-refresh' });
     const access = this.auth.signAccessToken(payload);
+    const csrf = randomBytes(24).toString('hex');
     res.cookie('access_token', access, this.cookieOptions());
+    res.cookie('csrf_token', csrf, { ...this.cookieOptions(), httpOnly: false });
     return { ok: true };
   }
 

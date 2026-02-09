@@ -39,6 +39,30 @@ export class UpdatePostDto {
   cover_image_url?: string;
 
   @IsOptional()
+  @IsString()
+  seo_title_ar?: string;
+
+  @IsOptional()
+  @IsString()
+  seo_title_en?: string;
+
+  @IsOptional()
+  @IsString()
+  seo_desc_ar?: string;
+
+  @IsOptional()
+  @IsString()
+  seo_desc_en?: string;
+
+  @IsOptional()
+  @IsString()
+  canonical_url?: string;
+
+  @IsOptional()
+  @IsString()
+  og_image_url?: string;
+
+  @IsOptional()
   @IsDateString()
   published_at?: string;
 

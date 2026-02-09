@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 
-const Hero: React.FC = () => {
+type Localized = { ar?: string; en?: string };
+type HeroContent = {
+  title?: Localized;
+  subtitle?: Localized;
+  description?: Localized;
+  placeholder?: Localized;
+  cta?: Localized;
+  backgroundUrl?: string;
+};
+
+const Hero: React.FC<{ content?: HeroContent }> = ({ content }) => {
   const navigate = useNavigate();
   const { lang } = useLang();
   const [query, setQuery] = useState('');
@@ -14,23 +24,31 @@ const Hero: React.FC = () => {
     navigate(`/${lang}/search?q=${encodeURIComponent(query.trim())}`);
   };
 
-  const copy = {
-    title: lang === 'ar' ? 'دليلك الشامل لتجارب استثنائية' : 'Your complete guide to exceptional experiences',
-    subtitle: lang === 'ar' ? 'في قلب اسطنبول' : 'In the heart of Istanbul',
-    description:
-      lang === 'ar'
-        ? 'نحن نقوم بالبحث والمقارنة لنقدم لك الأفضل دائماً، دون الحاجة للتنقل بين مئات الصفحات'
-        : 'We research and compare so you always get the best—without jumping between hundreds of pages.',
-    placeholder: lang === 'ar' ? 'ماذا تريد أن تستكشف اليوم؟' : 'What do you want to explore today?',
-    cta: lang === 'ar' ? 'بحث' : 'Search'
-  };
+  const copy = useMemo(
+    () => ({
+      title: (content?.title?.[lang] ??
+        (lang === 'ar' ? 'دليلك الشامل لتجارب استثنائية' : 'Your complete guide to exceptional experiences')) as string,
+      subtitle: (content?.subtitle?.[lang] ?? (lang === 'ar' ? 'في قلب اسطنبول' : 'In the heart of Istanbul')) as string,
+      description:
+        (content?.description?.[lang] ??
+          (lang === 'ar'
+            ? 'نحن نقوم بالبحث والمقارنة لنقدم لك الأفضل دائماً، دون الحاجة للتنقل بين مئات الصفحات'
+            : 'We research and compare so you always get the best—without jumping between hundreds of pages.')) as string,
+      placeholder: (content?.placeholder?.[lang] ?? (lang === 'ar' ? 'ماذا تريد أن تستكشف اليوم؟' : 'What do you want to explore today?')) as string,
+      cta: (content?.cta?.[lang] ?? (lang === 'ar' ? 'بحث' : 'Search')) as string,
+      backgroundUrl:
+        content?.backgroundUrl ||
+        'https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=2598&auto=format&fit=crop'
+    }),
+    [content, lang]
+  );
 
   return (
     <section className="relative h-[650px] flex flex-col justify-center items-center text-center px-4 overflow-visible">
       {/* Background with overlay */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=2598&auto=format&fit=crop" 
+          src={copy.backgroundUrl} 
           alt="Istanbul Besiktas" 
           className="w-full h-full object-cover"
         />

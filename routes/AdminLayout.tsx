@@ -1,8 +1,9 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Link, Outlet, NavLink, useLocation } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 import ContentLoading from '../components/ContentLoading';
 import { useRouteTransition } from '../context/RouteTransitionContext';
+import { fetchUnreadNotificationsCount } from '../services/api';
 
 const navItem = () => ({ isActive }: { isActive: boolean }) =>
   [
@@ -16,6 +17,13 @@ const AdminLayout: React.FC = () => {
   const location = useLocation();
   const isBuilder = location.pathname.includes('/admin/posts/edit/') || location.pathname.includes('/admin/posts/preview/');
   const { isPending } = useRouteTransition();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    fetchUnreadNotificationsCount()
+      .then((data: any) => setUnreadCount(Number(data) || 0))
+      .catch(() => setUnreadCount(0));
+  }, [location.pathname]);
 
   if (isBuilder) {
     return (
@@ -42,6 +50,14 @@ const AdminLayout: React.FC = () => {
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
+            <Link to="/admin/notifications" className="relative text-xs text-gray-500 dark:text-gray-300">
+              Notifications
+              {unreadCount > 0 && (
+                <span className="absolute -top-2 -right-3 bg-primary text-[#0f172a] text-[10px] px-1.5 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
+            </Link>
             <div className="text-xs text-gray-500 dark:text-gray-300">/admin</div>
           </div>
         </div>
@@ -52,18 +68,25 @@ const AdminLayout: React.FC = () => {
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">Main</div>
             <nav className="space-y-2">
               <NavLink to="/admin/dashboard" className={navItem()}>Dashboard</NavLink>
+              <NavLink to="/admin/home" className={navItem()}>Home Page</NavLink>
               <NavLink to="/admin/posts" className={navItem()}>Posts</NavLink>
               <NavLink to="/admin/media" className={navItem()}>Media</NavLink>
               <NavLink to="/admin/categories" className={navItem()}>Categories</NavLink>
               <NavLink to="/admin/tags" className={navItem()}>Tags</NavLink>
+              <NavLink to="/admin/header-footer" className={navItem()}>Header & Footer</NavLink>
+              <NavLink to="/admin/pages" className={navItem()}>Static Pages</NavLink>
             </nav>
           </div>
           <div className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm dark:bg-white/5 dark:border-white/10 dark:shadow-none">
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">Admin</div>
             <nav className="space-y-2">
+              <NavLink to="/admin/notifications" className={navItem()}>Notifications</NavLink>
+              <NavLink to="/admin/crawlers" className={navItem()}>Crawler Analytics</NavLink>
+              <NavLink to="/admin/search-console" className={navItem()}>Search Console</NavLink>
               <NavLink to="/admin/users" className={navItem()}>Users</NavLink>
               <NavLink to="/admin/logs" className={navItem()}>Audit Logs</NavLink>
               <NavLink to="/admin/settings" className={navItem()}>Settings</NavLink>
+              <NavLink to="/admin/db-tools" className={navItem()}>Database Tools</NavLink>
             </nav>
           </div>
         </aside>
