@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
-import { fetchCategories, fetchUploads, uploadImage } from '../services/api';
+import { fetchCategories, fetchTags, fetchUploads, uploadImage, createCategory, createTag } from '../services/api';
+import { parseImportedPostJson } from '../utils/postJsonImport';
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
@@ -64,8 +65,16 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
   const [mediaTarget, setMediaTarget] = useState<{ type: 'cover' | 'image' | 'gallery'; blockId?: string } | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
+  const [newCategoryAr, setNewCategoryAr] = useState('');
+  const [newCategoryEn, setNewCategoryEn] = useState('');
+  const [newTagAr, setNewTagAr] = useState('');
+  const [newTagEn, setNewTagEn] = useState('');
+  const [creatingCategory, setCreatingCategory] = useState(false);
+  const [creatingTag, setCreatingTag] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [builderMode, setBuilderMode] = useState(true);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const key = values?.id || 'new';
@@ -86,7 +95,17 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => setCategories([]));
+    fetchTags().then(setTags).catch(() => setTags([]));
   }, []);
+
+  useEffect(() => {
+    if (!tags.length || !Array.isArray(values.tag_ids)) return;
+    const validTagIds = new Set(tags.map((tag: any) => tag?.id).filter(Boolean));
+    const cleaned = values.tag_ids.filter((id: string) => validTagIds.has(id));
+    if (cleaned.length !== values.tag_ids.length) {
+      update('tag_ids', cleaned);
+    }
+  }, [tags, values.tag_ids]);
 
   useEffect(() => {
     if (!selectedId && blocks.length) {
@@ -99,6 +118,73 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
   const getLocalized = (value: Localized | undefined, fallback = '') => {
     if (typeof value === 'string') return value || fallback;
     return (value?.[contentLang] ?? value?.ar ?? value?.en ?? fallback) as string;
+  };
+
+  const isoToLocalDateTime = (iso?: string) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const localDateTimeToIso = (localValue: string) => {
+    if (!localValue) return '';
+    const d = new Date(localValue);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toISOString();
+  };
+
+  const selectedTagIds = useMemo(() => {
+    if (Array.isArray(values.tag_ids)) return values.tag_ids;
+    if (Array.isArray(values.tags)) {
+      return values.tags
+        .map((postTag: any) => postTag?.tag?.id || postTag?.tag_id)
+        .filter(Boolean);
+    }
+    return [];
+  }, [values.tag_ids, values.tags]);
+
+  const toggleTag = (tagId: string) => {
+    const current = new Set(selectedTagIds);
+    if (current.has(tagId)) {
+      current.delete(tagId);
+    } else {
+      current.add(tagId);
+    }
+    update('tag_ids', Array.from(current));
+  };
+
+  const handleCreateCategory = async () => {
+    const nameAr = newCategoryAr.trim();
+    const nameEn = newCategoryEn.trim();
+    if (!nameAr || !nameEn) return;
+    setCreatingCategory(true);
+    try {
+      const created = await createCategory({ name_ar: nameAr, name_en: nameEn });
+      setCategories((prev) => [created, ...prev.filter((item) => item.id !== created.id)]);
+      update('category_id', created.id);
+      setNewCategoryAr('');
+      setNewCategoryEn('');
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
+
+  const handleCreateTag = async () => {
+    const nameAr = newTagAr.trim();
+    const nameEn = newTagEn.trim();
+    if (!nameAr || !nameEn) return;
+    setCreatingTag(true);
+    try {
+      const created = await createTag({ name_ar: nameAr, name_en: nameEn });
+      setTags((prev) => [created, ...prev.filter((item) => item.id !== created.id)]);
+      update('tag_ids', Array.from(new Set([...selectedTagIds, created.id])));
+      setNewTagAr('');
+      setNewTagEn('');
+    } finally {
+      setCreatingTag(false);
+    }
   };
 
   const setLocalized = (value: Localized | undefined, next: string): Localized => {
@@ -268,6 +354,25 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     });
   };
 
+  const importFromJsonFile = async (file?: File | null) => {
+    if (!file) return;
+    try {
+      const raw = await file.text();
+      const imported = parseImportedPostJson(raw);
+      const importedBlocks = (imported.blocks || []).map((block) => ({ ...block, id: block?.id || makeId() })) as Block[];
+      setBlocks(importedBlocks);
+      onChange({
+        ...values,
+        ...imported.values,
+        content_blocks_json: importedBlocks
+      });
+      setSelectedId(importedBlocks[0]?.id || null);
+      alert(`Imported JSON successfully (${importedBlocks.length} blocks).`);
+    } catch (error: any) {
+      alert(error?.message || 'Invalid JSON file');
+    }
+  };
+
   const handleUpload = async (blockId: string, onUrl: (url: string) => void, file?: File | null) => {
     if (!file) return;
     setUploading((prev) => ({ ...prev, [blockId]: true }));
@@ -380,6 +485,8 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     }
 
     if (block.type === 'comparison') {
+      const headers = block.data?.headers || [];
+      const rows = block.data?.rows || [];
       return (
         <div className="rounded-2xl border border-[#E5E7EB] overflow-hidden bg-white dark:bg-[#111827] dark:border-white/10">
           {block.data?.title && (
@@ -395,7 +502,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
             <table className="w-full text-sm">
               <thead className="bg-[#F9FAFB] text-gray-500 text-xs dark:bg-[#0f172a]">
                 <tr>
-                  {(block.data?.headers || []).map((h: any, idx: number) => (
+                  {headers.map((h: any, idx: number) => (
                     <th key={`${block.id}-h-${idx}`} className="px-4 py-3 text-start">
                       <EditableText
                         tag="span"
@@ -411,9 +518,9 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
                 </tr>
               </thead>
               <tbody>
-                {(block.data?.rows || []).map((row: any[], rowIdx: number) => (
+                {rows.map((row: any[], rowIdx: number) => (
                   <tr key={`${block.id}-r-${rowIdx}`} className="border-b last:border-none dark:border-white/10">
-                    {(block.data?.headers || []).map((_h: any, colIdx: number) => (
+                    {headers.map((_h: any, colIdx: number) => (
                       <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="px-4 py-3 text-gray-600 dark:text-gray-300">
                         <EditableText
                           tag="span"
@@ -430,6 +537,44 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="px-4 py-3 border-t border-[#E5E7EB] dark:border-white/10 flex flex-wrap gap-2 text-xs">
+            <button
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              onClick={() => updateBlock(block.id, { ...block.data, rows: [...rows, Array(headers.length).fill('')] })}
+            >
+              + Row
+            </button>
+            <button
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              onClick={() => {
+                const nextHeaders = [...headers, ''];
+                const nextRows = rows.map((row: any[]) => [...row, '']);
+                updateBlock(block.id, { ...block.data, headers: nextHeaders, rows: nextRows });
+              }}
+            >
+              + Column
+            </button>
+            <button
+              className="px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+              onClick={() => {
+                if (!rows.length) return;
+                updateBlock(block.id, { ...block.data, rows: rows.slice(0, -1) });
+              }}
+            >
+              - Last Row
+            </button>
+            <button
+              className="px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+              onClick={() => {
+                if (!headers.length) return;
+                const nextHeaders = headers.slice(0, -1);
+                const nextRows = rows.map((row: any[]) => row.slice(0, -1));
+                updateBlock(block.id, { ...block.data, headers: nextHeaders, rows: nextRows });
+              }}
+            >
+              - Last Column
+            </button>
           </div>
         </div>
       );
@@ -793,6 +938,8 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     }
 
     if (block.type === 'comparison') {
+      const headers = block.data?.headers || [];
+      const rows = block.data?.rows || [];
       return (
         <div className="space-y-3">
           <input
@@ -801,70 +948,75 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
             value={getLocalized(block.data.title || '')}
             onChange={(e) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title || '', e.target.value) })}
           />
-          <div className="text-xs text-gray-300">Headers</div>
-          {block.data.headers.map((h: string, idx: number) => (
-            <div key={`${block.id}-h-${idx}`} className="flex items-center gap-2">
-              <input
-                className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
-                placeholder={`Header ${idx + 1}`}
-                value={getLocalized(h)}
-                onChange={(e) => {
-                  const next = [...block.data.headers];
-                  next[idx] = setLocalized(h, e.target.value);
-                  updateBlock(block.id, { ...block.data, headers: next });
-                }}
-              />
-              <button
-                className="text-xs px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
-                onClick={() => {
-                  const nextHeaders = block.data.headers.filter((_v: any, i: number) => i !== idx);
-                  const nextRows = block.data.rows.map((row: any[]) => row.filter((_v, i) => i !== idx));
-                  updateBlock(block.id, { ...block.data, headers: nextHeaders, rows: nextRows });
-                }}
-              >
-                حذف عمود
-              </button>
-            </div>
-          ))}
-          <button className="text-xs text-[#22C55E]" onClick={() => updateBlock(block.id, { ...block.data, headers: [...block.data.headers, ''] })}>
+          <div className="text-xs text-gray-400">Edit table from Inspector</div>
+          <div className="overflow-x-auto rounded-lg border border-white/10">
+            <table className="w-full text-xs">
+              <thead>
+                <tr>
+                  {headers.map((header: any, idx: number) => (
+                    <th key={`${block.id}-h-${idx}`} className="p-2 align-top min-w-[130px]">
+                      <input
+                        className="w-full bg-white/10 border border-white/10 rounded-lg px-2 py-1.5 text-xs"
+                        placeholder={`Header ${idx + 1}`}
+                        value={getLocalized(header)}
+                        onChange={(e) => {
+                          const nextHeaders = [...headers];
+                          nextHeaders[idx] = setLocalized(header, e.target.value);
+                          updateBlock(block.id, { ...block.data, headers: nextHeaders });
+                        }}
+                      />
+                      <button
+                        className="mt-1 text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+                        onClick={() => {
+                          const nextHeaders = headers.filter((_v: any, i: number) => i !== idx);
+                          const nextRows = rows.map((row: any[]) => row.filter((_v: any, i: number) => i !== idx));
+                          updateBlock(block.id, { ...block.data, headers: nextHeaders, rows: nextRows });
+                        }}
+                      >
+                        Remove col
+                      </button>
+                    </th>
+                  ))}
+                  <th className="p-2 text-gray-500 min-w-[90px]">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row: any[], rowIdx: number) => (
+                  <tr key={`${block.id}-r-${rowIdx}`} className="border-t border-white/10">
+                    {headers.map((_h: any, colIdx: number) => (
+                      <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="p-2">
+                        <input
+                          className="w-full bg-white/10 border border-white/10 rounded-lg px-2 py-1.5 text-xs"
+                          placeholder={`R${rowIdx + 1} C${colIdx + 1}`}
+                          value={getLocalized(row[colIdx] || '')}
+                          onChange={(e) => {
+                            const nextRows = rows.map((r: any[]) => [...r]);
+                            nextRows[rowIdx][colIdx] = setLocalized(row[colIdx] || '', e.target.value);
+                            updateBlock(block.id, { ...block.data, rows: nextRows });
+                          }}
+                        />
+                      </td>
+                    ))}
+                    <td className="p-2">
+                      <button
+                        className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+                        onClick={() => {
+                          const nextRows = rows.filter((_v: any, i: number) => i !== rowIdx);
+                          updateBlock(block.id, { ...block.data, rows: nextRows.length ? nextRows : [Array(headers.length).fill('')] });
+                        }}
+                      >
+                        Remove row
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <button className="text-xs text-[#22C55E]" onClick={() => updateBlock(block.id, { ...block.data, headers: [...headers, ''], rows: rows.map((row: any[]) => [...row, '']) })}>
             + Add header
           </button>
-          <div className="text-xs text-gray-300 mt-3">Rows</div>
-          {block.data.rows.map((row: string[], rowIdx: number) => (
-            <div key={`${block.id}-r-${rowIdx}`} className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="text-xs text-gray-400">Row {rowIdx + 1}</div>
-                <button
-                  className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
-                  onClick={() => {
-                    const rows = block.data.rows.filter((_r: any, i: number) => i !== rowIdx);
-                    updateBlock(block.id, { ...block.data, rows });
-                  }}
-                >
-                  حذف سطر
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                {block.data.headers.map((_h: string, colIdx: number) => (
-                  <input
-                    key={`${block.id}-r-${rowIdx}-${colIdx}`}
-                    className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
-                    placeholder={`Row ${rowIdx + 1} Col ${colIdx + 1}`}
-                    value={getLocalized(row[colIdx] || '')}
-                    onChange={(e) => {
-                      const rows = block.data.rows.map((r: string[]) => [...r]);
-                      rows[rowIdx][colIdx] = setLocalized(row[colIdx] || '', e.target.value);
-                      updateBlock(block.id, { ...block.data, rows });
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-          <button
-            className="text-xs text-[#22C55E]"
-            onClick={() => updateBlock(block.id, { ...block.data, rows: [...block.data.rows, Array(block.data.headers.length).fill('')] })}
-          >
+          <button className="text-xs text-[#22C55E]" onClick={() => updateBlock(block.id, { ...block.data, rows: [...rows, Array(headers.length).fill('')] })}>
             + Add row
           </button>
         </div>
@@ -1049,7 +1201,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           <input
             className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
             placeholder="Cover image URL"
-            value={block.data.coverUrl || ''}
+            value={block.data.coverUrl || block.data.cover_image_url || block.data.imageUrl || block.data.image || ''}
             onChange={(e) => updateBlock(block.id, { ...block.data, coverUrl: e.target.value })}
           />
           <div className="space-y-2">
@@ -1179,16 +1331,16 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           <option value="ARCHIVED">Archived</option>
         </select>
         <input
+          type="datetime-local"
           className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
-          placeholder="Published At (ISO)"
-          value={values.published_at || ''}
-          onChange={(e) => update('published_at', e.target.value)}
+          value={isoToLocalDateTime(values.published_at)}
+          onChange={(e) => update('published_at', localDateTimeToIso(e.target.value))}
         />
         <input
+          type="datetime-local"
           className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
-          placeholder="Scheduled At (ISO)"
-          value={values.scheduled_at || ''}
-          onChange={(e) => update('scheduled_at', e.target.value)}
+          value={isoToLocalDateTime(values.scheduled_at)}
+          onChange={(e) => update('scheduled_at', localDateTimeToIso(e.target.value))}
         />
       </div>
       <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
@@ -1232,19 +1384,90 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           />
         </div>
       </div>
-      <div>
-        <select
-          className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm w-full"
-          value={values.category_id || ''}
-          onChange={(e) => update('category_id', e.target.value || null)}
-        >
-          <option value="">No Category</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {(cat.name_en || cat.name_ar) ?? 'Untitled'}
-            </option>
-          ))}
-        </select>
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <div className="text-xs text-gray-300">Category</div>
+            <select
+              className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm w-full"
+              value={values.category_id || ''}
+              onChange={(e) => update('category_id', e.target.value || null)}
+            >
+              <option value="">No Category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {(cat.name_en || cat.name_ar) ?? 'Untitled'}
+                </option>
+              ))}
+            </select>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <input
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder="New Category AR"
+                value={newCategoryAr}
+                onChange={(e) => setNewCategoryAr(e.target.value)}
+              />
+              <input
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder="New Category EN"
+                value={newCategoryEn}
+                onChange={(e) => setNewCategoryEn(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={handleCreateCategory}
+                disabled={creatingCategory || !newCategoryAr.trim() || !newCategoryEn.trim()}
+                className="bg-primary text-white px-3 py-2 rounded-lg text-xs disabled:opacity-60"
+              >
+                {creatingCategory ? 'Adding...' : 'Add Category'}
+              </button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="text-xs text-gray-300">Tags</div>
+            <div className="max-h-28 overflow-auto rounded-lg border border-white/10 p-2 bg-white/5">
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => {
+                  const active = selectedTagIds.includes(tag.id);
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() => toggleTag(tag.id)}
+                      className={`px-3 py-1 rounded-full text-xs border ${
+                        active ? 'bg-primary/20 border-primary/30 text-primary' : 'bg-white/10 border-white/10 text-gray-300'
+                      }`}
+                    >
+                      {tag.name_en || tag.name_ar}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <input
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder="New Tag AR"
+                value={newTagAr}
+                onChange={(e) => setNewTagAr(e.target.value)}
+              />
+              <input
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder="New Tag EN"
+                value={newTagEn}
+                onChange={(e) => setNewTagEn(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={handleCreateTag}
+                disabled={creatingTag || !newTagAr.trim() || !newTagEn.trim()}
+                className="bg-primary text-white px-3 py-2 rounded-lg text-xs disabled:opacity-60"
+              >
+                {creatingTag ? 'Adding...' : 'Add Tag'}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <button
@@ -1265,12 +1488,32 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
         >
           {builderMode ? 'Builder Mode' : 'Form Mode'}
         </button>
+        <button
+          onClick={() => importInputRef.current?.click()}
+          className="px-3 py-1 rounded-full text-xs bg-white/10 text-white"
+        >
+          Import JSON
+        </button>
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".json,application/json,text/plain"
+          className="hidden"
+          onChange={(e) => {
+            importFromJsonFile(e.target.files?.[0]);
+            e.currentTarget.value = '';
+          }}
+        />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" placeholder="Title (AR)" value={values.title_ar || ''} onChange={(e) => update('title_ar', e.target.value)} />
         <input className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" placeholder="Title (EN)" value={values.title_en || ''} onChange={(e) => update('title_en', e.target.value)} />
         <input className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" placeholder="Excerpt (AR)" value={values.excerpt_ar || ''} onChange={(e) => update('excerpt_ar', e.target.value)} />
         <input className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" placeholder="Excerpt (EN)" value={values.excerpt_en || ''} onChange={(e) => update('excerpt_en', e.target.value)} />
+        <input className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" placeholder="SEO Title (AR)" value={values.seo_title_ar || ''} onChange={(e) => update('seo_title_ar', e.target.value)} />
+        <input className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" placeholder="SEO Title (EN)" value={values.seo_title_en || ''} onChange={(e) => update('seo_title_en', e.target.value)} />
+        <textarea className="md:col-span-2 w-full bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" rows={3} placeholder="SEO Description (AR)" value={values.seo_desc_ar || ''} onChange={(e) => update('seo_desc_ar', e.target.value)} />
+        <textarea className="md:col-span-2 w-full mt-2 bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" rows={3} placeholder="SEO Description (EN)" value={values.seo_desc_en || ''} onChange={(e) => update('seo_desc_en', e.target.value)} />
         <div className="md:col-span-2 flex items-center gap-3">
           <input className="flex-1 bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm" placeholder="Cover Image URL" value={values.cover_image_url || ''} onChange={(e) => update('cover_image_url', e.target.value)} />
           <button
