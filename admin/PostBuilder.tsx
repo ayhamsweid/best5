@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { uploadImage, fetchUploads } from '../services/api';
+import { uploadImage, fetchUploads, fetchCategories, fetchTags, createCategory, createTag } from '../services/api';
+import { parseImportedPostJson } from '../utils/postJsonImport';
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
@@ -79,6 +80,15 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
   const [showMedia, setShowMedia] = useState(false);
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
   const [mediaTarget, setMediaTarget] = useState<{ type: 'cover' | 'image' | 'gallery'; blockId?: string } | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
+  const [newCategoryAr, setNewCategoryAr] = useState('');
+  const [newCategoryEn, setNewCategoryEn] = useState('');
+  const [newTagAr, setNewTagAr] = useState('');
+  const [newTagEn, setNewTagEn] = useState('');
+  const [creatingCategory, setCreatingCategory] = useState(false);
+  const [creatingTag, setCreatingTag] = useState(false);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
   const lastIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -114,6 +124,11 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
     if (!showMedia) return;
     fetchUploads().then(setMediaFiles).catch(() => setMediaFiles([]));
   }, [showMedia]);
+
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => setCategories([]));
+    fetchTags().then(setTags).catch(() => setTags([]));
+  }, []);
 
   const getLocalized = (value: Localized | undefined, fallback = '') => {
     if (typeof value === 'string') return value || fallback;
@@ -216,6 +231,15 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
   const [undoVersion, setUndoVersion] = useState(0);
   const canUndo = historyIndexRef.current > 0;
+  const selectedTagIds = useMemo(() => {
+    if (Array.isArray(values.tag_ids)) return values.tag_ids;
+    if (Array.isArray(values.tags)) {
+      return values.tags
+        .map((postTag: any) => postTag?.tag?.id || postTag?.tag_id)
+        .filter(Boolean);
+    }
+    return [];
+  }, [values.tag_ids, values.tags]);
 
   const undo = () => {
     if (!canUndo) return;
@@ -226,6 +250,68 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
     onChange(snapshot.values);
     isRestoringRef.current = false;
     setUndoVersion((v) => v + 1);
+  };
+
+  const toggleTag = (tagId: string) => {
+    const current = new Set(selectedTagIds);
+    if (current.has(tagId)) {
+      current.delete(tagId);
+    } else {
+      current.add(tagId);
+    }
+    update('tag_ids', Array.from(current));
+  };
+
+  const handleCreateCategory = async () => {
+    const nameAr = newCategoryAr.trim();
+    const nameEn = newCategoryEn.trim();
+    if (!nameAr || !nameEn) return;
+    setCreatingCategory(true);
+    try {
+      const created = await createCategory({ name_ar: nameAr, name_en: nameEn });
+      setCategories((prev) => [created, ...prev.filter((item) => item.id !== created.id)]);
+      update('category_id', created.id);
+      setNewCategoryAr('');
+      setNewCategoryEn('');
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
+
+  const handleCreateTag = async () => {
+    const nameAr = newTagAr.trim();
+    const nameEn = newTagEn.trim();
+    if (!nameAr || !nameEn) return;
+    setCreatingTag(true);
+    try {
+      const created = await createTag({ name_ar: nameAr, name_en: nameEn });
+      setTags((prev) => [created, ...prev.filter((item) => item.id !== created.id)]);
+      update('tag_ids', Array.from(new Set([...selectedTagIds, created.id])));
+      setNewTagAr('');
+      setNewTagEn('');
+    } finally {
+      setCreatingTag(false);
+    }
+  };
+
+  const importFromJsonFile = async (file?: File | null) => {
+    if (!file) return;
+    try {
+      const raw = await file.text();
+      const imported = parseImportedPostJson(raw);
+      const importedBlocks = (imported.blocks || []).map((block) => ({ ...block, id: block?.id || makeId() })) as Block[];
+      recordHistory();
+      setBlocks(importedBlocks);
+      onChange({
+        ...latestValuesRef.current,
+        ...imported.values,
+        content_blocks_json: importedBlocks
+      });
+      setSelectedId(importedBlocks[0]?.id || null);
+      alert(`Imported JSON successfully (${importedBlocks.length} blocks).`);
+    } catch (error: any) {
+      alert(error?.message || 'Invalid JSON file');
+    }
   };
 
   const EditableText: React.FC<{
@@ -377,6 +463,8 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
     }
 
     if (block.type === 'comparison') {
+      const headers = block.data?.headers || [];
+      const rows = block.data?.rows || [];
       return (
         <div className="rounded-2xl border border-[#E5E7EB] overflow-hidden bg-white dark:bg-[#111827] dark:border-white/10">
           {block.data?.title && (
@@ -392,7 +480,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             <table className="w-full text-sm">
               <thead className="bg-[#F9FAFB] text-gray-500 text-xs dark:bg-[#0f172a]">
                 <tr>
-                  {(block.data?.headers || []).map((h: any, idx: number) => (
+                  {headers.map((h: any, idx: number) => (
                     <th key={`${block.id}-h-${idx}`} className="px-4 py-3 text-start">
                       <EditableText
                         tag="span"
@@ -408,9 +496,9 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
                 </tr>
               </thead>
               <tbody>
-                {(block.data?.rows || []).map((row: any[], rowIdx: number) => (
+                {rows.map((row: any[], rowIdx: number) => (
                   <tr key={`${block.id}-r-${rowIdx}`} className="border-b last:border-none dark:border-white/10">
-                    {(block.data?.headers || []).map((_h: any, colIdx: number) => (
+                    {headers.map((_h: any, colIdx: number) => (
                       <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="px-4 py-3 text-gray-600 dark:text-gray-300">
                         <EditableText
                           tag="span"
@@ -427,6 +515,44 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="px-4 py-3 border-t border-[#E5E7EB] dark:border-white/10 flex flex-wrap gap-2 text-xs">
+            <button
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              onClick={() => updateBlock(block.id, { ...block.data, rows: [...rows, Array(headers.length).fill('')] })}
+            >
+              + Row
+            </button>
+            <button
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              onClick={() => {
+                const nextHeaders = [...headers, ''];
+                const nextRows = rows.map((row: any[]) => [...row, '']);
+                updateBlock(block.id, { ...block.data, headers: nextHeaders, rows: nextRows });
+              }}
+            >
+              + Column
+            </button>
+            <button
+              className="px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+              onClick={() => {
+                if (!rows.length) return;
+                updateBlock(block.id, { ...block.data, rows: rows.slice(0, -1) });
+              }}
+            >
+              - Last Row
+            </button>
+            <button
+              className="px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+              onClick={() => {
+                if (!headers.length) return;
+                const nextHeaders = headers.slice(0, -1);
+                const nextRows = rows.map((row: any[]) => row.slice(0, -1));
+                updateBlock(block.id, { ...block.data, headers: nextHeaders, rows: nextRows });
+              }}
+            >
+              - Last Column
+            </button>
           </div>
         </div>
       );
@@ -763,7 +889,22 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Rating (e.g. 4.9)" value={block.data.rating ?? ''} onChange={(e) => updateBlock(block.id, { ...block.data, rating: Number(e.target.value || 0) })} />
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Reviews count" value={block.data.reviews ?? ''} onChange={(e) => updateBlock(block.id, { ...block.data, reviews: Number(e.target.value || 0) })} />
           </div>
-          <input className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Cover image URL" value={block.data.coverUrl || ''} onChange={(e) => updateBlock(block.id, { ...block.data, coverUrl: e.target.value })} />
+          <input className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Cover image URL" value={block.data.coverUrl || block.data.cover_image_url || block.data.imageUrl || block.data.image || ''} onChange={(e) => updateBlock(block.id, { ...block.data, coverUrl: e.target.value })} />
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              accept="image/*"
+              className="text-xs text-gray-300"
+              onChange={(e) =>
+                handleUpload(
+                  `${block.id}-restaurant-cover`,
+                  (url) => updateBlock(block.id, { ...block.data, coverUrl: url }),
+                  e.target.files?.[0]
+                )
+              }
+            />
+            {uploading[`${block.id}-restaurant-cover`] && <div className="text-xs text-gray-400">Uploading...</div>}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Address" value={getLocalized(block.data.address || '')} onChange={(e) => updateBlock(block.id, { ...block.data, address: setLocalized(block.data.address || '', e.target.value) })} />
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Hours" value={getLocalized(block.data.hours || '')} onChange={(e) => updateBlock(block.id, { ...block.data, hours: setLocalized(block.data.hours || '', e.target.value) })} />
@@ -773,6 +914,50 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Map URL" value={block.data.mapUrl || ''} onChange={(e) => updateBlock(block.id, { ...block.data, mapUrl: e.target.value })} />
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Phone" value={block.data.phone || ''} onChange={(e) => updateBlock(block.id, { ...block.data, phone: e.target.value })} />
+          </div>
+          <div className="space-y-2">
+            <div className="text-xs text-gray-300">Pros</div>
+            {(block.data.pros || []).map((item: any, idx: number) => (
+              <input
+                key={`${block.id}-pro-${idx}`}
+                className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder={`Pro ${idx + 1}`}
+                value={getLocalized(item)}
+                onChange={(e) => {
+                  const next = [...(block.data.pros || [])];
+                  next[idx] = setLocalized(item, e.target.value);
+                  updateBlock(block.id, { ...block.data, pros: next });
+                }}
+              />
+            ))}
+            <button
+              className="text-xs text-[#22C55E]"
+              onClick={() => updateBlock(block.id, { ...block.data, pros: [...(block.data.pros || []), { ar: '', en: '' }] })}
+            >
+              + Add pro
+            </button>
+          </div>
+          <div className="space-y-2">
+            <div className="text-xs text-gray-300">Cons</div>
+            {(block.data.cons || []).map((item: any, idx: number) => (
+              <input
+                key={`${block.id}-con-${idx}`}
+                className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder={`Con ${idx + 1}`}
+                value={getLocalized(item)}
+                onChange={(e) => {
+                  const next = [...(block.data.cons || [])];
+                  next[idx] = setLocalized(item, e.target.value);
+                  updateBlock(block.id, { ...block.data, cons: next });
+                }}
+              />
+            ))}
+            <button
+              className="text-xs text-[#22C55E]"
+              onClick={() => updateBlock(block.id, { ...block.data, cons: [...(block.data.cons || []), { ar: '', en: '' }] })}
+            >
+              + Add con
+            </button>
           </div>
         </div>
       );
@@ -801,41 +986,85 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
     }
 
     if (block.type === 'comparison') {
+      const headers = block.data?.headers || [];
+      const rows = block.data?.rows || [];
       return (
-        <div className="space-y-2">
-          <div className="space-y-2">
-            {(block.data.headers || []).map((_h: any, idx: number) => (
-              <button
-                key={`${block.id}-header-remove-${idx}`}
-                className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200 me-2"
-                onClick={() => {
-                  const headers = block.data.headers.filter((_v: any, i: number) => i !== idx);
-                  const rows = block.data.rows.map((row: any[]) => row.filter((_v: any, i: number) => i !== idx));
-                  updateBlock(block.id, { ...block.data, headers: headers.length ? headers : [''], rows });
-                }}
-              >
-                Remove header {idx + 1}
-              </button>
-            ))}
+        <div className="space-y-3">
+          <input
+            className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="Table title"
+            value={getLocalized(block.data.title || '')}
+            onChange={(e) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title || '', e.target.value) })}
+          />
+          <div className="text-xs text-gray-400">Edit table from Inspector</div>
+          <div className="overflow-x-auto rounded-lg border border-white/10">
+            <table className="w-full text-xs">
+              <thead>
+                <tr>
+                  {headers.map((header: any, idx: number) => (
+                    <th key={`${block.id}-header-edit-${idx}`} className="p-2 align-top min-w-[130px]">
+                      <input
+                        className="w-full bg-white/10 border border-white/10 rounded-lg px-2 py-1.5 text-xs"
+                        placeholder={`Header ${idx + 1}`}
+                        value={getLocalized(header)}
+                        onChange={(e) => {
+                          const nextHeaders = [...headers];
+                          nextHeaders[idx] = setLocalized(header, e.target.value);
+                          updateBlock(block.id, { ...block.data, headers: nextHeaders });
+                        }}
+                      />
+                      <button
+                        className="mt-1 text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+                        onClick={() => {
+                          const nextHeaders = headers.filter((_v: any, i: number) => i !== idx);
+                          const nextRows = rows.map((row: any[]) => row.filter((_v: any, i: number) => i !== idx));
+                          updateBlock(block.id, { ...block.data, headers: nextHeaders.length ? nextHeaders : [''], rows: nextRows });
+                        }}
+                      >
+                        Remove col
+                      </button>
+                    </th>
+                  ))}
+                  <th className="p-2 text-gray-500 min-w-[90px]">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row: any[], rowIdx: number) => (
+                  <tr key={`${block.id}-row-edit-${rowIdx}`} className="border-t border-white/10">
+                    {headers.map((_header: any, colIdx: number) => (
+                      <td key={`${block.id}-cell-edit-${rowIdx}-${colIdx}`} className="p-2">
+                        <input
+                          className="w-full bg-white/10 border border-white/10 rounded-lg px-2 py-1.5 text-xs"
+                          placeholder={`R${rowIdx + 1} C${colIdx + 1}`}
+                          value={getLocalized(row[colIdx] || '')}
+                          onChange={(e) => {
+                            const nextRows = rows.map((r: any[]) => [...r]);
+                            nextRows[rowIdx][colIdx] = setLocalized(row[colIdx] || '', e.target.value);
+                            updateBlock(block.id, { ...block.data, rows: nextRows });
+                          }}
+                        />
+                      </td>
+                    ))}
+                    <td className="p-2">
+                      <button
+                        className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+                        onClick={() => {
+                          const nextRows = rows.filter((_v: any, i: number) => i !== rowIdx);
+                          updateBlock(block.id, { ...block.data, rows: nextRows.length ? nextRows : [Array(headers.length).fill('')] });
+                        }}
+                      >
+                        Remove row
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <div className="space-y-2">
-            {(block.data.rows || []).map((_row: any, idx: number) => (
-              <button
-                key={`${block.id}-row-remove-${idx}`}
-                className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200 me-2"
-                onClick={() => {
-                  const rows = block.data.rows.filter((_v: any, i: number) => i !== idx);
-                  updateBlock(block.id, { ...block.data, rows: rows.length ? rows : [Array(block.data.headers.length).fill('')] });
-                }}
-              >
-                Remove row {idx + 1}
-              </button>
-            ))}
-          </div>
-          <button className="text-xs text-[#22C55E]" onClick={() => updateBlock(block.id, { ...block.data, headers: [...block.data.headers, ''] })}>
+          <button className="text-xs text-[#22C55E]" onClick={() => updateBlock(block.id, { ...block.data, headers: [...headers, ''], rows: rows.map((row: any[]) => [...row, '']) })}>
             + Add header
           </button>
-          <button className="text-xs text-[#22C55E]" onClick={() => updateBlock(block.id, { ...block.data, rows: [...block.data.rows, Array(block.data.headers.length).fill('')] })}>
+          <button className="text-xs text-[#22C55E]" onClick={() => updateBlock(block.id, { ...block.data, rows: [...rows, Array(headers.length).fill('')] })}>
             + Add row
           </button>
         </div>
@@ -844,22 +1073,91 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'cards') {
       return (
-        <div className="space-y-2">
-          {(block.data.cards || []).map((_card: any, idx: number) => (
-            <button
-              key={`${block.id}-card-remove-${idx}`}
-              className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200 me-2"
-              onClick={() => {
-                const next = block.data.cards.filter((_v: any, i: number) => i !== idx);
-                updateBlock(block.id, { ...block.data, cards: next.length ? next : [{ title: { ar: '', en: '' }, label: { ar: '', en: '' }, note: { ar: '', en: '' }, icon: 'Star' }] });
-              }}
-            >
-              Remove card {idx + 1}
-            </button>
+        <div className="space-y-3">
+          <input
+            className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="Section title"
+            value={getLocalized(block.data.title || '')}
+            onChange={(e) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title || '', e.target.value) })}
+          />
+          {(block.data.cards || []).map((card: any, idx: number) => (
+            <div key={`${block.id}-card-${idx}`} className="grid grid-cols-1 md:grid-cols-5 gap-2">
+              <input
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder="Card title"
+                value={getLocalized(card.title)}
+                onChange={(e) => {
+                  const next = [...block.data.cards];
+                  next[idx] = { ...card, title: setLocalized(card.title, e.target.value) };
+                  updateBlock(block.id, { ...block.data, cards: next });
+                }}
+              />
+              <select
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                value={card.icon || 'Star'}
+                onChange={(e) => {
+                  const next = [...block.data.cards];
+                  next[idx] = { ...card, icon: e.target.value };
+                  updateBlock(block.id, { ...block.data, cards: next });
+                }}
+              >
+                {[
+                  { value: 'Star', label: 'نجمة' },
+                  { value: 'Sparkles', label: 'لمعة' },
+                  { value: 'Crown', label: 'تاج' },
+                  { value: 'TrendingUp', label: 'صاعد' },
+                  { value: 'BadgeCheck', label: 'شارة موثوقة' },
+                  { value: 'Leaf', label: 'ورقة' },
+                  { value: 'MapPin', label: 'موقع' },
+                  { value: 'Zap', label: 'برق' }
+                ].map((icon) => (
+                  <option key={icon.value} value={icon.value}>
+                    {icon.label}
+                  </option>
+                ))}
+              </select>
+              <input
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder="Badge label"
+                value={getLocalized(card.label || '')}
+                onChange={(e) => {
+                  const next = [...block.data.cards];
+                  next[idx] = { ...card, label: setLocalized(card.label || '', e.target.value) };
+                  updateBlock(block.id, { ...block.data, cards: next });
+                }}
+              />
+              <input
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                placeholder="Note"
+                value={getLocalized(card.note || '')}
+                onChange={(e) => {
+                  const next = [...block.data.cards];
+                  next[idx] = { ...card, note: setLocalized(card.note || '', e.target.value) };
+                  updateBlock(block.id, { ...block.data, cards: next });
+                }}
+              />
+              <button
+                className="text-[10px] px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200"
+                onClick={() => {
+                  const next = block.data.cards.filter((_v: any, i: number) => i !== idx);
+                  updateBlock(block.id, {
+                    ...block.data,
+                    cards: next.length ? next : [{ title: { ar: '', en: '' }, label: { ar: '', en: '' }, note: { ar: '', en: '' }, icon: 'Star' }]
+                  });
+                }}
+              >
+                Remove
+              </button>
+            </div>
           ))}
           <button
             className="text-xs text-[#22C55E]"
-            onClick={() => updateBlock(block.id, { ...block.data, cards: [...block.data.cards, { title: { ar: '', en: '' }, label: { ar: '', en: '' }, note: { ar: '', en: '' }, icon: 'Star' }] })}
+            onClick={() =>
+              updateBlock(block.id, {
+                ...block.data,
+                cards: [...block.data.cards, { title: { ar: '', en: '' }, label: { ar: '', en: '' }, note: { ar: '', en: '' }, icon: 'Star' }]
+              })
+            }
           >
             + Add card
           </button>
@@ -901,27 +1199,43 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="font-black">{contentLang === 'ar' ? 'محرر المقال' : 'Post Builder'}</div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setContentLang('ar')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'ar' ? 'bg-primary text-[#0f172a]' : 'bg-white/10 text-white'}`}>
+            <button onClick={() => setContentLang('ar')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'ar' ? 'bg-primary text-[#0f172a]' : 'bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white'}`}>
               AR
             </button>
-            <button onClick={() => setContentLang('en')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'en' ? 'bg-primary text-[#0f172a]' : 'bg-white/10 text-white'}`}>
+            <button onClick={() => setContentLang('en')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'en' ? 'bg-primary text-[#0f172a]' : 'bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white'}`}>
               EN
             </button>
-            <button onClick={undo} disabled={!canUndo} className="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs border border-white/10 hover:bg-white/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <button onClick={undo} disabled={!canUndo} className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
               Undo
             </button>
-            <button onClick={() => onPreview({ values: latestValuesRef.current, lang: contentLang, blocks })} className="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs border border-white/10 hover:bg-white/20 transition">
+            <button
+              onClick={() => importInputRef.current?.click()}
+              className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition"
+            >
+              Import JSON
+            </button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".json,application/json,text/plain"
+              className="hidden"
+              onChange={(e) => {
+                importFromJsonFile(e.target.files?.[0]);
+                e.currentTarget.value = '';
+              }}
+            />
+            <button onClick={() => onPreview({ values: latestValuesRef.current, lang: contentLang, blocks })} className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition">
               Preview
             </button>
             {onPreviewPublic && (
               <button
                 onClick={() => onPreviewPublic({ values: latestValuesRef.current, lang: contentLang, blocks })}
-                className="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs border border-white/10 hover:bg-white/20 transition"
+                className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition"
               >
                 Preview (Site)
               </button>
             )}
-            <button onClick={onSaveDraft} className="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs border border-white/10 hover:bg-white/20 transition">
+            <button onClick={onSaveDraft} className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition">
               Save Draft
             </button>
             <button onClick={onPublish} className="bg-primary text-[#0f172a] px-3 py-1.5 rounded-full text-xs font-semibold">
@@ -930,6 +1244,96 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
           </div>
         </div>
       </div>
+
+      <section className="max-w-7xl mx-auto px-6 pt-6">
+        <div className="rounded-2xl border border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#111827] p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="text-xs font-semibold text-gray-600 dark:text-gray-300">Category</div>
+              <select
+                className="w-full bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                value={values.category_id || ''}
+                onChange={(e) => update('category_id', e.target.value || null)}
+              >
+                <option value="">No Category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {(cat.name_en || cat.name_ar) ?? 'Untitled'}
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <input
+                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="New Category AR"
+                  value={newCategoryAr}
+                  onChange={(e) => setNewCategoryAr(e.target.value)}
+                />
+                <input
+                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="New Category EN"
+                  value={newCategoryEn}
+                  onChange={(e) => setNewCategoryEn(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={handleCreateCategory}
+                  disabled={creatingCategory || !newCategoryAr.trim() || !newCategoryEn.trim()}
+                  className="bg-primary text-[#0f172a] rounded-lg px-3 py-2 text-sm font-semibold disabled:opacity-60"
+                >
+                  {creatingCategory ? 'Adding...' : 'Add Category'}
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-xs font-semibold text-gray-600 dark:text-gray-300">Tags</div>
+              <div className="max-h-28 overflow-auto rounded-lg border border-[#E5E7EB] dark:border-white/10 p-2 bg-[#F9FAFB] dark:bg-white/5">
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => {
+                    const active = selectedTagIds.includes(tag.id);
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={() => toggleTag(tag.id)}
+                        className={`px-3 py-1 rounded-full text-xs border ${
+                          active
+                            ? 'bg-[#22C55E]/20 border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]'
+                            : 'bg-white dark:bg-white/10 border-[#E5E7EB] dark:border-white/10 text-gray-600 dark:text-gray-300'
+                        }`}
+                      >
+                        {tag.name_en || tag.name_ar}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <input
+                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="New Tag AR"
+                  value={newTagAr}
+                  onChange={(e) => setNewTagAr(e.target.value)}
+                />
+                <input
+                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="New Tag EN"
+                  value={newTagEn}
+                  onChange={(e) => setNewTagEn(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={handleCreateTag}
+                  disabled={creatingTag || !newTagAr.trim() || !newTagEn.trim()}
+                  className="bg-primary text-[#0f172a] rounded-lg px-3 py-2 text-sm font-semibold disabled:opacity-60"
+                >
+                  {creatingTag ? 'Adding...' : 'Add Tag'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
         <div className="space-y-8">
@@ -1050,14 +1454,20 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
           </div>
 
           <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm dark:bg-[#111827] dark:border-white/10">
-            <div className="text-xs text-gray-400 mb-3">Post Settings</div>
-            <input className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Cover Image URL" value={values.cover_image_url || ''} onChange={(e) => update('cover_image_url', e.target.value)} />
-            <div className="flex items-center gap-2 mt-2">
-              <button className="text-xs px-3 py-1 rounded-full bg-white/10 border border-white/10" onClick={() => openMedia({ type: 'cover' })}>
-                Choose from Media
-              </button>
-              <input type="file" accept="image/*" className="text-xs text-gray-300" onChange={(e) => handleUpload('cover', (url) => update('cover_image_url', url), e.target.files?.[0])} />
-            </div>
+              <div className="text-xs text-gray-400 mb-3">Post Settings</div>
+              <input className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Cover Image URL" value={values.cover_image_url || ''} onChange={(e) => update('cover_image_url', e.target.value)} />
+              <div className="flex items-center gap-2 mt-2">
+                <button className="text-xs px-3 py-1 rounded-full bg-white/10 border border-white/10" onClick={() => openMedia({ type: 'cover' })}>
+                  Choose from Media
+                </button>
+                <input type="file" accept="image/*" className="text-xs text-gray-300" onChange={(e) => handleUpload('cover', (url) => update('cover_image_url', url), e.target.files?.[0])} />
+              </div>
+
+              <div className="mt-3 text-xs text-gray-400 mb-2">SEO / Meta</div>
+              <input className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="SEO Title (AR)" value={values.seo_title_ar || ''} onChange={(e) => update('seo_title_ar', e.target.value)} />
+              <input className="w-full mt-2 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="SEO Title (EN)" value={values.seo_title_en || ''} onChange={(e) => update('seo_title_en', e.target.value)} />
+              <textarea rows={3} className="w-full mt-2 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="SEO Description (AR)" value={values.seo_desc_ar || ''} onChange={(e) => update('seo_desc_ar', e.target.value)} />
+              <textarea rows={3} className="w-full mt-2 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="SEO Description (EN)" value={values.seo_desc_en || ''} onChange={(e) => update('seo_desc_en', e.target.value)} />
           </div>
         </aside>
       </div>
