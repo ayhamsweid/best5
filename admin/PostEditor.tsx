@@ -436,7 +436,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           tag={Tag}
           value={getLocalized(block.data.text)}
           onChange={(next) => updateBlock(block.id, { ...block.data, text: setLocalized(block.data.text, next) })}
-          className="font-black text-[#111827] dark:text-white"
+          className="font-black text-[#111827]"
           placeholder="Heading"
         />
       );
@@ -448,7 +448,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           tag="p"
           value={getLocalized(block.data.text)}
           onChange={(next) => updateBlock(block.id, { ...block.data, text: setLocalized(block.data.text, next) })}
-          className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap"
+          className="text-gray-600 whitespace-pre-wrap"
           placeholder="Write paragraph..."
         />
       );
@@ -456,15 +456,15 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
     if (block.type === 'summary') {
       return (
-        <div className="rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] p-5 dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] p-5">
           <EditableText
             tag="div"
             value={getLocalized(block.data?.title)}
             onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title, next) })}
-            className="font-black text-[#111827] dark:text-white mb-3"
+            className="font-black text-[#111827] mb-3"
             placeholder="Summary title"
           />
-          <ul className="list-disc ps-5 text-gray-600 dark:text-gray-300 space-y-1">
+          <ul className="list-disc ps-5 text-gray-600 space-y-1">
             {(block.data?.items || []).map((item: any, idx: number) => (
               <li key={`${block.id}-item-${idx}`}>
                 <EditableText
@@ -488,9 +488,9 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
       const headers = block.data?.headers || [];
       const rows = block.data?.rows || [];
       return (
-        <div className="rounded-2xl border border-[#E5E7EB] overflow-hidden bg-white dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl border border-[#E5E7EB] overflow-hidden bg-white">
           {block.data?.title && (
-            <div className="px-6 py-4 border-b border-[#E5E7EB] dark:border-white/10 font-black text-[#111827] dark:text-white">
+            <div className="px-6 py-4 border-b border-[#E5E7EB] font-black text-[#111827]">
               <EditableText
                 tag="div"
                 value={getLocalized(block.data.title)}
@@ -500,7 +500,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           )}
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#F9FAFB] text-gray-500 text-xs dark:bg-[#0f172a]">
+              <thead className="bg-[#F9FAFB] text-gray-500 text-xs">
                 <tr>
                   {headers.map((h: any, idx: number) => (
                     <th key={`${block.id}-h-${idx}`} className="px-4 py-3 text-start">
@@ -519,9 +519,9 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
               </thead>
               <tbody>
                 {rows.map((row: any[], rowIdx: number) => (
-                  <tr key={`${block.id}-r-${rowIdx}`} className="border-b last:border-none dark:border-white/10">
+                  <tr key={`${block.id}-r-${rowIdx}`} className="border-b last:border-none">
                     {headers.map((_h: any, colIdx: number) => (
-                      <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                      <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="px-4 py-3 text-gray-600">
                         <EditableText
                           tag="span"
                           value={getLocalized(row[colIdx] || '')}
@@ -538,15 +538,15 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 border-t border-[#E5E7EB] dark:border-white/10 flex flex-wrap gap-2 text-xs">
+          <div className="px-4 py-3 border-t border-[#E5E7EB] flex flex-wrap gap-2 text-xs">
             <button
-              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d]"
               onClick={() => updateBlock(block.id, { ...block.data, rows: [...rows, Array(headers.length).fill('')] })}
             >
               + Row
             </button>
             <button
-              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d]"
               onClick={() => {
                 const nextHeaders = [...headers, ''];
                 const nextRows = rows.map((row: any[]) => [...row, '']);
@@ -588,13 +588,13 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
               tag="div"
               value={getLocalized(block.data.title)}
               onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title, next) })}
-              className="text-2xl font-black text-[#111827] dark:text-white"
+              className="text-2xl font-black text-[#111827]"
             />
           )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(block.data?.cards || []).map((card: any, idx: number) => (
-              <div key={`${block.id}-card-${idx}`} className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm dark:bg-[#111827] dark:border-white/10">
-                <div className="font-black text-lg text-[#111827] dark:text-white">
+              <div key={`${block.id}-card-${idx}`} className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+                <div className="font-black text-lg text-[#111827]">
                   <EditableText
                     tag="span"
                     value={getLocalized(card.title)}
@@ -618,7 +618,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
                     placeholder="Label"
                   />
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <div className="text-xs text-gray-500 mt-2">
                   <EditableText
                     tag="span"
                     value={getLocalized(card.note || '')}
@@ -639,19 +639,19 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
     if (block.type === 'guide') {
       return (
-        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm">
           <EditableText
             tag="h2"
             value={getLocalized(block.data?.title)}
             onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title, next) })}
-            className="text-xl font-black mb-4 text-[#111827] dark:text-white"
+            className="text-xl font-black mb-4 text-[#111827]"
             placeholder="Guide title"
           />
           <EditableText
             tag="div"
             value={getLocalized(block.data?.content)}
             onChange={(next) => updateBlock(block.id, { ...block.data, content: setLocalized(block.data.content, next) })}
-            className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap"
+            className="text-sm text-gray-600 whitespace-pre-wrap"
             placeholder="Guide content"
           />
         </div>
@@ -660,18 +660,18 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
     if (block.type === 'faq') {
       return (
-        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm">
           <EditableText
             tag="h3"
             value={getLocalized(block.data?.title || '')}
             onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title || '', next) })}
-            className="text-xl font-black mb-4 text-[#111827] dark:text-white"
+            className="text-xl font-black mb-4 text-[#111827]"
             placeholder="FAQ title"
           />
-          <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+          <div className="space-y-3 text-sm text-gray-600">
             {(block.data?.items || []).map((item: any, idx: number) => (
               <div key={`${block.id}-faq-${idx}`}>
-                <div className="font-semibold text-[#111827] dark:text-white">
+                <div className="font-semibold text-[#111827]">
                   <EditableText
                     tag="span"
                     value={getLocalized(item.q)}
@@ -702,12 +702,12 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
     if (block.type === 'cta') {
       return (
-        <div className="rounded-2xl bg-[#E8F5EC] border border-[#D1E7D8] p-5 flex items-center justify-between gap-4 dark:bg-[#0f172a] dark:border-white/10">
+        <div className="rounded-2xl bg-[#E8F5EC] border border-[#D1E7D8] p-5 flex items-center justify-between gap-4">
           <EditableText
             tag="div"
             value={getLocalized(block.data?.label)}
             onChange={(next) => updateBlock(block.id, { ...block.data, label: setLocalized(block.data.label, next) })}
-            className="font-semibold text-[#0f172a] dark:text-white"
+            className="font-semibold text-[#0f172a]"
             placeholder="CTA label"
           />
         </div>
@@ -726,7 +726,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
       return block.data?.url ? (
         <img src={block.data.url} alt="" className="rounded-2xl w-full object-cover" />
       ) : (
-        <div className="rounded-2xl border border-dashed border-gray-300 dark:border-white/10 p-6 text-xs text-gray-400">Image block</div>
+        <div className="rounded-2xl border border-dashed border-gray-300 p-6 text-xs text-gray-400">Image block</div>
       );
     }
 
@@ -742,7 +742,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
     if (block.type === 'map') {
       return (
-        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] dark:border-white/10 p-4 text-gray-500">
+        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] p-4 text-gray-500">
           Map block (edit URL in Inspector)
         </div>
       );
@@ -750,7 +750,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
     if (block.type === 'video') {
       return (
-        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] dark:border-white/10 p-4 text-gray-500">
+        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] p-4 text-gray-500">
           Video block (edit URL in Inspector)
         </div>
       );

@@ -58,16 +58,16 @@ const Categories: React.FC = () => {
 
   return (
     <div className="relative -mt-14 z-20 px-4 mb-20">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-[#111827] rounded-2xl shadow-xl py-6 px-4 md:px-10 flex flex-wrap justify-between items-center gap-4 border border-gray-100 dark:border-white/10">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl py-6 px-4 md:px-10 flex flex-wrap justify-between items-center gap-4 border border-gray-100">
         {list.map((cat, idx) => {
           const slug = (lang === 'ar' ? cat.slug_ar : cat.slug_en) || cat.slug_en || cat.slug_ar;
           const name = (lang === 'ar' ? cat.name_ar : cat.name_en) || cat.name_en || cat.name_ar;
           return (
           <Link key={cat.id || idx} to={`/${lang}/category/${slug}`} className="flex flex-col items-center gap-3 group min-w-[60px]">
-            <div className="w-14 h-14 rounded-full bg-gray-50 dark:bg-white/10 flex items-center justify-center text-gray-700 dark:text-gray-200 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
+            <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center text-gray-700 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
               {renderIcon(cat.icon)}
             </div>
-            <span className="text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">{name}</span>
+            <span className="text-sm font-bold text-gray-700 group-hover:text-primary transition-colors">{name}</span>
           </Link>
         )})}
       </div>

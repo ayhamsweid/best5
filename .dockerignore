@@ -1,0 +1,10 @@
+.git
+node_modules
+dist
+server/node_modules
+server/dist
+server/uploads
+db_raw_data_backup
+*.log
+.env
+server/.env

@@ -46,6 +46,8 @@ export const restorePostRevision = (id: string, revisionId: string) =>
   request(`/posts/${id}/revisions/${revisionId}/restore`, { method: 'POST' });
 export const fetchPublicPosts = (lang: 'ar' | 'en', categorySlug?: string) =>
   request(`/posts/public?lang=${lang}${categorySlug ? `&category=${encodeURIComponent(categorySlug)}` : ''}`);
+export const fetchPopularPosts = (lang: 'ar' | 'en', days = 7, limit = 5) =>
+  request(`/posts/public/popular?lang=${lang}&days=${days}&limit=${limit}`);
 export const fetchPublicPost = (lang: 'ar' | 'en', slug: string) => request(`/posts/public/${slug}?lang=${lang}`);
 
 export const uploadImage = async (file: File) => {
@@ -85,6 +87,7 @@ export const createCategory = (payload: Record<string, unknown>) =>
   request('/categories', { method: 'POST', body: JSON.stringify(payload) });
 
 export const fetchTags = () => request('/tags');
+export const fetchPublicTags = () => request('/tags/public');
 export const createTag = (payload: Record<string, unknown>) =>
   request('/tags', { method: 'POST', body: JSON.stringify(payload) });
 

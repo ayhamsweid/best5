@@ -101,10 +101,10 @@ const FeaturedGuides: React.FC<{
     <section className="max-w-7xl mx-auto px-4 md:px-8 mb-24">
       <div className="flex justify-between items-end mb-10 border-r-4 border-primary pr-4">
         <div>
-          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+          <h2 className="text-3xl font-black text-gray-900 mb-2">
             {config?.title?.[lang] ?? (lang === 'ar' ? 'أحدث أدلة المقارنة' : 'Latest comparison guides')}
           </h2>
-          <p className="text-gray-500 dark:text-gray-300">
+          <p className="text-gray-500">
             {config?.subtitle?.[lang] ?? (lang === 'ar' ? 'أدلة مفصلة تم إعدادها بواسطة خبراء محليين' : 'Detailed guides curated by local experts')}
           </p>
         </div>
@@ -115,7 +115,7 @@ const FeaturedGuides: React.FC<{
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {guides.map((guide) => (
-          <div key={guide.id} className="group bg-white dark:bg-[#111827] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-white/10 flex flex-col h-full">
+          <div key={guide.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full">
             <div className="relative h-60 overflow-hidden">
               <img 
                 src={guide.image} 
@@ -129,14 +129,14 @@ const FeaturedGuides: React.FC<{
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
                 {guide.title}
               </h3>
-              <p className="text-gray-500 dark:text-gray-300 text-sm leading-relaxed mb-6 flex-grow">
+              <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">
                 {guide.description}
               </p>
               
-              <Link to={`/${lang}/compare/${guide.slug}`} className="w-full bg-gray-50 dark:bg-white/5 hover:bg-primary hover:text-white text-gray-700 dark:text-gray-200 font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 group-hover:shadow-md">
+              <Link to={`/${lang}/compare/${guide.slug}`} className="w-full bg-gray-50 hover:bg-primary hover:text-white text-gray-700 font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 group-hover:shadow-md">
                 {lang === 'ar' ? 'عرض المقارنة' : 'Open comparison'}
                 <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               </Link>

@@ -414,7 +414,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
           tag={Tag}
           value={getLocalized(block.data.text)}
           onChange={(next) => updateBlock(block.id, { ...block.data, text: setLocalized(block.data.text, next) })}
-          className="font-black text-[#111827] dark:text-white"
+          className="font-black text-[#111827]"
           placeholder="Heading"
         />
       );
@@ -426,7 +426,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
           tag="p"
           value={getLocalized(block.data.text)}
           onChange={(next) => updateBlock(block.id, { ...block.data, text: setLocalized(block.data.text, next) })}
-          className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap"
+          className="text-gray-600 whitespace-pre-wrap"
           placeholder="Write paragraph..."
         />
       );
@@ -434,15 +434,15 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'summary') {
       return (
-        <div className="rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] p-5 dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] p-5">
           <EditableText
             tag="div"
             value={getLocalized(block.data?.title)}
             onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title, next) })}
-            className="font-black text-[#111827] dark:text-white mb-3"
+            className="font-black text-[#111827] mb-3"
             placeholder="Summary title"
           />
-          <ul className="list-disc ps-5 text-gray-600 dark:text-gray-300 space-y-1">
+          <ul className="list-disc ps-5 text-gray-600 space-y-1">
             {(block.data?.items || []).map((item: any, idx: number) => (
               <li key={`${block.id}-item-${idx}`}>
                 <EditableText
@@ -466,9 +466,9 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
       const headers = block.data?.headers || [];
       const rows = block.data?.rows || [];
       return (
-        <div className="rounded-2xl border border-[#E5E7EB] overflow-hidden bg-white dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl border border-[#E5E7EB] overflow-hidden bg-white">
           {block.data?.title && (
-            <div className="px-6 py-4 border-b border-[#E5E7EB] dark:border-white/10 font-black text-[#111827] dark:text-white">
+            <div className="px-6 py-4 border-b border-[#E5E7EB] font-black text-[#111827]">
               <EditableText
                 tag="div"
                 value={getLocalized(block.data.title)}
@@ -478,7 +478,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
           )}
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#F9FAFB] text-gray-500 text-xs dark:bg-[#0f172a]">
+              <thead className="bg-[#F9FAFB] text-gray-500 text-xs">
                 <tr>
                   {headers.map((h: any, idx: number) => (
                     <th key={`${block.id}-h-${idx}`} className="px-4 py-3 text-start">
@@ -497,9 +497,9 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               </thead>
               <tbody>
                 {rows.map((row: any[], rowIdx: number) => (
-                  <tr key={`${block.id}-r-${rowIdx}`} className="border-b last:border-none dark:border-white/10">
+                  <tr key={`${block.id}-r-${rowIdx}`} className="border-b last:border-none">
                     {headers.map((_h: any, colIdx: number) => (
-                      <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                      <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="px-4 py-3 text-gray-600">
                         <EditableText
                           tag="span"
                           value={getLocalized(row[colIdx] || '')}
@@ -516,15 +516,15 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 border-t border-[#E5E7EB] dark:border-white/10 flex flex-wrap gap-2 text-xs">
+          <div className="px-4 py-3 border-t border-[#E5E7EB] flex flex-wrap gap-2 text-xs">
             <button
-              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d]"
               onClick={() => updateBlock(block.id, { ...block.data, rows: [...rows, Array(headers.length).fill('')] })}
             >
               + Row
             </button>
             <button
-              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]"
+              className="px-3 py-1 rounded-full bg-[#22C55E]/20 border border-[#22C55E]/30 text-[#14532d]"
               onClick={() => {
                 const nextHeaders = [...headers, ''];
                 const nextRows = rows.map((row: any[]) => [...row, '']);
@@ -566,13 +566,13 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               tag="div"
               value={getLocalized(block.data.title)}
               onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title, next) })}
-              className="text-2xl font-black text-[#111827] dark:text-white"
+              className="text-2xl font-black text-[#111827]"
             />
           )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(block.data?.cards || []).map((card: any, idx: number) => (
-              <div key={`${block.id}-card-${idx}`} className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm dark:bg-[#111827] dark:border-white/10">
-                <div className="font-black text-lg text-[#111827] dark:text-white">
+              <div key={`${block.id}-card-${idx}`} className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+                <div className="font-black text-lg text-[#111827]">
                   <EditableText
                     tag="span"
                     value={getLocalized(card.title)}
@@ -596,7 +596,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
                     placeholder="Label"
                   />
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <div className="text-xs text-gray-500 mt-2">
                   <EditableText
                     tag="span"
                     value={getLocalized(card.note || '')}
@@ -617,19 +617,19 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'guide') {
       return (
-        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm">
           <EditableText
             tag="h2"
             value={getLocalized(block.data?.title)}
             onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title, next) })}
-            className="text-xl font-black mb-4 text-[#111827] dark:text-white"
+            className="text-xl font-black mb-4 text-[#111827]"
             placeholder="Guide title"
           />
           <EditableText
             tag="div"
             value={getLocalized(block.data?.content)}
             onChange={(next) => updateBlock(block.id, { ...block.data, content: setLocalized(block.data.content, next) })}
-            className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap"
+            className="text-sm text-gray-600 whitespace-pre-wrap"
             placeholder="Guide content"
           />
         </div>
@@ -638,18 +638,18 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'faq') {
       return (
-        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm dark:bg-[#111827] dark:border-white/10">
+        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm">
           <EditableText
             tag="h3"
             value={getLocalized(block.data?.title || '')}
             onChange={(next) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title || '', next) })}
-            className="text-xl font-black mb-4 text-[#111827] dark:text-white"
+            className="text-xl font-black mb-4 text-[#111827]"
             placeholder="FAQ title"
           />
-          <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+          <div className="space-y-3 text-sm text-gray-600">
             {(block.data?.items || []).map((item: any, idx: number) => (
               <div key={`${block.id}-faq-${idx}`}>
-                <div className="font-semibold text-[#111827] dark:text-white">
+                <div className="font-semibold text-[#111827]">
                   <EditableText
                     tag="span"
                     value={getLocalized(item.q)}
@@ -680,12 +680,12 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'cta') {
       return (
-        <div className="rounded-2xl bg-[#E8F5EC] border border-[#D1E7D8] p-5 flex items-center justify-between gap-4 dark:bg-[#0f172a] dark:border-white/10">
+        <div className="rounded-2xl bg-[#E8F5EC] border border-[#D1E7D8] p-5 flex items-center justify-between gap-4">
           <EditableText
             tag="div"
             value={getLocalized(block.data?.label)}
             onChange={(next) => updateBlock(block.id, { ...block.data, label: setLocalized(block.data.label, next) })}
-            className="font-semibold text-[#0f172a] dark:text-white"
+            className="font-semibold text-[#0f172a]"
             placeholder="CTA label"
           />
         </div>
@@ -694,9 +694,9 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'restaurant') {
       return (
-        <div className="bg-white rounded-3xl border border-[#E5E7EB] shadow-xl overflow-hidden relative dark:bg-[#111827] dark:border-white/10">
+        <div className="bg-white rounded-3xl border border-[#E5E7EB] shadow-xl overflow-hidden relative">
           <div className="p-6 md:p-8">
-            <h2 className="text-2xl md:text-3xl font-black mb-1 text-[#111827] dark:text-white">
+            <h2 className="text-2xl md:text-3xl font-black mb-1 text-[#111827]">
               <EditableText
                 tag="span"
                 value={getLocalized(block.data?.name)}
@@ -712,12 +712,12 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
                 placeholder="Location"
               />
             </div>
-            <div className="bg-[#E8F5EC] border-s-4 border-[#22C55E] p-4 rounded-xl dark:bg-[#0f172a]">
+            <div className="bg-[#E8F5EC] border-s-4 border-[#22C55E] p-4 rounded-xl">
               <EditableText
                 tag="div"
                 value={getLocalized(block.data?.description || '')}
                 onChange={(next) => updateBlock(block.id, { ...block.data, description: setLocalized(block.data.description || '', next) })}
-                className="text-sm text-[#0f172a]/80 dark:text-white/80"
+                className="text-sm text-[#0f172a]/80"
                 placeholder="Description"
               />
             </div>
@@ -730,7 +730,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
       return block.data?.url ? (
         <img src={block.data.url} alt="" className="rounded-2xl w-full object-cover" />
       ) : (
-        <div className="rounded-2xl border border-dashed border-gray-300 dark:border-white/10 p-6 text-xs text-gray-400">Image block</div>
+        <div className="rounded-2xl border border-dashed border-gray-300 p-6 text-xs text-gray-400">Image block</div>
       );
     }
 
@@ -746,7 +746,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'map') {
       return (
-        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] dark:border-white/10 p-4 text-gray-500">
+        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] p-4 text-gray-500">
           Map block (edit URL in Panel)
         </div>
       );
@@ -754,7 +754,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
     if (block.type === 'video') {
       return (
-        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] dark:border-white/10 p-4 text-gray-500">
+        <div className="rounded-2xl overflow-hidden border border-[#E5E7EB] p-4 text-gray-500">
           Video block (edit URL in Panel)
         </div>
       );
@@ -1194,23 +1194,23 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
   };
 
   return (
-    <div className="admin-shell min-h-screen bg-[#F9FAFB] text-[#111827] dark:bg-[#0b1224] dark:text-white">
-      <div className="sticky top-0 z-40 bg-white/90 dark:bg-[#0f172a]/90 backdrop-blur border-b border-gray-200/60 dark:border-white/10">
+    <div className="admin-shell min-h-screen bg-[#F9FAFB] text-[#111827]">
+      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200/60">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="font-black">{contentLang === 'ar' ? 'محرر المقال' : 'Post Builder'}</div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setContentLang('ar')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'ar' ? 'bg-primary text-[#0f172a]' : 'bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white'}`}>
+            <button onClick={() => setContentLang('ar')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'ar' ? 'bg-primary text-[#0f172a]' : 'bg-[#F3F4F6] text-[#111827]'}`}>
               AR
             </button>
-            <button onClick={() => setContentLang('en')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'en' ? 'bg-primary text-[#0f172a]' : 'bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white'}`}>
+            <button onClick={() => setContentLang('en')} className={`px-3 py-1 rounded-full text-xs ${contentLang === 'en' ? 'bg-primary text-[#0f172a]' : 'bg-[#F3F4F6] text-[#111827]'}`}>
               EN
             </button>
-            <button onClick={undo} disabled={!canUndo} className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <button onClick={undo} disabled={!canUndo} className="bg-[#F3F4F6] text-[#111827] px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] hover:bg-[#E5E7EB] transition disabled:opacity-40 disabled:cursor-not-allowed">
               Undo
             </button>
             <button
               onClick={() => importInputRef.current?.click()}
-              className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition"
+              className="bg-[#F3F4F6] text-[#111827] px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] hover:bg-[#E5E7EB] transition"
             >
               Import JSON
             </button>
@@ -1224,18 +1224,18 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
                 e.currentTarget.value = '';
               }}
             />
-            <button onClick={() => onPreview({ values: latestValuesRef.current, lang: contentLang, blocks })} className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition">
+            <button onClick={() => onPreview({ values: latestValuesRef.current, lang: contentLang, blocks })} className="bg-[#F3F4F6] text-[#111827] px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] hover:bg-[#E5E7EB] transition">
               Preview
             </button>
             {onPreviewPublic && (
               <button
                 onClick={() => onPreviewPublic({ values: latestValuesRef.current, lang: contentLang, blocks })}
-                className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition"
+                className="bg-[#F3F4F6] text-[#111827] px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] hover:bg-[#E5E7EB] transition"
               >
                 Preview (Site)
               </button>
             )}
-            <button onClick={onSaveDraft} className="bg-[#F3F4F6] text-[#111827] dark:bg-white/10 dark:text-white px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] dark:border-white/10 hover:bg-[#E5E7EB] dark:hover:bg-white/20 transition">
+            <button onClick={onSaveDraft} className="bg-[#F3F4F6] text-[#111827] px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] hover:bg-[#E5E7EB] transition">
               Save Draft
             </button>
             <button onClick={onPublish} className="bg-primary text-[#0f172a] px-3 py-1.5 rounded-full text-xs font-semibold">
@@ -1246,12 +1246,12 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
       </div>
 
       <section className="max-w-7xl mx-auto px-6 pt-6">
-        <div className="rounded-2xl border border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#111827] p-4 space-y-4">
+        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-300">Category</div>
+              <div className="text-xs font-semibold text-gray-600">Category</div>
               <select
-                className="w-full bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm"
                 value={values.category_id || ''}
                 onChange={(e) => update('category_id', e.target.value || null)}
               >
@@ -1264,13 +1264,13 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               </select>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <input
-                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  className="sm:col-span-1 bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm"
                   placeholder="New Category AR"
                   value={newCategoryAr}
                   onChange={(e) => setNewCategoryAr(e.target.value)}
                 />
                 <input
-                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  className="sm:col-span-1 bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm"
                   placeholder="New Category EN"
                   value={newCategoryEn}
                   onChange={(e) => setNewCategoryEn(e.target.value)}
@@ -1286,8 +1286,8 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-300">Tags</div>
-              <div className="max-h-28 overflow-auto rounded-lg border border-[#E5E7EB] dark:border-white/10 p-2 bg-[#F9FAFB] dark:bg-white/5">
+              <div className="text-xs font-semibold text-gray-600">Tags</div>
+              <div className="max-h-28 overflow-auto rounded-lg border border-[#E5E7EB] p-2 bg-[#F9FAFB]">
                 <div className="flex flex-wrap gap-2">
                   {tags.map((tag) => {
                     const active = selectedTagIds.includes(tag.id);
@@ -1298,8 +1298,8 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
                         onClick={() => toggleTag(tag.id)}
                         className={`px-3 py-1 rounded-full text-xs border ${
                           active
-                            ? 'bg-[#22C55E]/20 border-[#22C55E]/30 text-[#14532d] dark:text-[#86efac]'
-                            : 'bg-white dark:bg-white/10 border-[#E5E7EB] dark:border-white/10 text-gray-600 dark:text-gray-300'
+                            ? 'bg-[#22C55E]/20 border-[#22C55E]/30 text-[#14532d]'
+                            : 'bg-white border-[#E5E7EB] text-gray-600'
                         }`}
                       >
                         {tag.name_en || tag.name_ar}
@@ -1310,13 +1310,13 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <input
-                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  className="sm:col-span-1 bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm"
                   placeholder="New Tag AR"
                   value={newTagAr}
                   onChange={(e) => setNewTagAr(e.target.value)}
                 />
                 <input
-                  className="sm:col-span-1 bg-[#F9FAFB] dark:bg-white/10 border border-[#E5E7EB] dark:border-white/10 rounded-lg px-3 py-2 text-sm"
+                  className="sm:col-span-1 bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm"
                   placeholder="New Tag EN"
                   value={newTagEn}
                   onChange={(e) => setNewTagEn(e.target.value)}
@@ -1375,8 +1375,8 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
                 onDrop={() => dragId && moveBlock(dragId, block.id)}
                 onClick={() => setSelectedId(block.id)}
                 className={[
-                  'rounded-2xl border p-4 bg-white dark:bg-[#111827] transition cursor-pointer',
-                  selectedId === block.id ? 'border-primary shadow-lg shadow-primary/20' : 'border-[#E5E7EB] dark:border-white/10'
+                  'rounded-2xl border p-4 bg-white transition cursor-pointer',
+                  selectedId === block.id ? 'border-primary shadow-lg shadow-primary/20' : 'border-[#E5E7EB]'
                 ].join(' ')}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -1420,14 +1420,14 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
         </div>
 
         <aside className="space-y-6">
-          <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm dark:bg-[#111827] dark:border-white/10">
+          <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm">
             <div className="text-xs text-gray-400 mb-3">Add Block</div>
             <div className="space-y-2">
               {widgets.map((w) => (
                 <button
                   key={w.type}
                   onClick={() => addBlock(w.type as Block['type'])}
-                  className="w-full text-start px-3 py-2 rounded-lg bg-[#F9FAFB] text-xs hover:bg-gray-100 transition dark:bg-white/5 dark:hover:bg-white/10"
+                  className="w-full text-start px-3 py-2 rounded-lg bg-[#F9FAFB] text-xs hover:bg-gray-100 transition"
                 >
                   + {w.label}
                 </button>
@@ -1435,7 +1435,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm dark:bg-[#111827] dark:border-white/10">
+          <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm">
             <div className="text-xs text-gray-400 mb-3">Inspector</div>
             {!selectedId ? (
               <div className="text-xs text-gray-400">Select a block to edit.</div>
@@ -1453,7 +1453,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             )}
           </div>
 
-          <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm dark:bg-[#111827] dark:border-white/10">
+          <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm">
               <div className="text-xs text-gray-400 mb-3">Post Settings</div>
               <input className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Cover Image URL" value={values.cover_image_url || ''} onChange={(e) => update('cover_image_url', e.target.value)} />
               <div className="flex items-center gap-2 mt-2">

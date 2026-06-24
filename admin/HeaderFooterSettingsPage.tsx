@@ -21,7 +21,6 @@ type HeaderConfig = {
   logoSubtitle?: Localized;
   logoImageUrl?: string;
   navLinks?: NavLinkItem[];
-  showThemeToggle?: boolean;
   showLangSwitch?: boolean;
 };
 
@@ -53,7 +52,6 @@ const defaultHeader = (): HeaderConfig => ({
     { label: { ar: 'المقارنات', en: 'Compare' }, path: '/compare/all', external: false, enabled: true },
     { label: { ar: 'من نحن', en: 'About' }, path: '/about', external: false, enabled: true }
   ],
-  showThemeToggle: true,
   showLangSwitch: true
 });
 
@@ -173,14 +171,6 @@ const HeaderFooterSettingsPage: React.FC = () => {
             value={header.logoImageUrl || ''}
             onChange={(e) => setHeader((prev) => ({ ...prev, logoImageUrl: e.target.value }))}
           />
-          <label className="flex items-center gap-2 text-xs text-gray-300">
-            <input
-              type="checkbox"
-              checked={!!header.showThemeToggle}
-              onChange={() => setHeader((prev) => ({ ...prev, showThemeToggle: !prev.showThemeToggle }))}
-            />
-            Show theme toggle
-          </label>
           <label className="flex items-center gap-2 text-xs text-gray-300">
             <input
               type="checkbox"

@@ -23,6 +23,12 @@ export class PostsController {
     return this.posts.publicList(safeLang, category);
   }
 
+  @Get('public/popular')
+  publicPopular(@Query('lang') lang?: string, @Query('days') days?: string, @Query('limit') limit?: string) {
+    const safeLang = lang === 'en' ? 'en' : 'ar';
+    return this.posts.publicPopular(safeLang, Number(days) || 7, Number(limit) || 5);
+  }
+
   @Get('public/:slug')
   publicDetail(@Param('slug') slug: string, @Query('lang') lang?: string) {
     const safeLang = lang === 'en' ? 'en' : 'ar';
