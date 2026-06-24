@@ -103,7 +103,7 @@ const AboutPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="bg-background-light text-slate-900 transition-colors duration-300">
       <section
         className="relative py-24 text-center text-white overflow-hidden"
         style={{
@@ -146,29 +146,29 @@ const AboutPage: React.FC = () => {
           <div className="w-1 h-8 bg-primary rounded-full"></div>
           <div>
             <h2 className="text-2xl md:text-3xl font-bold">{copy.whyTitle}</h2>
-            <p className="text-slate-600 dark:text-slate-400 mt-2">{copy.whySubtitle}</p>
+            <p className="text-slate-600 mt-2">{copy.whySubtitle}</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {copy.why.map((item) => (
-            <div key={item.title} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all">
+            <div key={item.title} className="bg-white p-8 rounded-3xl border border-slate-100 hover:shadow-xl transition-all">
               <h3 className="text-xl font-bold mb-4">{item.title}</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{item.text}</p>
+              <p className="text-slate-600 leading-relaxed">{item.text}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="py-20 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">{copy.teamTitle}</h2>
-            <p className="text-slate-600 dark:text-slate-400">{copy.teamSubtitle}</p>
+            <p className="text-slate-600">{copy.teamSubtitle}</p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {copy.team.map((person) => (
               <div key={person.name} className="text-center">
-                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white dark:border-slate-800 overflow-hidden shadow-lg mx-auto mb-4">
+                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white overflow-hidden shadow-lg mx-auto mb-4">
                   <img
                     alt={person.name}
                     loading="lazy"
@@ -177,7 +177,7 @@ const AboutPage: React.FC = () => {
                   />
                 </div>
                 <h4 className="text-lg font-bold">{person.name}</h4>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{person.role}</p>
+                <p className="text-sm text-slate-500">{person.role}</p>
               </div>
             ))}
           </div>
@@ -191,11 +191,11 @@ const AboutPage: React.FC = () => {
         </div>
         <div className="space-y-4">
           {copy.faqs.map((faq) => (
-            <div key={faq.q} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div key={faq.q} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
               <div className="w-full px-6 py-5 flex items-center justify-between text-right font-bold text-lg">
                 <span>{faq.q}</span>
               </div>
-              <div className="px-6 pb-5 text-slate-600 dark:text-slate-400 border-t border-slate-50 dark:border-slate-700/50 pt-4">
+              <div className="px-6 pb-5 text-slate-600 border-t border-slate-50 pt-4">
                 {faq.a}
               </div>
             </div>

@@ -28,7 +28,7 @@ const PublicLayout: React.FC = () => {
     trackPageView({ path: location.pathname + location.search, lang }).catch(() => null);
   }, [location.pathname, location.search, lang]);
   return (
-    <div className="font-sans text-gray-900 bg-gray-50 dark:text-white dark:bg-[#0b1224] min-h-screen flex flex-col">
+    <div className="font-sans text-gray-900 bg-gray-50 min-h-screen flex flex-col">
       <Ga4Loader measurementId={ga4} />
       <Header />
       <main className="flex-grow relative">
@@ -36,7 +36,7 @@ const PublicLayout: React.FC = () => {
           <Outlet />
         </Suspense>
         {isPending && (
-          <div className="pointer-events-none absolute inset-0 z-10 bg-gray-50/95 dark:bg-[#0b1224]/95">
+          <div className="pointer-events-none absolute inset-0 z-10 bg-gray-50/95">
             <ContentLoading />
           </div>
         )}

@@ -11,22 +11,22 @@ const Footer: React.FC = () => {
 
   const copy = useMemo(() => {
     return {
-      brand: config?.brandTitle?.[lang] || (lang === 'ar' ? 'دليل بشكتاش' : 'Besiktas City Guide'),
+      brand: config?.brandTitle?.[lang] || (lang === 'ar' ? 'أفضل 5' : 'Best 5'),
       about:
         config?.about?.[lang] ||
         (lang === 'ar'
-          ? 'المنصة الموثوقة الأولى لاستكشاف معالم ومطاعم منطقة بشكتاش في اسطنبول. نقدم لكم المعلومة بكل شفافية وموضوعية.'
-          : 'The trusted platform to explore Beşiktaş landmarks and restaurants. Clear, unbiased info you can rely on.'),
+          ? 'منصة ترشيحات وتصنيفات تساعدك تكتشف أفضل 5 اختيارات في تركيا بسرعة ووضوح.'
+          : 'A ranking platform that helps you discover the best 5 picks across Turkey with clarity.'),
       explore: lang === 'ar' ? 'أحدث المدونات' : 'Latest blogs',
       links: lang === 'ar' ? 'روابط سريعة' : 'Quick Links',
       contact: lang === 'ar' ? 'التواصل' : 'Contact',
       quickLinks: config?.quickLinks || [],
-      address: config?.address?.[lang] || (lang === 'ar' ? 'سنان باشا، بشكتاش، اسطنبول، تركيا' : 'Sinan Pasha, Beşiktaş, Istanbul, Turkey'),
-      email: config?.email || 'hello@besiktasguide.com',
+      address: config?.address?.[lang] || (lang === 'ar' ? 'إسطنبول، تركيا' : 'Istanbul, Turkey'),
+      email: config?.email || 'hello@best5.com.tr',
       copyright:
         config?.copyright?.[lang] ||
-        (lang === 'ar' ? '© 2026 دليل بشكتاش. جميع الحقوق محفوظة.' : '© 2026 Besiktas City Guide. All rights reserved.'),
-      credit: config?.credit?.[lang] || (lang === 'ar' ? 'تصميم وتطوير بواسطة فريق بشكتاش' : 'Designed and built by the Beşiktaş team'),
+        (lang === 'ar' ? '© 2026 أفضل 5. جميع الحقوق محفوظة.' : '© 2026 Best 5. All rights reserved.'),
+      credit: config?.credit?.[lang] || (lang === 'ar' ? 'قوائم مختصرة بدون حيرة' : 'Shortlists without the guesswork'),
       showLatestPosts: config?.showLatestPosts !== false,
       socials: config?.socials || []
     };
@@ -54,7 +54,7 @@ const Footer: React.FC = () => {
     [latestPosts, lang]
   );
   return (
-    <footer className="bg-white text-gray-600 pt-20 pb-10 px-4 border-t border-gray-200 dark:bg-secondary dark:text-gray-400 dark:border-gray-800">
+    <footer className="bg-white text-gray-600 pt-20 pb-10 px-4 border-t border-gray-200">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
         {/* Brand */}
         <div>
@@ -62,7 +62,7 @@ const Footer: React.FC = () => {
           <div className="bg-primary p-1.5 rounded-lg">
             <Compass className="text-white w-5 h-5" />
           </div>
-          <div className="text-gray-900 dark:text-white">
+          <div className="text-gray-900">
             <h2 className="text-lg font-black leading-none">{copy.brand}</h2>
           </div>
         </div>
@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
         {/* Links 1 */}
         {copy.showLatestPosts && (
           <div>
-            <h3 className="text-gray-900 dark:text-white font-bold mb-6 text-primary">{copy.explore}</h3>
+            <h3 className="text-gray-900 font-bold mb-6 text-primary">{copy.explore}</h3>
             <ul className="space-y-4 text-sm">
               {latestLinks.length ? (
                 latestLinks.map((item) => (
@@ -83,7 +83,7 @@ const Footer: React.FC = () => {
                   </li>
                 ))
               ) : (
-                <li className="text-gray-500 dark:text-gray-400">
+                <li className="text-gray-500">
                   {lang === 'ar' ? 'لا توجد مدونات بعد.' : 'No blogs yet.'}
                 </li>
               )}
@@ -93,7 +93,7 @@ const Footer: React.FC = () => {
 
         {/* Links 2 */}
         <div>
-          <h3 className="text-gray-900 dark:text-white font-bold mb-6 text-primary">{copy.links}</h3>
+          <h3 className="text-gray-900 font-bold mb-6 text-primary">{copy.links}</h3>
           <ul className="space-y-4 text-sm">
             {(copy.quickLinks || [])
               .filter((item: any) => item.enabled !== false)
@@ -122,21 +122,21 @@ const Footer: React.FC = () => {
 
         {/* Contact */}
         <div>
-          <h3 className="text-gray-900 dark:text-white font-bold mb-6 text-primary">{copy.contact}</h3>
+          <h3 className="text-gray-900 font-bold mb-6 text-primary">{copy.contact}</h3>
           <ul className="space-y-4 text-sm">
             <li className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-gray-500 mt-0.5 dark:text-gray-500" />
+              <MapPin className="w-5 h-5 text-gray-500 mt-0.5" />
               <span>{copy.address}</span>
             </li>
             <li className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-gray-500 dark:text-gray-500" />
+              <Mail className="w-5 h-5 text-gray-500" />
               <span>{copy.email}</span>
             </li>
           </ul>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto border-t border-gray-200 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 dark:text-gray-600">
+      <div className="max-w-7xl mx-auto border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
         <p>{copy.copyright}</p>
         <div className="flex gap-4 mt-4 md:mt-0 items-center">
           {copy.credit && <span>{copy.credit}</span>}

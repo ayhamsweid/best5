@@ -1,0 +1,68 @@
+services:
+  db-restore:
+    image: alpine:3.20
+    profiles:
+      - restore
+    volumes:
+      - ./db_raw_data_backup:/backup:ro
+      - postgres_data:/var/lib/postgresql/data
+    command: >
+      sh -c '
+        if [ -f /var/lib/postgresql/data/PG_VERSION ]; then
+          echo "Postgres data volume already initialized; skipping restore."
+          exit 0
+        fi
+        cp -a /backup/. /var/lib/postgresql/data/
+        rm -f /var/lib/postgresql/data/postmaster.pid
+        chown -R 999:999 /var/lib/postgresql/data
+        chmod 700 /var/lib/postgresql/data
+      '
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U best5_user -d besiktas"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://best5_user:strongpass@db:5432/besiktas
+      JWT_ACCESS_SECRET: change-me-access
+      JWT_REFRESH_SECRET: change-me-refresh
+      JWT_ACCESS_TTL: "900"
+      JWT_REFRESH_TTL: "604800"
+      COOKIE_SECURE: "false"
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8080
+      UPLOAD_DIR: /app/uploads
+      ENABLE_DB_TOOLS: "1"
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server/uploads:/app/uploads
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres_data:

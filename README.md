@@ -18,6 +18,35 @@ Public site + Admin panel + NestJS API in a single repo.
 6. Start API: `npm run start:dev`
 7. API docs: `http://localhost:4000/api/docs`
 
+## Containers
+
+The root `docker-compose.yml` runs:
+
+- `db`: PostgreSQL 16, initialized from `db_raw_data_backup`
+- `api`: NestJS API on `http://localhost:4000`
+- `web`: built Vite app served by nginx on `http://localhost:3000`
+
+First run:
+
+```bash
+docker compose --profile restore run --rm db-restore
+docker compose up -d --build
+```
+
+Normal runs after the database volume exists:
+
+```bash
+docker compose up -d
+```
+
+Reset the restored database volume and re-import the backup:
+
+```bash
+docker compose down -v
+docker compose --profile restore run --rm db-restore
+docker compose up -d --build
+```
+
 ## Build + Preview
 
 1. `npm run build`

@@ -16,6 +16,15 @@ const slugify = (value: string) =>
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
+  private publicInclude = {
+    category: true,
+    tags: {
+      include: {
+        tag: true
+      }
+    }
+  };
+
   private async publishDueScheduled() {
     const now = new Date();
     const duePosts = await this.prisma.post.findMany({
@@ -39,13 +48,42 @@ export class PostsService {
     );
   }
 
+  private async attachViews<T extends { slug_ar: string; slug_en: string }>(posts: T[], days = 30) {
+    if (!posts.length) return posts.map((post) => ({ ...post, views: 0 }));
+
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const rows = await this.prisma.pageView.groupBy({
+      by: ['path'],
+      where: {
+        is_bot: false,
+        created_at: { gte: since },
+        path: { contains: '/blog/' }
+      },
+      _count: { path: true }
+    });
+
+    const slugViews = new Map<string, number>();
+    for (const row of rows) {
+      const path = row.path.split('?')[0];
+      const match = path.match(/\/(?:ar|en)\/blog\/([^/?#]+)/);
+      const slug = match?.[1] ? decodeURIComponent(match[1]) : '';
+      if (!slug) continue;
+      slugViews.set(slug, (slugViews.get(slug) || 0) + row._count.path);
+    }
+
+    return posts.map((post) => ({
+      ...post,
+      views: Math.max(slugViews.get(post.slug_ar) || 0, slugViews.get(post.slug_en) || 0)
+    }));
+  }
+
   list() {
     return this.prisma.post.findMany({ orderBy: { created_at: 'desc' } });
   }
 
   async publicList(lang: 'ar' | 'en' = 'ar', categorySlug?: string) {
     await this.publishDueScheduled();
-    return this.prisma.post.findMany({
+    const posts = await this.prisma.post.findMany({
       where: {
         status: PostStatus.PUBLISHED,
         published_at: { not: null },
@@ -57,11 +95,74 @@ export class PostsService {
             }
           : {})
       },
-      include: {
-        category: true
-      },
+      include: this.publicInclude,
       orderBy: { published_at: 'desc' }
     });
+
+    return this.attachViews(posts);
+  }
+
+  async publicPopular(lang: 'ar' | 'en' = 'ar', days = 7, limit = 5) {
+    await this.publishDueScheduled();
+    const safeLimit = Math.min(Math.max(limit, 1), 10);
+    const safeDays = Math.min(Math.max(days, 1), 30);
+    const since = new Date(Date.now() - safeDays * 24 * 60 * 60 * 1000);
+    const rows = await this.prisma.pageView.groupBy({
+      by: ['path'],
+      where: {
+        is_bot: false,
+        created_at: { gte: since },
+        path: { contains: '/blog/' }
+      },
+      _count: { path: true },
+      orderBy: { _count: { path: 'desc' } },
+      take: safeLimit * 4
+    });
+
+    const slugViews = new Map<string, number>();
+    for (const row of rows) {
+      const path = row.path.split('?')[0];
+      const match = path.match(/\/(?:ar|en)\/blog\/([^/?#]+)/);
+      const slug = match?.[1] ? decodeURIComponent(match[1]) : '';
+      if (!slug) continue;
+      slugViews.set(slug, (slugViews.get(slug) || 0) + row._count.path);
+    }
+
+    const slugs = [...slugViews.keys()];
+    const popularPosts = slugs.length
+      ? await this.prisma.post.findMany({
+          where: {
+            status: PostStatus.PUBLISHED,
+            published_at: { not: null },
+            OR: [{ slug_ar: { in: slugs } }, { slug_en: { in: slugs } }]
+          },
+          include: this.publicInclude
+        })
+      : [];
+
+    const sortedPopular = popularPosts
+      .map((post) => ({
+        ...post,
+        views: Math.max(slugViews.get(post.slug_ar) || 0, slugViews.get(post.slug_en) || 0)
+      }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, safeLimit);
+
+    if (sortedPopular.length >= safeLimit) return sortedPopular;
+
+    const seenIds = new Set(sortedPopular.map((post) => post.id));
+    const latest = await this.prisma.post.findMany({
+      where: {
+        status: PostStatus.PUBLISHED,
+        published_at: { not: null },
+        id: { notIn: [...seenIds] }
+      },
+      include: this.publicInclude,
+      orderBy: { published_at: 'desc' },
+      take: safeLimit - sortedPopular.length
+    });
+
+    return [...sortedPopular, ...latest.map((post) => ({ ...post, views: 0 }))];
   }
 
   async publicBySlug(lang: 'ar' | 'en', slug: string) {
@@ -73,7 +174,13 @@ export class PostsService {
         ...(lang === 'ar' ? { slug_ar: slug } : { slug_en: slug })
       },
       include: {
-        author: { select: { full_name: true } }
+        author: { select: { full_name: true } },
+        category: true,
+        tags: {
+          include: {
+            tag: true
+          }
+        }
       }
     });
     if (primary) return primary;
@@ -84,7 +191,13 @@ export class PostsService {
         ...(lang === 'ar' ? { slug_en: slug } : { slug_ar: slug })
       },
       include: {
-        author: { select: { full_name: true } }
+        author: { select: { full_name: true } },
+        category: true,
+        tags: {
+          include: {
+            tag: true
+          }
+        }
       }
     });
   }

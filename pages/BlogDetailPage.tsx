@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Seo from '../components/Seo';
 import { useLang } from '../hooks/useLang';
-import { fetchPublicPost } from '../services/api';
+import { fetchPublicPost, fetchPublicPosts } from '../services/api';
 import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
 
 interface BlogDetailPageProps {
@@ -10,11 +10,36 @@ interface BlogDetailPageProps {
   overrideLang?: 'ar' | 'en';
 }
 
+const taxonomyKeys = (value: any) =>
+  [value?.id, value?.slug_ar, value?.slug_en, value?.name_ar, value?.name_en]
+    .filter(Boolean)
+    .map((item) => String(item).trim().toLowerCase());
+
+const postTagKeys = (post: any) => {
+  const tags = Array.isArray(post?.tags) ? post.tags : [];
+  return new Set(
+    tags.flatMap((entry: any) => taxonomyKeys(entry?.tag || entry)).filter(Boolean)
+  );
+};
+
+const hasIntersection = (a: Set<string>, b: Set<string>) => {
+  for (const key of a) {
+    if (b.has(key)) return true;
+  }
+  return false;
+};
+
+const viewsCount = (post: any) => {
+  const views = Number(post?.views);
+  return Number.isFinite(views) ? views : 0;
+};
+
 const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideLang }) => {
   const { slug } = useParams();
   const { lang: routeLang } = useLang();
   const lang = overrideLang || routeLang;
   const [post, setPost] = useState<any | null>(null);
+  const [allPosts, setAllPosts] = useState<any[]>([]);
 
   useEffect(() => {
     if (overridePost) {
@@ -26,6 +51,12 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
       .then(setPost)
       .catch(() => setPost(null));
   }, [slug, lang, overridePost]);
+
+  useEffect(() => {
+    fetchPublicPosts(lang)
+      .then((items: any) => setAllPosts(Array.isArray(items) ? items : []))
+      .catch(() => setAllPosts([]));
+  }, [lang]);
 
   const pills = useMemo(
     () =>
@@ -41,7 +72,30 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
     return value?.[lang] ?? value?.ar ?? value?.en ?? '';
   };
 
-  
+  const relatedPosts = useMemo(() => {
+    if (!post || !allPosts.length) return [];
+
+    const currentCategory = new Set(taxonomyKeys(post.category || { id: post.category_id }));
+    const currentTags = postTagKeys(post);
+
+    return allPosts
+      .filter((item) => item.id !== post.id)
+      .map((item) => {
+        const sameCategory = hasIntersection(currentCategory, new Set(taxonomyKeys(item.category || { id: item.category_id })));
+        const sameTag = hasIntersection(currentTags, postTagKeys(item));
+        const score = sameCategory && sameTag ? 3 : sameTag ? 2 : sameCategory ? 1 : 0;
+        return { item, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        const viewDiff = viewsCount(b.item) - viewsCount(a.item);
+        if (viewDiff !== 0) return viewDiff;
+        return new Date(b.item.published_at || 0).getTime() - new Date(a.item.published_at || 0).getTime();
+      })
+      .slice(0, 3)
+      .map(({ item }) => item);
+  }, [allPosts, post]);
 
   if (!post) {
     return (
@@ -117,7 +171,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
     .filter(Boolean) as Array<{ id: string; label: string }>;
 
   return (
-    <div className="bg-[#F9FAFB] text-[#111827] dark:bg-[#0b1224] dark:text-white" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#F9FAFB] text-[#111827]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <Seo title={`${seoTitle || title} | Besiktas City Guide`} description={seoDesc || excerpt} canonical={canonicalUrl} image={ogImage} type="article" url={canonicalUrl} />
       <script
         type="application/ld+json"
@@ -168,7 +222,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
           )}
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/70" />
           <div className="relative z-10 px-6 py-12 md:px-12 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#22C55E]/20 text-[#22C55E] px-4 py-1.5 text-xs font-bold border border-[#22C55E]/30">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#b11226]/20 text-[#ffcad2] px-4 py-1.5 text-xs font-bold border border-[#b11226]/30">
               {publishedAt ? (lang === 'ar' ? `آخر تحديث: ${publishedAt}` : `Last updated: ${publishedAt}`) : (lang === 'ar' ? 'محدث باستمرار' : 'Continuously updated')}
             </div>
             <h1 className="mt-6 text-3xl md:text-6xl font-black leading-tight">{title}</h1>
@@ -179,7 +233,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
                   {pill}
                 </span>
               ))}
-              <button className="rounded-full bg-[#22C55E] px-5 py-2.5 text-xs font-bold text-[#0f172a]">
+              <button className="rounded-full bg-[#b11226] px-5 py-2.5 text-xs font-bold text-white">
                 {lang === 'ar' ? 'اكتشف القائمة' : 'Explore list'}
               </button>
             </div>
@@ -190,13 +244,13 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
       <section className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
         <aside className="hidden lg:block lg:col-span-3">
           <div className="sticky top-28 space-y-6">
-            <div className="bg-white p-6 rounded-2xl border border-[#E5E7EB] shadow-sm dark:bg-[#111827] dark:border-white/10">
+            <div className="bg-white p-6 rounded-2xl border border-[#E5E7EB] shadow-sm">
               <div className="font-black mb-4">{lang === 'ar' ? 'محتويات الدليل' : 'Guide Contents'}</div>
               <nav className="space-y-3 text-sm">
                 {tocItems.map((item) => (
                   <a
                     key={item.id}
-                    className="block text-gray-500 hover:text-[#22C55E]"
+                    className="block text-gray-500 hover:text-[#b11226]"
                     href={`#${item.id}`}
                     onClick={(e) => {
                       e.preventDefault();
@@ -211,21 +265,12 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
                 ))}
               </nav>
             </div>
-            <div className="bg-[#E8F5EC] p-6 rounded-2xl border border-[#D1E7D8] dark:bg-[#0f172a] dark:border-white/10">
-              <div className="font-black text-[#0f172a]">{lang === 'ar' ? 'هل تبحث عن السكن؟' : 'Looking for stays?'}</div>
-              <div className="text-xs text-[#0f172a]/70 mt-2 dark:text-white/70">
-                {lang === 'ar' ? 'اكتشف أفضل الفنادق القريبة من مراكز الطعام.' : 'Discover top hotels near the food hotspots.'}
-              </div>
-              <button className="mt-4 w-full rounded-lg bg-[#22C55E] px-4 py-2 text-xs font-bold text-[#0f172a]">
-                {lang === 'ar' ? 'عرض الفنادق' : 'View hotels'}
-              </button>
-            </div>
           </div>
         </aside>
 
         <div className="lg:col-span-9 space-y-10">
           {!blocks.length && content ? (
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 dark:bg-[#111827] dark:border-white/10" dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6" dangerouslySetInnerHTML={{ __html: content }} />
           ) : (
             blocks.map((block: any) => (
               <section key={block.id} id={`block-${block.id}`} className="scroll-mt-28">
@@ -235,6 +280,52 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
           )}
         </div>
       </section>
+
+      {relatedPosts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-6 pb-14">
+          <div className="border-t border-[#E5E7EB] pt-10">
+            <div className="flex items-end justify-between gap-6 mb-6">
+              <div>
+                <div className="text-xs font-black tracking-[0.35em] text-[#b11226] uppercase">
+                  {lang === 'ar' ? 'Related' : 'Related'}
+                </div>
+                <h2 className="mt-3 text-3xl md:text-4xl font-black text-[#111827]">
+                  {lang === 'ar' ? 'اقرأ أيضًا' : 'Read Also'}
+                </h2>
+              </div>
+              <Link to={`/${lang}/blog`} className="hidden sm:inline-flex rounded-full border border-[#E5E7EB] bg-white px-5 py-2 text-sm font-bold text-[#4b5563] hover:text-[#b11226] transition">
+                {lang === 'ar' ? 'كل المقالات' : 'All Articles'}
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {relatedPosts.map((related) => {
+                const relatedSlug = (lang === 'ar' ? related.slug_ar : related.slug_en) || related.slug_en || related.slug_ar;
+                const relatedTitle = (lang === 'ar' ? related.title_ar : related.title_en) || related.title_ar || related.title_en;
+                const relatedExcerpt = (lang === 'ar' ? related.excerpt_ar : related.excerpt_en) || related.excerpt_ar || related.excerpt_en;
+                const categoryName = (lang === 'ar' ? related?.category?.name_ar : related?.category?.name_en) || related?.category?.name_ar || 'Best 5';
+                return (
+                  <Link
+                    key={related.id}
+                    to={`/${lang}/blog/${relatedSlug}`}
+                    className="group overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    {related.cover_image_url ? (
+                      <img src={related.cover_image_url} alt="" loading="lazy" className="h-44 w-full object-cover transition duration-500 group-hover:scale-105" />
+                    ) : (
+                      <div className="h-44 w-full bg-[#fff1f1]" />
+                    )}
+                    <div className="p-5">
+                      <div className="mb-3 text-xs font-black text-[#b11226]">{categoryName}</div>
+                      <h3 className="line-clamp-2 text-lg font-black leading-7 text-[#111827]">{relatedTitle}</h3>
+                      <p className="mt-3 line-clamp-2 text-sm leading-6 text-gray-500">{relatedExcerpt}</p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

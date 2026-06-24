@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { fetchSettings, updateSettings } from '../services/api';
+import { fetchPosts, fetchSettings, updateSettings } from '../services/api';
 
 type Localized = { ar?: string; en?: string };
 
@@ -21,6 +21,7 @@ type HomeSettings = {
     subtitle?: Localized;
     viewAllLabel?: Localized;
   };
+  editorPickPostIds: string[];
   features: {
     heading?: Localized;
     sub?: Localized;
@@ -49,6 +50,7 @@ const defaultHomeSettings = (): HomeSettings => ({
     subtitle: { ar: 'آخر ما نشرناه من أدلة ومقارنات', en: 'Fresh guides and comparisons from our editors' },
     viewAllLabel: { ar: 'عرض الكل', en: 'View all' }
   },
+  editorPickPostIds: [],
   features: {
     heading: { ar: 'لماذا تختار دليل بشكتاش؟', en: 'Why choose Besiktas City Guide?' },
     sub: {
@@ -80,8 +82,15 @@ const defaultHomeSettings = (): HomeSettings => ({
 
 const HomePageSettingsPage: React.FC = () => {
   const [home, setHome] = useState<HomeSettings>(() => defaultHomeSettings());
+  const [posts, setPosts] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchPosts()
+      .then((data) => setPosts(Array.isArray(data) ? data : []))
+      .catch(() => setPosts([]));
+  }, []);
 
   useEffect(() => {
     fetchSettings()
@@ -95,6 +104,7 @@ const HomePageSettingsPage: React.FC = () => {
           ...merged.latestPosts,
           ...(data?.home_json?.latestPosts || {})
         };
+        merged.editorPickPostIds = data?.home_json?.editorPickPostIds || merged.editorPickPostIds;
         merged.features = {
           ...merged.features,
           ...(data?.home_json?.features || {}),
@@ -139,7 +149,12 @@ const HomePageSettingsPage: React.FC = () => {
   const onSave = async () => {
     setSaving(true);
     try {
-      await updateSettings({ home_json: home });
+      await updateSettings({
+        home_json: {
+          ...home,
+          editorPickPostIds: (home.editorPickPostIds || []).filter(Boolean)
+        }
+      });
       setMessage('Saved');
       setTimeout(() => setMessage(null), 2000);
     } finally {
@@ -353,6 +368,39 @@ const HomePageSettingsPage: React.FC = () => {
         </div>
       </section>
 
+      <section className="space-y-3 rounded-2xl border border-gray-200 bg-gray-50 p-4">
+        <div>
+          <div className="text-sm font-semibold text-gray-950">Editor's Picks</div>
+          <p className="mt-1 text-xs text-gray-600">Choose existing posts. Homepage cards will link directly to the selected blog pages.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+          {[0, 1, 2].map((idx) => (
+            <div key={`editor-pick-slot-${idx}`} className="min-w-0 space-y-2">
+              <label className="text-xs font-semibold text-gray-700">Pick #{idx + 1}</label>
+              <select
+                className="w-full min-w-0 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-950 shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                value={home.editorPickPostIds?.[idx] || ''}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setHome((prev) => {
+                    const next = [...(prev.editorPickPostIds || [])];
+                    if (value) next[idx] = value;
+                    else next[idx] = '';
+                    return { ...prev, editorPickPostIds: next };
+                  });
+                }}
+              >
+                <option value="">Auto / latest post</option>
+                {posts.map((post) => (
+                  <option key={post.id || post.slug_ar || post.slug_en} value={post.id || post.slug_ar || post.slug_en}>
+                    {post.title_ar || post.title_en || post.slug_ar || post.slug_en}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </div>
+      </section>
       <section className="space-y-3">
         <div className="text-sm font-semibold">Features Section</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

@@ -193,3 +193,101 @@ body.app-ready #app-shell {
   opacity: 1;
   transform: translateY(0);
 }
+
+.best5-home {
+  --best5-red: #b11226;
+  --best5-gold: #d99a24;
+}
+
+.best5-home [data-home-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.best5-home [data-home-reveal].home-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.best5-stack {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transition: transform 220ms ease-out;
+}
+
+.best5-stack .stack-card {
+  transform-style: preserve-3d;
+}
+
+.city-switch-panel {
+  animation: cityPanelIn 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.city-switch-card {
+  animation: cityCardIn 460ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes cityPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes cityCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.best5-stack:hover .stack-card:nth-child(1) {
+  transform: translate(96px, 116px) rotate(15deg) scale(0.9);
+}
+
+.best5-stack:hover .stack-card:nth-child(2) {
+  transform: translate(52px, 56px) rotate(7deg) scale(0.95);
+}
+
+.best5-stack:hover .stack-card:nth-child(3) {
+  transform: translateY(-8px) rotate(-2deg) scale(1.08);
+}
+
+.best5-stack:hover .stack-card:nth-child(4) {
+  transform: translate(-60px, -54px) rotate(-8deg) scale(0.95);
+}
+
+.best5-stack:hover .stack-card:nth-child(5) {
+  transform: translate(-112px, -104px) rotate(-15deg) scale(0.9);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .best5-home [data-home-reveal],
+  .best5-stack,
+  .best5-stack .stack-card,
+  .city-switch-panel,
+  .city-switch-card {
+    animation: none;
+    transition: none;
+  }
+}
