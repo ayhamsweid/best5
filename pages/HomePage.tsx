@@ -26,6 +26,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { fetchPopularPosts, fetchPublicCategories, fetchPublicPosts, fetchPublicSettings, fetchPublicTags } from '../services/api';
 import SearchSuggestions from '../components/SearchSuggestions';
+import Seo from '../components/Seo';
 
 type CityTag = {
   id: string;
@@ -595,6 +596,7 @@ const HomePage: React.FC = () => {
         setTilt({ x, y });
       }}
     >
+      <Seo title={isArabic ? 'أفضل 5 | دليلك الشامل' : 'Best 5 | Your Complete Guide'} canonical={`/${lang}`} />
       <section className="relative min-h-[calc(100vh-76px)] px-4 py-12 md:px-8 md:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(177,18,38,0.12),transparent_28%),radial-gradient(circle_at_80%_15%,rgba(217,154,36,0.18),transparent_24%)]" />
         <div className="absolute inset-x-0 top-16 h-px bg-gradient-to-l from-transparent via-[#b11226]/20 to-transparent" />
