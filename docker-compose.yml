@@ -40,7 +40,7 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://best5_user:strongpass@db:5432/besiktas
+      DATABASE_URL: postgresql://best5_user:Best5Db1212@db:5432/besiktas
       JWT_ACCESS_SECRET: change-me-access
       JWT_REFRESH_SECRET: change-me-refresh
       JWT_ACCESS_TTL: "900"
