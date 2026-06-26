@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
@@ -11,6 +11,8 @@ import { randomBytes } from 'crypto';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private auth: AuthService,
     private jwt: JwtService,
@@ -29,8 +31,12 @@ export class AuthController {
     res.cookie('refresh_token', refresh, { ...this.cookieOptions(), maxAge: 1000 * Number(process.env.JWT_REFRESH_TTL || 604800) });
     res.cookie('csrf_token', csrf, { ...this.cookieOptions(), httpOnly: false });
 
-    await this.prisma.user.update({ where: { id: user.id }, data: { last_login_at: new Date() } });
-    await this.logs.log(user.id, 'LOGIN', 'USER', user.id, null, { email: user.email });
+    try {
+      await this.prisma.user.update({ where: { id: user.id }, data: { last_login_at: new Date() } });
+      await this.logs.log(user.id, 'LOGIN', 'USER', user.id, null, { email: user.email });
+    } catch (error) {
+      this.logger.warn(`Login side effects failed for ${user.email}: ${(error as Error).message}`);
+    }
 
     return { ok: true };
   }

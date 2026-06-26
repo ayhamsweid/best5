@@ -27,6 +27,7 @@ const Footer: React.FC = () => {
         config?.copyright?.[lang] ||
         (lang === 'ar' ? '© 2026 أفضل 5. جميع الحقوق محفوظة.' : '© 2026 Best 5. All rights reserved.'),
       credit: config?.credit?.[lang] || (lang === 'ar' ? 'قوائم مختصرة بدون حيرة' : 'Shortlists without the guesswork'),
+      logoImageUrl: config?.logoImageUrl || '',
       showLatestPosts: config?.showLatestPosts !== false,
       socials: config?.socials || []
     };
@@ -59,9 +60,13 @@ const Footer: React.FC = () => {
         {/* Brand */}
         <div>
         <div className="flex items-center gap-3 mb-6">
-          <div className="bg-primary p-1.5 rounded-lg">
-            <Compass className="text-white w-5 h-5" />
-          </div>
+          {copy.logoImageUrl ? (
+            <img src={copy.logoImageUrl} alt={copy.brand} className="block h-10 w-10 shrink-0 rounded-lg object-contain" />
+          ) : (
+            <div className="bg-primary p-1.5 rounded-lg">
+              <Compass className="text-white w-5 h-5" />
+            </div>
+          )}
           <div className="text-gray-900">
             <h2 className="text-lg font-black leading-none">{copy.brand}</h2>
           </div>

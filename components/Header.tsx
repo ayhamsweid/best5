@@ -122,13 +122,11 @@ const Header: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-4 md:px-8">
         <Link to={`/${lang}`} className="flex items-center gap-3">
-          <div className="bg-primary p-2 rounded-lg">
-            {config?.logoImageUrl ? (
-              <img src={config.logoImageUrl} alt="" className="w-6 h-6 object-contain" />
-            ) : (
-              <Compass className="text-white w-6 h-6" />
-            )}
-          </div>
+          {config?.logoImageUrl ? (
+            <img src={config.logoImageUrl} alt={logoTitle} className="block h-12 w-12 shrink-0 rounded-xl object-contain" />
+          ) : (
+            <Compass className="h-8 w-8 shrink-0 text-primary" />
+          )}
           <div className="text-gray-900">
             <h1 className="text-xl font-black leading-none">{logoTitle}</h1>
             <span className="text-[10px] tracking-widest opacity-70 uppercase">{logoSubtitle}</span>
