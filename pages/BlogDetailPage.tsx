@@ -109,7 +109,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
   const excerpt = lang === 'ar' ? post.excerpt_ar : post.excerpt_en;
   const seoTitle = lang === 'ar' ? post.seo_title_ar : post.seo_title_en;
   const seoDesc = lang === 'ar' ? post.seo_desc_ar : post.seo_desc_en;
-  const canonical = post.canonical_url || `/${lang}/blog/${slug}`;
+  const canonical = `/${lang}/blog/${slug}`;
   const ogImage = post.og_image_url || post.cover_image_url;
   const canonicalUrl = canonical?.startsWith('http') ? canonical : `${window.location.origin}${canonical}`;
   const authorName = post.author?.full_name || 'Besiktas City Guide';

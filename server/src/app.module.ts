@@ -12,6 +12,7 @@ import { UploadsModule } from './modules/uploads/uploads.module';
 import { SitemapModule } from './modules/sitemap/sitemap.module';
 import { DbToolsModule } from './modules/db-tools/db-tools.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { SeoRenderModule } from './modules/seo-render/seo-render.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     UploadsModule,
     SitemapModule,
     DbToolsModule,
-    NotificationsModule
+    NotificationsModule,
+    SeoRenderModule
   ]
 })
 export class AppModule {}

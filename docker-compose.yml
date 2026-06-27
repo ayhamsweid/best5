@@ -47,6 +47,8 @@ services:
       JWT_REFRESH_TTL: "604800"
       COOKIE_SECURE: "false"
       CORS_ORIGINS: http://localhost:3000,http://localhost:8080
+      PUBLIC_SITE_URL: https://best5.com.tr
+      SPA_TEMPLATE_URL: http://web/index.html
       UPLOAD_DIR: /app/uploads
       ENABLE_DB_TOOLS: "1"
     ports:

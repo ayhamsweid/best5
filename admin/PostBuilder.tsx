@@ -229,7 +229,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
     setUndoVersion((v) => v + 1);
   };
 
-  const [undoVersion, setUndoVersion] = useState(0);
+  const [, setUndoVersion] = useState(0);
   const canUndo = historyIndexRef.current > 0;
   const selectedTagIds = useMemo(() => {
     if (Array.isArray(values.tag_ids)) return values.tag_ids;
