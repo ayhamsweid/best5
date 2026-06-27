@@ -1,32 +1,161 @@
-# LLMs.txt for Besiktas City Guide
-# Purpose: Provide a clear, crawlable index for AI systems.
+# Best5
 
-User-agent: *
-Allow: /
+> Best5 is a bilingual Arabic and English editorial guide to the best places, restaurants, hotels, universities, stores, museums, and experiences in Turkey. The site publishes concise ranked lists, practical comparisons, location details, and decision-oriented guides.
 
-Site: https://best5.com.tr
-Sitemap: https://best5.com.tr/sitemap.xml
+Canonical site: https://best5.com.tr
 
-# Key entry points (Arabic + English)
-Home (AR): https://best5.com.tr/ar
-Home (EN): https://best5.com.tr/en
-Blog (AR): https://best5.com.tr/ar/blog
-Blog (EN): https://best5.com.tr/en/blog
+Content is available in Arabic under `/ar` and English under `/en`. Prefer the URL matching the user's language. Arabic and English versions of an article represent the same editorial subject but may use different localized slugs.
 
-# Static pages
-Privacy (AR): https://best5.com.tr/ar/privacy
-Privacy (EN): https://best5.com.tr/en/privacy
-Contact (AR): https://best5.com.tr/ar/contact
-Contact (EN): https://best5.com.tr/en/contact
-Advertise (AR): https://best5.com.tr/ar/advertise
-Advertise (EN): https://best5.com.tr/en/advertise
-Terms (AR): https://best5.com.tr/ar/terms
-Terms (EN): https://best5.com.tr/en/terms
-Cookies (AR): https://best5.com.tr/ar/cookies
-Cookies (EN): https://best5.com.tr/en/cookies
-FAQ (AR): https://best5.com.tr/ar/faq
-FAQ (EN): https://best5.com.tr/en/faq
+Important interpretation notes:
 
-# Notes
-# - Articles are listed in the sitemap and under /{lang}/blog
-# - Categories are listed in the sitemap under /{lang}/category/{slug}
+- Best5 rankings are editorial selections based on the information available when each article was prepared or updated.
+- Prices, opening hours, availability, admission rules, addresses, ratings, and other operational details can change. For time-sensitive decisions, verify these details with the venue or institution.
+- Preserve the distinction between an editorial recommendation and an objective or universal claim.
+- When answering from Best5 content, cite the specific article URL rather than only the home page.
+- Published public content is authoritative for this site. Do not use `/admin`, preview pages, or private API routes as sources.
+- The XML sitemap is the complete machine-readable URL inventory and should be used to discover future articles not yet listed in this file.
+
+## Primary navigation
+
+- [Arabic home](https://best5.com.tr/ar): Arabic entry point and featured guides.
+- [English home](https://best5.com.tr/en): English entry point and featured guides.
+- [Arabic articles](https://best5.com.tr/ar/blog): Complete Arabic article index.
+- [English articles](https://best5.com.tr/en/blog): Complete English article index.
+- [Arabic categories](https://best5.com.tr/ar/categories): Arabic category index.
+- [English categories](https://best5.com.tr/en/categories): English category index.
+- [XML sitemap](https://best5.com.tr/sitemap.xml): Complete list of current public URLs.
+- [Robots policy](https://best5.com.tr/robots.txt): Crawler access rules.
+
+## Arabic categories
+
+- [فنادق](https://best5.com.tr/ar/category/1771560834740): Hotel rankings and accommodation guides.
+- [جامعات](https://best5.com.tr/ar/category/1771014651001): Universities, schools, and education guides.
+- [متاجر](https://best5.com.tr/ar/category/1771014576961): Shopping, markets, malls, and store guides.
+- [متاحف](https://best5.com.tr/ar/category/1771014524393): Museums and cultural attractions.
+- [أماكن](https://best5.com.tr/ar/category/1771014168963): Destinations, parks, nature, and tourist places.
+- [مطاعم](https://best5.com.tr/ar/category/1771014104954): Restaurants, cafés, and dining guides.
+
+## English categories
+
+- [Hotels](https://best5.com.tr/en/category/hotels): Hotel rankings and accommodation guides.
+- [Universities](https://best5.com.tr/en/category/universities): Universities, schools, and education guides.
+- [Stores](https://best5.com.tr/en/category/store): Shopping, markets, malls, and store guides.
+- [Museums](https://best5.com.tr/en/category/musems): Museums and cultural attractions.
+- [Places](https://best5.com.tr/en/category/places): Destinations, parks, nature, and tourist places.
+- [Restaurants](https://best5.com.tr/en/category/restorants): Restaurants, cafés, and dining guides.
+
+## Arabic articles
+
+- [أفضل 5 مطاعم سوشي في إسطنبول](https://best5.com.tr/ar/blog/أفضل-5-مطاعم-سوشي-في-إسطنبول)
+- [افضل خمس مولات اوتليت يجب عليك زيارتهم في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-مولات-اوتليت-يجب-عليك-زيارتهم-في-اسطنبول-2026)
+- [افضل خمس مولات في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-مولات-في-اسطنبول-2026)
+- [أفضل خمس مطاعم فطور في كاديكوي 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مطاعم-فطور-في-كاديكوي-2026)
+- [أفضل 5 مطاعم في بشكطاش](https://best5.com.tr/ar/blog/أفضل-5-مطاعم-في-بشكطاش)
+- [أفضل 5 جامعات خاصة في تركيا 2026](https://best5.com.tr/ar/blog/أفضل-5-جامعات-خاصة-في-تركيا-2026)
+- [افضل خمس منتجعات في انطاليا](https://best5.com.tr/ar/blog/افضل-خمس-منتجعات-في-انطاليا)
+- [أفضل 5 مطاعم نباتية في إسطنبول](https://best5.com.tr/ar/blog/أفضل-5-مطاعم-نباتية-في-إسطنبول)
+- [أفضل 5 جامعات لدراسة الصيدلة في تركيا](https://best5.com.tr/ar/blog/أفضل-5-جامعات-لدراسة-الصيدلة-في-تركيا)
+- [أفضل 5 جامعات لدراسة إدارة الأعمال في تركيا](https://best5.com.tr/ar/blog/أفضل-5-جامعات-لدراسة-إدارة-الأعمال-في-تركيا)
+- [أفضل 5 مطاعم يمنية في إسطنبول](https://best5.com.tr/ar/blog/أفضل-5-مطاعم-يمنية-في-إسطنبول-دليل-المذاق-الأصلي-والمندي)
+- [أفضل خمس مطاعم عائلية في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مطاعم-عائلية-في-إسطنبول-2026)
+- [أفضل خمس مطاعم سمك في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مطاعم-سمك-في-إسطنبول-2026)
+- [أفضل 5 جامعات طبية في إسطنبول](https://best5.com.tr/ar/blog/أفضل-5-جامعات-طبية-في-إسطنبول)
+- [أفضل 5 جامعات خاصة في إسطنبول](https://best5.com.tr/ar/blog/أفضل-5-جامعات-خاصة-في-إسطنبول)
+- [أفضل 5 مدارس دولية في إسطنبول](https://best5.com.tr/ar/blog/أفضل-5-مدارس-دولية-في-إسطنبول)
+- [أفضل 5 مطاعم سمك في طرابزون بوزتبيه](https://best5.com.tr/ar/blog/أفضل-5-مطاعم-سمك-في-طرابزون-بوزتبيه)
+- [أفضل خمس مطاعم اقتصادية في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مطاعم-اقتصادية-في-إسطنبول-2026)
+- [أفضل خمس مطاعم عربية في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مطاعم-عربية-في-إسطنبول-2026)
+- [أفضل خمس مطاعم ستيك في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مطاعم-ستيك-في-إسطنبول-2026)
+- [أفضل خمس مطاعم تركية تقليدية في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مطاعم-تركية-تقليدية-في-إسطنبول-2026)
+- [أفضل خمس جامعات لدراسة الطب في تركيا 2026](https://best5.com.tr/ar/blog/أفضل-خمس-جامعات-لدراسة-الطب-في-تركيا-2026)
+- [أفضل خمس جامعات لدراسة إدارة الأعمال في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-جامعات-لدراسة-إدارة-الأعمال-في-إسطنبول-2026)
+- [أفضل خمس أكواخ ريفية في طرابزون 2026](https://best5.com.tr/ar/blog/أفضل-خمس-أكواخ-ريفية-في-طرابزون-2026)
+- [أفضل خمس فنادق اقتصادية في تقسيم 2026](https://best5.com.tr/ar/blog/أفضل-خمس-فنادق-اقتصادية-في-تقسيم-2026)
+- [أفضل خمس مدن جبلية في تركيا 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مدن-جبلية-في-تركيا-2026)
+- [أفضل خمس شلالات يجب زيارتها في تركيا 2026](https://best5.com.tr/ar/blog/أفضل-خمس-شلالات-يجب-زيارتها-في-تركيا-2026)
+- [أفضل خمس بحيرات طبيعية في تركيا 2026](https://best5.com.tr/ar/blog/أفضل-خمس-بحيرات-طبيعية-في-تركيا-2026)
+- [أفضل خمس أماكن سياحية في طرابزون 2026](https://best5.com.tr/ar/blog/أفضل-خمس-أماكن-سياحية-في-طرابزون-2026)
+- [أفضل خمس متاجر شوكولا في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-متاجر-شوكولا-في-إسطنبول-2026)
+- [أفضل خمس أسواق شعبية في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-أسواق-شعبية-في-إسطنبول-2026)
+- [أفضل خمس مقاهي للعمل في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مقاهي-للعمل-في-إسطنبول-2026)
+- [أفضل خمس مقاهي بإطلالة بحرية في إسطنبول 2026](https://best5.com.tr/ar/blog/أفضل-خمس-مقاهي-بإطلالة-بحرية-في-إسطنبول-2026)
+- [افضل خمس جامعات لدراسة ادارة التسويق في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-جامعات-لدراسة-ادارة-التسويق-في-اسطنبول-2026)
+- [افضل خمس حدائق يجب عليك زيارتها في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-حدائق-يجب-عليك-زيارتها-في-اسطنبول-2026)
+- [افضل خمس متاحف يجب عليك زيارتها في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-متاحف-يجب-عليك-زيارتها-في-اسطنبول-2026)
+- [افضل خمس فنادق اربع نجوم في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-فنادق-اربع-نجوم-في-اسطنبول-2026)
+- [افضل خمس فنادق خمس نجوم في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-فنادق-خمس-نجوم-في-اسطنبول-2026)
+- [افضل خمس فنادق اربع نجوم باطلالة بحرية في كاراكوي 2026](https://best5.com.tr/ar/blog/افضل-خمس-فنادق-اربع-نجوم-باطلالة-بحرية-في-كاراكوي-2026)
+- [افضل خمس فنادق اربع نجوم باطلالة بحرية في بشكتاش 2026](https://best5.com.tr/ar/blog/افضل-خمس-فنادق-اربع-نجوم-باطلالة-بحرية-في-بشكتاش-2026)
+- [افضل خمس جامعات لدراسة الهندسة الكهربائية في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-جامعات-لدراسة-الهندسة-الكهربائية-في-اسطنبول-2026)
+- [افضل خمس فنادق خمس نجوم باطلالة بحرية في بشكتاش 2026](https://best5.com.tr/ar/blog/افضل-خمس-فنادق-خمس-نجوم-باطلالة-بحرية-في-بشكتاش-2026)
+- [افضل خمس فنادق خمس نجوم في تقسيم 2026](https://best5.com.tr/ar/blog/test)
+- [افضل خمس متاجر لشراء الحلقوم في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-مطاعم-كباب-في-بشكتاش-2026)
+- [افضل خمس جامعات حكومية لدراسة هندسة الحاسوب في اسطنبول 2026](https://best5.com.tr/ar/blog/افضل-خمس-جامعات-حكومية-لدراسة-هندسة-الحاسوب-في-اسطنبول-2026)
+
+## English articles
+
+- [Best 5 Sushi Restaurants in Istanbul](https://best5.com.tr/en/blog/best-5-sushi-restaurants-in-istanbul)
+- [Best 5 Outlet Malls You Should Visit in Istanbul](https://best5.com.tr/en/blog/best-5-outlet-malls-you-should-visit-in-istanbul-2026-guide)
+- [Best 5 Shopping Malls in Istanbul](https://best5.com.tr/en/blog/best-5-shopping-malls-in-istanbul-2026-guide)
+- [Best Breakfast Restaurants in Kadikoy](https://best5.com.tr/en/blog/best-breakfast-restaurants-in-kadikoy-2026-guide)
+- [Best 5 Restaurants in Besiktas](https://best5.com.tr/en/blog/best-5-restaurants-in-besiktas)
+- [Best 5 Private Universities in Turkey](https://best5.com.tr/en/blog/best-5-private-universities-in-turkey-2026)
+- [Best Five Resorts in Antalya](https://best5.com.tr/en/blog/best-five-resorts-in-antalya)
+- [Top 5 Vegan Restaurants in Istanbul](https://best5.com.tr/en/blog/top-5-vegan-restaurants-in-istanbul)
+- [Best 5 Universities to Study Pharmacy in Turkey](https://best5.com.tr/en/blog/best-5-universities-to-study-pharmacy-in-turkey)
+- [Best 5 Universities for Business Administration in Turkey](https://best5.com.tr/en/blog/best-5-universities-for-business-administration-in-turkey)
+- [Best 5 Yemeni Restaurants in Istanbul](https://best5.com.tr/en/blog/best-5-yemeni-restaurants-in-istanbul-authentic-mandi-guide)
+- [Best 5 Family Restaurants in Istanbul](https://best5.com.tr/en/blog/best-5-family-restaurants-in-istanbul-2026-guide)
+- [Best Fish Restaurants in Istanbul](https://best5.com.tr/en/blog/best-fish-restaurants-in-istanbul-2026-guide)
+- [Best 5 Medical Universities in Istanbul](https://best5.com.tr/en/blog/best-5-medical-universities-in-istanbul)
+- [Best 5 Private Universities in Istanbul](https://best5.com.tr/en/blog/best-5-private-universities-in-istanbul)
+- [Best 5 International Schools in Istanbul](https://best5.com.tr/en/blog/best-5-international-schools-in-istanbul)
+- [Best 5 Fish Restaurants in Trabzon Boztepe](https://best5.com.tr/en/blog/best-5-fish-restaurants-in-trabzon-boztepe)
+- [Best Budget Restaurants in Istanbul](https://best5.com.tr/en/blog/best-budget-restaurants-in-istanbul-2026-guide)
+- [Best 5 Arabic Restaurants in Istanbul](https://best5.com.tr/en/blog/best-5-arabic-restaurants-in-istanbul-2026-guide)
+- [Best 5 Steak Restaurants in Istanbul](https://best5.com.tr/en/blog/best-5-steak-restaurants-in-istanbul-2026-guide)
+- [Best Traditional Turkish Restaurants in Istanbul](https://best5.com.tr/en/blog/best-traditional-turkish-restaurants-in-istanbul-2026-guide)
+- [Top 5 Universities to Study Medicine in Turkey](https://best5.com.tr/en/blog/top-5-universities-to-study-medicine-in-turkey-2026-guide)
+- [Top 5 Universities to Study Business Administration in Istanbul](https://best5.com.tr/en/blog/top-5-universities-to-study-business-administration-in-istanbul-2026-guide)
+- [Best 5 Rustic Cabins in Trabzon](https://best5.com.tr/en/blog/best-5-rustic-cabins-in-trabzon-2026-guide)
+- [Best Budget Hotels in Taksim](https://best5.com.tr/en/blog/best-budget-hotels-in-taksim-2026-guide)
+- [Top 5 Mountain Cities in Turkey](https://best5.com.tr/en/blog/top-5-mountain-cities-in-turkey-2026-guide)
+- [Best 5 Waterfalls to Visit in Turkey](https://best5.com.tr/en/blog/best-5-waterfalls-to-visit-in-turkey-2026-guide)
+- [Top 5 Natural Lakes in Turkey](https://best5.com.tr/en/blog/top-5-natural-lakes-in-turkey-2026-guide)
+- [Top 5 Tourist Places in Trabzon](https://best5.com.tr/en/blog/top-5-tourist-places-in-trabzon-2026-guide)
+- [Best Chocolate Shops in Istanbul](https://best5.com.tr/en/blog/best-chocolate-shops-in-istanbul-2026-guide)
+- [Best 5 Traditional Markets in Istanbul](https://best5.com.tr/en/blog/best-5-traditional-markets-in-istanbul-2026-guide)
+- [Best Cafes for Working in Istanbul](https://best5.com.tr/en/blog/best-cafes-for-working-in-istanbul-2026-guide)
+- [Best 5 Sea View Cafes in Istanbul](https://best5.com.tr/en/blog/best-5-sea-view-cafes-in-istanbul-2026-guide)
+- [Top 5 Universities to Study Marketing Management in Istanbul](https://best5.com.tr/en/blog/top-5-universities-to-study-marketing-management-in-istanbul-2026-guide)
+- [Top 5 Parks You Must Visit in Istanbul](https://best5.com.tr/en/blog/top-5-parks-you-must-visit-in-istanbul-2026-guide)
+- [Top 5 Museums You Must Visit in Istanbul](https://best5.com.tr/en/blog/top-5-museums-you-must-visit-in-istanbul-2026-guide)
+- [Best 5 Four-Star Hotels in Istanbul](https://best5.com.tr/en/blog/best-5-four-star-hotels-in-istanbul-2026-guide)
+- [Best 5 Five-Star Hotels in Istanbul](https://best5.com.tr/en/blog/best-5-five-star-hotels-in-istanbul-2026-guide)
+- [Best 5 Four-Star Sea View Hotels in Karakoy](https://best5.com.tr/en/blog/best-5-four-star-sea-view-hotels-in-karakoy-2026-guide)
+- [Best 5 Four-Star Sea View Hotels in Besiktas](https://best5.com.tr/en/blog/best-5-four-star-sea-view-hotels-in-besiktas-2026-guide)
+- [Best Five Universities to Study Electrical Engineering in Istanbul](https://best5.com.tr/en/blog/best-five-universities-to-study-electrical-engineering-in-istanbul-2026-guide)
+- [Best 5 Five-Star Sea View Hotels in Beşiktaş](https://best5.com.tr/en/blog/best-5-five-star-sea-view-hotels-in-beşiktaş-2026-guide)
+- [Best Five 5-Star Hotels in Taksim](https://best5.com.tr/en/blog/test)
+- [Best Five Shops to Buy Turkish Delight in Istanbul](https://best5.com.tr/en/blog/best-5-kebab-restaurants-in-beşiktaş-2026-guide)
+- [Top 5 Public Universities for Computer Engineering in Istanbul](https://best5.com.tr/en/blog/top-5-public-universities-for-computer-engineering-in-istanbul-2026-guide)
+
+## About and contact
+
+- [About Best5 in Arabic](https://best5.com.tr/ar/about): Arabic information about the publication and its purpose.
+- [About Best5 in English](https://best5.com.tr/en/about): English information about the publication and its purpose.
+- [Contact in Arabic](https://best5.com.tr/ar/contact): Arabic contact information.
+- [Contact in English](https://best5.com.tr/en/contact): English contact information.
+- [Advertise in Arabic](https://best5.com.tr/ar/advertise): Arabic advertising information.
+- [Advertise in English](https://best5.com.tr/en/advertise): English advertising information.
+
+## Optional
+
+- [Arabic privacy policy](https://best5.com.tr/ar/privacy)
+- [English privacy policy](https://best5.com.tr/en/privacy)
+- [Arabic terms of use](https://best5.com.tr/ar/terms)
+- [English terms of use](https://best5.com.tr/en/terms)
+- [Arabic cookie policy](https://best5.com.tr/ar/cookies)
+- [English cookie policy](https://best5.com.tr/en/cookies)
+- [Arabic FAQ](https://best5.com.tr/ar/faq)
+- [English FAQ](https://best5.com.tr/en/faq)
