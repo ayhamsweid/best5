@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState, useTransition } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import PublicLayout from './routes/PublicLayout';
 import AdminLayout from './routes/AdminLayout';
 import RequireAuth from './routes/RequireAuth';
@@ -17,6 +17,7 @@ const ComparePage = lazy(() => import('./pages/ComparePage'));
 const GuidePage = lazy(() => import('./pages/GuidePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const StaticPage = lazy(() => import('./pages/StaticPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const LoginPage = lazy(() => import('./admin/LoginPage'));
 const DashboardPage = lazy(() => import('./admin/DashboardPage'));
@@ -37,6 +38,12 @@ const NotificationsPage = lazy(() => import('./admin/NotificationsPage'));
 const BotAnalyticsPage = lazy(() => import('./admin/BotAnalyticsPage'));
 const SearchConsolePage = lazy(() => import('./admin/SearchConsolePage'));
 const MediaPage = lazy(() => import('./admin/MediaPage'));
+
+const PublicLanguageLayout: React.FC = () => {
+  const { lang } = useParams();
+  if (lang !== 'ar' && lang !== 'en') return <NotFoundPage />;
+  return <PublicLayout />;
+};
 
 const AppRoutes: React.FC = () => {
   const location = useLocation();
@@ -82,7 +89,7 @@ const AppRoutes: React.FC = () => {
               <Route path=":id" element={<PublicPostPreviewPage />} />
             </Route>
           </Route>
-          <Route path="/:lang" element={<PublicLayout />}>
+          <Route path="/:lang" element={<PublicLanguageLayout />}>
             <Route index element={<HomePage />} />
             <Route path="blog" element={<BlogListPage />} />
             <Route path="blog/:slug" element={<BlogDetailPage />} />
@@ -98,8 +105,9 @@ const AppRoutes: React.FC = () => {
             <Route path="terms" element={<StaticPage slug="terms" />} />
             <Route path="cookies" element={<StaticPage slug="cookies" />} />
             <Route path="faq" element={<StaticPage slug="faq" />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
-          <Route path="*" element={<Navigate to="/ar" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
     </RouteTransitionProvider>

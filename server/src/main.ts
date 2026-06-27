@@ -49,7 +49,8 @@ async function bootstrap() {
   app.use(
     rateLimit({
       windowMs: 1000 * Number(process.env.RATE_LIMIT_WINDOW_SEC || 60),
-      max: Number(process.env.RATE_LIMIT_MAX || 120)
+      max: Number(process.env.RATE_LIMIT_MAX || 120),
+      skip: (req) => req.path === '/api/seo/render' || req.path.startsWith('/uploads/')
     })
   );
   const prisma = app.get(PrismaService);

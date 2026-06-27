@@ -20,6 +20,23 @@ const hasText = (value: any, lang: Lang) => pick(value, lang).trim().length > 0;
 const localizedList = (items: any[] | undefined, lang: Lang) =>
   (Array.isArray(items) ? items : []).filter((item) => hasText(item, lang));
 
+const normalizeMapUrl = (value: unknown, fallbackQuery: string) => {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  const markdownTarget = raw.match(/^\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i)?.[1];
+  const candidate = markdownTarget || raw;
+
+  try {
+    const url = new URL(candidate);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.toString();
+  } catch {
+    // Fall back to a Google Maps search instead of treating malformed input as an internal URL.
+  }
+
+  return fallbackQuery
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackQuery)}`
+    : '';
+};
+
 const BlockImage: React.FC<{ src?: string; className?: string; fallbackClassName?: string }> = ({
   src,
   className = '',
@@ -257,6 +274,7 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           const pros = localizedList(block.data?.pros, lang);
           const cons = localizedList(block.data?.cons, lang);
           const galleryUrls = (Array.isArray(block.data?.galleryUrls) ? block.data.galleryUrls : []).filter(Boolean);
+          const mapUrl = normalizeMapUrl(block.data?.mapUrl, [title, address].filter(Boolean).join(' '));
           return (
             <div key={block.id} className="bg-white rounded-3xl border border-[#E5E7EB] shadow-xl overflow-hidden relative">
               {block.data?.rank && (
@@ -381,8 +399,8 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                   )}
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {block.data?.mapUrl && (
-                    <a className="flex-1 min-w-[180px] flex items-center justify-center gap-2 bg-[#b11226] text-white py-3 rounded-xl font-black text-sm shadow-xl shadow-[#b11226]/20" href={block.data.mapUrl} target="_blank" rel="noreferrer">
+                  {mapUrl && (
+                    <a className="flex-1 min-w-[180px] flex items-center justify-center gap-2 bg-[#b11226] text-white py-3 rounded-xl font-black text-sm shadow-xl shadow-[#b11226]/20" href={mapUrl} target="_blank" rel="noreferrer">
                       <MapPin className="w-4 h-4" />
                       {lang === 'ar' ? 'فتح في خرائط جوجل' : 'Open in Google Maps'}
                     </a>
