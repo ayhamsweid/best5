@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PostStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { staticPageContent } from './static-page-content';
 
 type Lang = 'ar' | 'en';
 type PageData = {
@@ -289,7 +290,7 @@ export class SeoRenderService {
     };
     const title = `${labels[key]?.[lang] || 'Best5'} | Best5`;
     const pages = settings?.pages_json as any;
-    const content = pick(pages?.[key], lang);
+    const content = pick(pages?.[key], lang) || staticPageContent[key]?.[lang] || '';
     return {
       status: 200,
       title,

@@ -4,6 +4,7 @@ import Seo from '../components/Seo';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicSettings } from '../services/api';
 import Markdown from '../components/Markdown';
+import { staticPageContent } from '../data/staticPageContent';
 
 const pageMap = {
   privacy: { title: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' }, key: 'privacy' },
@@ -37,7 +38,9 @@ const StaticPage: React.FC<{ slug?: PageKey }> = ({ slug: slugOverride }) => {
   const activeSlug = (slugOverride || slug || '') as PageKey | '';
   const pageConfig = useMemo(() => (activeSlug ? pageMap[activeSlug] : null), [activeSlug]);
   const title = pageConfig ? pageConfig.title[lang] : '';
-  const content = pageConfig ? pages?.[pageConfig.key]?.[lang] || '' : '';
+  const content = pageConfig
+    ? pages?.[pageConfig.key]?.[lang] || staticPageContent[pageConfig.key]?.[lang] || ''
+    : '';
   const meta = pageConfig ? pagesMeta?.[pageConfig.key] || {} : {};
   const ogImage = meta?.ogImage || '';
 

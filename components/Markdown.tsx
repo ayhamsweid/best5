@@ -70,7 +70,17 @@ const renderMarkdown = (md: string) => {
 
 const Markdown: React.FC<{ content?: string }> = ({ content = '' }) => {
   const html = renderMarkdown(content || '');
-  return <div className="markdown prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <div
+      className="markdown max-w-none text-gray-600 leading-8
+        [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-[#111827] [&_h1]:mt-10 [&_h1]:mb-4
+        [&_h2]:text-xl [&_h2]:font-black [&_h2]:text-[#111827] [&_h2]:mt-10 [&_h2]:mb-4
+        [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-[#111827] [&_h3]:mt-8 [&_h3]:mb-3
+        [&_p]:mb-5 [&_ul]:mb-6 [&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:ps-6
+        [&_a]:font-bold [&_a]:text-[#b11226] [&_a]:underline [&_a]:underline-offset-4"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 };
 
 export default Markdown;
