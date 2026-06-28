@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLang } from '../hooks/useLang';
+import Seo from '../components/Seo';
 
 const CountUp: React.FC<{ to: number; suffix?: string; duration?: number }> = ({ to, suffix = '', duration = 1200 }) => {
   const [value, setValue] = useState(0);
@@ -103,7 +104,12 @@ const AboutPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-background-light text-slate-900 transition-colors duration-300">
+    <>
+      <Seo
+        title={lang === 'ar' ? 'من نحن | Best 5' : 'About us | Best 5'}
+        canonical={`/${lang}/about`}
+      />
+      <div className="bg-background-light text-slate-900 transition-colors duration-300">
       <section
         className="relative py-24 text-center text-white overflow-hidden"
         style={{
@@ -202,7 +208,8 @@ const AboutPage: React.FC = () => {
           ))}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 

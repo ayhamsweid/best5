@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicPosts } from '../services/api';
+import { useInitialData } from '../context/InitialDataContext';
 
 type Localized = { ar?: string; en?: string };
 
@@ -14,7 +15,8 @@ const LatestPosts: React.FC<{
   };
 }> = ({ config }) => {
   const { lang } = useLang();
-  const [posts, setPosts] = useState<any[]>([]);
+  const { posts: initialPosts } = useInitialData();
+  const [posts, setPosts] = useState<any[]>(() => initialPosts?.slice(0, 3) || []);
 
   useEffect(() => {
     fetchPublicPosts(lang)

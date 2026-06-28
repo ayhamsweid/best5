@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { GuideItem, GuidePageData, GuideLang } from '../types/guide';
 import { sampleGuideAr, sampleGuideEn } from '../data/guides/sample';
@@ -9,6 +9,7 @@ import ComparisonTable from '../components/guide/ComparisonTable';
 import GuideItemSection from '../components/guide/GuideItemSection';
 import BuyingGuide from '../components/guide/BuyingGuide';
 import FAQAccordion from '../components/guide/FAQAccordion';
+import Seo from '../components/Seo';
 
 const getGuide = (lang: GuideLang, slug?: string): GuidePageData | null => {
   const source = lang === 'ar' ? sampleGuideAr : sampleGuideEn;
@@ -24,19 +25,6 @@ const GuidePage: React.FC = () => {
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [searchValue, setSearchValue] = useState('');
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  useEffect(() => {
-    if (!guide) return;
-    document.title = guide.title;
-    const description = guide.description;
-    let tag = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
-    if (!tag) {
-      tag = document.createElement('meta');
-      tag.name = 'description';
-      document.head.appendChild(tag);
-    }
-    tag.content = description;
-  }, [guide]);
 
   const labels = useMemo(
     () => ({
@@ -101,14 +89,22 @@ const GuidePage: React.FC = () => {
 
   if (!guide) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
-        <div className="text-gray-500">Guide not found</div>
-      </div>
+      <>
+        <Seo title={lang === 'ar' ? 'الدليل غير موجود | Best5' : 'Guide not found | Best5'} status={404} />
+        <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
+          <div className="text-gray-500">Guide not found</div>
+        </div>
+      </>
     );
   }
 
   return (
     <div dir={lang === 'ar' ? 'rtl' : 'ltr'} className="min-h-screen bg-[#F9FAFB] text-[#111827]">
+      <Seo
+        title={guide.title}
+        description={guide.description}
+        canonical={`/${lang}/guide/${guide.slug}`}
+      />
       <header className="bg-[#111827] text-white">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="font-black tracking-wide">Besiktas Guide</div>

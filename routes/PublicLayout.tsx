@@ -7,12 +7,14 @@ import { fetchPublicSettings, trackPageView } from '../services/api';
 import Ga4Loader from '../components/Ga4Loader';
 import ContentLoading from '../components/ContentLoading';
 import { useRouteTransition } from '../context/RouteTransitionContext';
+import { useInitialData } from '../context/InitialDataContext';
 
 const PublicLayout: React.FC = () => {
   const { lang } = useLang();
   const { isPending } = useRouteTransition();
   const location = useLocation();
-  const [ga4, setGa4] = useState<string | null>(null);
+  const { settings } = useInitialData();
+  const [ga4, setGa4] = useState<string | null>(() => settings?.ga4_measurement_id || null);
   useEffect(() => {
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     document.documentElement.setAttribute('lang', lang);

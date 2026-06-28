@@ -16,7 +16,18 @@ const slugify = (value: string) =>
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  private publicInclude = {
+  private publicListSelect = {
+    id: true,
+    title_ar: true,
+    title_en: true,
+    slug_ar: true,
+    slug_en: true,
+    excerpt_ar: true,
+    excerpt_en: true,
+    cover_image_url: true,
+    category_id: true,
+    published_at: true,
+    updated_at: true,
     category: true,
     tags: {
       include: {
@@ -95,7 +106,7 @@ export class PostsService {
             }
           : {})
       },
-      include: this.publicInclude,
+      select: this.publicListSelect,
       orderBy: { published_at: 'desc' }
     });
 
@@ -136,7 +147,7 @@ export class PostsService {
             published_at: { not: null },
             OR: [{ slug_ar: { in: slugs } }, { slug_en: { in: slugs } }]
           },
-          include: this.publicInclude
+          select: this.publicListSelect
         })
       : [];
 
@@ -157,7 +168,7 @@ export class PostsService {
         published_at: { not: null },
         id: { notIn: [...seenIds] }
       },
-      include: this.publicInclude,
+      select: this.publicListSelect,
       orderBy: { published_at: 'desc' },
       take: safeLimit - sortedPopular.length
     });

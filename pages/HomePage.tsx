@@ -25,6 +25,7 @@ import { useLang } from '../hooks/useLang';
 import { fetchPopularPosts, fetchPublicCategories, fetchPublicPosts, fetchPublicSettings, fetchPublicTags } from '../services/api';
 import SearchSuggestions from '../components/SearchSuggestions';
 import Seo from '../components/Seo';
+import { useInitialData } from '../context/InitialDataContext';
 
 type CityTag = {
   id: string;
@@ -298,18 +299,41 @@ const cityArticleTitles = (city: string, lang: 'ar' | 'en') =>
     ? [`أفضل 5 مطاعم في ${city}`, `أفضل 5 أماكن للزيارة في ${city}`, `أفضل 5 تجارب في ${city}`]
     : [`Best 5 restaurants in ${city}`, `Best 5 places to visit in ${city}`, `Best 5 experiences in ${city}`];
 
+const countPostsByCategory = (items: any[]) => {
+  const counts: Record<string, number> = {};
+  items.forEach((post: any) => {
+    const category = post.category || {};
+    const keys = [post.category_id, category.id, category.slug_ar, category.slug_en, category.name_ar, category.name_en].filter(Boolean);
+    keys.forEach((key) => {
+      counts[String(key)] = (counts[String(key)] || 0) + 1;
+    });
+  });
+  return counts;
+};
+
 const HomePage: React.FC = () => {
   const { lang } = useLang();
   const location = useLocation();
   const navigate = useNavigate();
   const isArabic = lang === 'ar';
+  const initialData = useInitialData();
+  const initialCityTags = useMemo(
+    () => uniqueCityTags(sortCityTags((initialData.tags || []).filter(isCityTag) as CityTag[])),
+    [initialData.tags]
+  );
+  const initialPosts = useMemo(
+    () => [...(initialData.popularPosts || []), ...(initialData.posts || [])],
+    [initialData.popularPosts, initialData.posts]
+  );
   const [query, setQuery] = useState('');
-  const [cityTags, setCityTags] = useState<CityTag[]>(defaultCityTags);
-  const [selectedCity, setSelectedCity] = useState(defaultCityTags[0].name_ar);
-  const [posts, setPosts] = useState<any[]>([]);
-  const [homeSettings, setHomeSettings] = useState<HomeSettings>({});
-  const [homeCategories, setHomeCategories] = useState<PublicCategory[]>([]);
-  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+  const [cityTags, setCityTags] = useState<CityTag[]>(() => initialCityTags.length ? initialCityTags : defaultCityTags);
+  const [selectedCity, setSelectedCity] = useState(() => (initialCityTags[0] || defaultCityTags[0]).name_ar);
+  const [posts, setPosts] = useState<any[]>(() => initialPosts);
+  const [homeSettings, setHomeSettings] = useState<HomeSettings>(() => initialData.settings?.home_json || {});
+  const [homeCategories, setHomeCategories] = useState<PublicCategory[]>(() => initialData.categories || []);
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>(
+    () => countPostsByCategory(initialData.posts || [])
+  );
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [heroIndex, setHeroIndex] = useState(0);
   const [dismissedHeroCards, setDismissedHeroCards] = useState<Set<number>>(() => new Set());
@@ -354,15 +378,7 @@ const HomePage: React.FC = () => {
       .then(([categoryData, postData]) => {
         const nextCategories = Array.isArray(categoryData) ? (categoryData as PublicCategory[]) : [];
         const nextPosts = Array.isArray(postData) ? postData : [];
-        const counts: Record<string, number> = {};
-
-        nextPosts.forEach((post: any) => {
-          const category = post.category || {};
-          const keys = [post.category_id, category.id, category.slug_ar, category.slug_en, category.name_ar, category.name_en].filter(Boolean);
-          keys.forEach((key) => {
-            counts[String(key)] = (counts[String(key)] || 0) + 1;
-          });
-        });
+        const counts = countPostsByCategory(nextPosts);
 
         if (nextCategories.length) setHomeCategories(nextCategories);
         setCategoryCounts(counts);

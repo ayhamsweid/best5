@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Seo from '../components/Seo';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicCategories, fetchPublicPosts } from '../services/api';
+import { useInitialData } from '../context/InitialDataContext';
 
 type PublicCategory = {
   id: string;
@@ -39,8 +40,9 @@ const categoryIcon = (category: PublicCategory) => {
 const CategoriesIndexPage: React.FC = () => {
   const { lang } = useLang();
   const isArabic = lang === 'ar';
-  const [categories, setCategories] = useState<PublicCategory[]>([]);
-  const [posts, setPosts] = useState<any[]>([]);
+  const { categories: initialCategories, posts: initialPosts } = useInitialData();
+  const [categories, setCategories] = useState<PublicCategory[]>(() => initialCategories || []);
+  const [posts, setPosts] = useState<any[]>(() => initialPosts || []);
 
   useEffect(() => {
     fetchPublicCategories()

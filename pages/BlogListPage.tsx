@@ -4,10 +4,12 @@ import Seo from '../components/Seo';
 import { useLang } from '../hooks/useLang';
 import { t } from '../utils/i18n';
 import { fetchPublicPosts } from '../services/api';
+import { useInitialData } from '../context/InitialDataContext';
 
 const BlogListPage: React.FC = () => {
   const { lang } = useLang();
-  const [posts, setPosts] = useState<any[]>([]);
+  const { posts: initialPosts } = useInitialData();
+  const [posts, setPosts] = useState<any[]>(() => initialPosts || []);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -28,7 +30,7 @@ const BlogListPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-20 text-[#111827]">
-      <Seo title={`${t(lang, 'blog')} | Besiktas City Guide`} />
+      <Seo title={`${t(lang, 'blog')} | Besiktas City Guide`} canonical={`/${lang}/blog`} />
       <div className="flex items-end justify-between gap-6 mb-10">
         <div>
           <h2 className="text-3xl font-black">{t(lang, 'blog')}</h2>

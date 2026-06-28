@@ -3,10 +3,12 @@ import { DynamicIcon, iconNames } from 'lucide-react/dynamic';
 import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicCategories } from '../services/api';
+import { useInitialData } from '../context/InitialDataContext';
 
 const Categories: React.FC = () => {
   const { lang } = useLang();
-  const [categories, setCategories] = useState<any[]>([]);
+  const { categories: initialCategories } = useInitialData();
+  const [categories, setCategories] = useState<any[]>(() => initialCategories || []);
 
   useEffect(() => {
     fetchPublicCategories()
