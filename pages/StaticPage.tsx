@@ -65,7 +65,7 @@ const StaticPage: React.FC<{ slug?: PageKey }> = ({ slug: slugOverride }) => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-20 text-[#111827]">
-      <Seo title={`${title} | Besiktas City Guide`} description={description} canonical={`/${lang}/${activeSlug}`} image={ogImage} />
+      <Seo title={`${title} | Best5`} description={description} canonical={`/${lang}/${activeSlug}`} image={ogImage} />
       <h1 className="text-3xl md:text-4xl font-black mb-6">{title}</h1>
       <Markdown content={content} />
     </div>

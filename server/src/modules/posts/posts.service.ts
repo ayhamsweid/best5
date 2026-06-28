@@ -16,6 +16,12 @@ const slugify = (value: string) =>
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
+  private readonly viewCacheTtlMs = Math.max(5_000, Number(process.env.VIEW_COUNT_CACHE_TTL_MS) || 60_000);
+  private readonly viewCountCache = new Map<number, {
+    expiresAt: number;
+    promise: Promise<Map<string, number>>;
+  }>();
+
   private publicListSelect = {
     id: true,
     title_ar: true,
@@ -59,32 +65,59 @@ export class PostsService {
     );
   }
 
+  private getViewCounts(days: number) {
+    const cached = this.viewCountCache.get(days);
+    if (cached && cached.expiresAt > Date.now()) return cached.promise;
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const promise = this.prisma.pageView.groupBy({
+        by: ['path'],
+        where: {
+          is_bot: false,
+          created_at: { gte: since },
+          path: { contains: '/blog/' }
+        },
+        _count: { path: true }
+      })
+      .then((rows) => {
+        const slugViews = new Map<string, number>();
+        for (const row of rows) {
+          const path = row.path.split('?')[0];
+          const match = path.match(/\/(?:ar|en)\/blog\/([^/?#]+)/);
+          if (!match?.[1]) continue;
+          try {
+            const slug = decodeURIComponent(match[1]);
+            slugViews.set(slug, (slugViews.get(slug) || 0) + row._count.path);
+          } catch {
+            // Ignore malformed tracked URLs.
+          }
+        }
+        return slugViews;
+      })
+      .catch((error) => {
+        this.viewCountCache.delete(days);
+        throw error;
+      });
+
+    this.viewCountCache.set(days, {
+      expiresAt: Date.now() + this.viewCacheTtlMs,
+      promise
+    });
+    return promise;
+  }
+
+  private postViewCount(post: { slug_ar: string; slug_en: string }, views: Map<string, number>) {
+    const arViews = views.get(post.slug_ar) || 0;
+    if (post.slug_ar === post.slug_en) return arViews;
+    return arViews + (views.get(post.slug_en) || 0);
+  }
+
   private async attachViews<T extends { slug_ar: string; slug_en: string }>(posts: T[], days = 30) {
     if (!posts.length) return posts.map((post) => ({ ...post, views: 0 }));
-
-    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    const rows = await this.prisma.pageView.groupBy({
-      by: ['path'],
-      where: {
-        is_bot: false,
-        created_at: { gte: since },
-        path: { contains: '/blog/' }
-      },
-      _count: { path: true }
-    });
-
-    const slugViews = new Map<string, number>();
-    for (const row of rows) {
-      const path = row.path.split('?')[0];
-      const match = path.match(/\/(?:ar|en)\/blog\/([^/?#]+)/);
-      const slug = match?.[1] ? decodeURIComponent(match[1]) : '';
-      if (!slug) continue;
-      slugViews.set(slug, (slugViews.get(slug) || 0) + row._count.path);
-    }
+    const slugViews = await this.getViewCounts(days);
 
     return posts.map((post) => ({
       ...post,
-      views: Math.max(slugViews.get(post.slug_ar) || 0, slugViews.get(post.slug_en) || 0)
+      views: this.postViewCount(post, slugViews)
     }));
   }
 
@@ -117,28 +150,7 @@ export class PostsService {
     await this.publishDueScheduled();
     const safeLimit = Math.min(Math.max(limit, 1), 10);
     const safeDays = Math.min(Math.max(days, 1), 30);
-    const since = new Date(Date.now() - safeDays * 24 * 60 * 60 * 1000);
-    const rows = await this.prisma.pageView.groupBy({
-      by: ['path'],
-      where: {
-        is_bot: false,
-        created_at: { gte: since },
-        path: { contains: '/blog/' }
-      },
-      _count: { path: true },
-      orderBy: { _count: { path: 'desc' } },
-      take: safeLimit * 4
-    });
-
-    const slugViews = new Map<string, number>();
-    for (const row of rows) {
-      const path = row.path.split('?')[0];
-      const match = path.match(/\/(?:ar|en)\/blog\/([^/?#]+)/);
-      const slug = match?.[1] ? decodeURIComponent(match[1]) : '';
-      if (!slug) continue;
-      slugViews.set(slug, (slugViews.get(slug) || 0) + row._count.path);
-    }
-
+    const slugViews = await this.getViewCounts(safeDays);
     const slugs = [...slugViews.keys()];
     const popularPosts = slugs.length
       ? await this.prisma.post.findMany({
@@ -154,7 +166,7 @@ export class PostsService {
     const sortedPopular = popularPosts
       .map((post) => ({
         ...post,
-        views: Math.max(slugViews.get(post.slug_ar) || 0, slugViews.get(post.slug_en) || 0)
+        views: this.postViewCount(post, slugViews)
       }))
       .sort((a, b) => b.views - a.views)
       .slice(0, safeLimit);

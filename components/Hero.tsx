@@ -49,7 +49,7 @@ const Hero: React.FC<{ content?: HeroContent }> = ({ content }) => {
       <div className="absolute inset-0 z-0">
         <img 
           src={copy.backgroundUrl} 
-          alt="Istanbul Besiktas" 
+          alt="Best5 Turkey guide"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-slate-900/70"></div>

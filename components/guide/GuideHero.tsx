@@ -12,7 +12,7 @@ const GuideHero: React.FC<GuideHeroProps> = ({ guide, onSearch }) => {
       {guide.hero.backgroundImageUrl && (
         <img
           src={guide.hero.backgroundImageUrl}
-          alt=""
+          alt={guide.title}
           className="absolute inset-0 h-full w-full object-cover opacity-30"
         />
       )}

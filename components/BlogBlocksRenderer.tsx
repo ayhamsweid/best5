@@ -37,8 +37,9 @@ const normalizeMapUrl = (value: unknown, fallbackQuery: string) => {
     : '';
 };
 
-const BlockImage: React.FC<{ src?: string; className?: string; fallbackClassName?: string }> = ({
+const BlockImage: React.FC<{ src?: string; alt?: string; className?: string; fallbackClassName?: string }> = ({
   src,
+  alt = '',
   className = '',
   fallbackClassName = ''
 }) => {
@@ -52,7 +53,7 @@ const BlockImage: React.FC<{ src?: string; className?: string; fallbackClassName
     );
   }
 
-  return <img className={className} src={src} alt="" loading="lazy" onError={() => setFailed(true)} />;
+  return <img className={className} src={src} alt={alt} loading="lazy" onError={() => setFailed(true)} />;
 };
 
 const parseRating = (value: any) => {
@@ -112,7 +113,14 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
         if (block.type === 'image') {
           return (
             <figure key={block.id} className="space-y-2">
-              {block.data?.url && <img src={block.data.url} alt="" loading="lazy" className="rounded-2xl w-full object-cover" />}
+              {block.data?.url && (
+                <img
+                  src={block.data.url}
+                  alt={pick(block.data?.caption, lang) || (lang === 'ar' ? 'صورة توضيحية للدليل' : 'Guide illustration')}
+                  loading="lazy"
+                  className="rounded-2xl w-full object-cover"
+                />
+              )}
               {block.data?.caption && <figcaption className="text-xs text-gray-500">{pick(block.data.caption, lang)}</figcaption>}
             </figure>
           );
@@ -121,7 +129,13 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           return (
             <div key={block.id} className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {(block.data?.urls || []).filter(Boolean).map((url: string, idx: number) => (
-                <img key={`${block.id}-${idx}`} src={url} alt="" loading="lazy" className="rounded-xl object-cover h-40 w-full" />
+                <img
+                  key={`${block.id}-${idx}`}
+                  src={url}
+                  alt={`${pick(block.data?.title, lang) || (lang === 'ar' ? 'معرض الصور' : 'Image gallery')} ${idx + 1}`}
+                  loading="lazy"
+                  className="rounded-xl object-cover h-40 w-full"
+                />
               ))}
             </div>
           );
@@ -289,6 +303,7 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                     <div className="aspect-square rounded-2xl overflow-hidden shadow-inner group bg-[#111827]">
                       <BlockImage
                         src={block.data?.coverUrl}
+                        alt={title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         fallbackClassName="w-full h-full"
                       />
@@ -299,6 +314,7 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                           <BlockImage
                             key={`${block.id}-gallery-${idx}`}
                             src={url}
+                            alt={`${title} ${idx + 1}`}
                             className="aspect-square object-cover rounded-xl border border-gray-100"
                           />
                         ))}

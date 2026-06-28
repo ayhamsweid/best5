@@ -40,7 +40,7 @@ const ComparisonTable: React.FC<ComparisonTableProps> = ({ items, ctaLabel, onCt
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-3">
                     {item.logoUrl ? (
-                      <img src={item.logoUrl} alt="" loading="lazy" className="h-8 w-8 rounded-full object-cover" />
+                      <img src={item.logoUrl} alt={item.name} loading="lazy" className="h-8 w-8 rounded-full object-cover" />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-[#E5E7EB]" />
                     )}

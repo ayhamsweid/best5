@@ -108,7 +108,7 @@ async function bootstrap() {
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('Besiktas City Guide API')
+      .setTitle('Best5 API')
       .setDescription('Admin + public API')
       .setVersion('1.0')
       .build();

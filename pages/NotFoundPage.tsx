@@ -8,7 +8,13 @@ const NotFoundPage: React.FC = () => {
 
   return (
     <>
-      <Seo title={lang === 'ar' ? 'الصفحة غير موجودة | Best5' : 'Page not found | Best5'} status={404} />
+      <Seo
+        title={lang === 'ar' ? 'الصفحة غير موجودة | Best5' : 'Page not found | Best5'}
+        description={lang === 'ar'
+          ? 'الصفحة التي تبحث عنها غير موجودة أو تم نقلها. يمكنك العودة إلى Best5 لاستكشاف أحدث الأدلة.'
+          : 'The page you requested does not exist or has moved. Return to Best5 to explore the latest guides.'}
+        status={404}
+      />
       <div className="min-h-[65vh] bg-[#F9FAFB] flex items-center justify-center px-6 py-20" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-xl w-full text-center bg-white border border-[#E5E7EB] rounded-3xl p-10 shadow-sm">
         <div className="text-7xl font-black text-[#b11226]">404</div>

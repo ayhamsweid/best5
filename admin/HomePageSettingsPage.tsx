@@ -52,7 +52,7 @@ const defaultHomeSettings = (): HomeSettings => ({
   },
   editorPickPostIds: [],
   features: {
-    heading: { ar: 'لماذا تختار دليل بشكتاش؟', en: 'Why choose Besiktas City Guide?' },
+    heading: { ar: 'لماذا تختار Best5؟', en: 'Why choose Best5?' },
     sub: {
       ar: 'نحن نوفر عليك عناء البحث من خلال تقديم معلومات دقيقة ومحدثة من قلب الحدث.',
       en: 'We save you the hassle of searching by providing accurate, up‑to‑date insights.'

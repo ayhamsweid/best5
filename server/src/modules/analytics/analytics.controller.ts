@@ -3,6 +3,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AnalyticsService } from './analytics.service';
 import { Request } from 'express';
 
+const botRegex =
+  /(googlebot|bingbot|yandexbot|duckduckbot|baiduspider|slurp|facebot|facebookexternalhit|twitterbot|linkedinbot|telegrambot|whatsapp|pinterest|ahrefsbot|semrushbot|mj12bot|dotbot|petalbot|applebot|claudebot|anthropic|openai|gptbot|perplexitybot|YouBot|CCBot|omgilibot|seznambot)/i;
+
 @Controller('analytics')
 export class AnalyticsController {
   constructor(private analytics: AnalyticsService) {}
@@ -11,6 +14,9 @@ export class AnalyticsController {
   track(@Body() body: { path?: string; lang?: string; referrer?: string }, @Req() req: Request) {
     if (!body?.path) {
       return { ok: false };
+    }
+    if (botRegex.test(req.get('user-agent') || '')) {
+      return { ok: true };
     }
     return this.analytics.track({
       path: body.path,
