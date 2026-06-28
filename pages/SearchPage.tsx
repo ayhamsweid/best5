@@ -70,7 +70,13 @@ const SearchPage: React.FC = () => {
 
   return (
     <div className="min-h-[60vh] bg-[#fbf7f2] px-4 py-16 text-[#111827] md:px-8" dir={isArabic ? 'rtl' : 'ltr'}>
-      <Seo title={`${isArabic ? 'بحث' : 'Search'}: ${q}`} canonical={`/${lang}/search?q=${encodeURIComponent(q)}`} />
+      <Seo
+        title={`${isArabic ? 'بحث' : 'Search'}: ${q} | Best5`}
+        description={isArabic
+          ? `نتائج بحث Best5 عن ${q || 'أفضل الأماكن والخدمات في تركيا'}.`
+          : `Best5 search results for ${q || 'top places and services in Turkey'}.`}
+        canonical={`/${lang}/search?q=${encodeURIComponent(q)}`}
+      />
       <div className="mx-auto max-w-6xl">
         <div className={isArabic ? 'text-right' : 'text-left'}>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#b11226]">
@@ -97,7 +103,7 @@ const SearchPage: React.FC = () => {
                     to={`/${lang}/blog/${slug}`}
                     className="group overflow-hidden rounded-3xl border border-[#e8e1db] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#b11226] hover:shadow-xl"
                   >
-                    {post.cover_image_url && <img src={post.cover_image_url} alt="" className="h-40 w-full object-cover" />}
+                    {post.cover_image_url && <img src={post.cover_image_url} alt={title} className="h-40 w-full object-cover" />}
                     <div className="p-5">
                       <div className="mb-3 text-xs font-black text-[#b11226]">{category}</div>
                       <h2 className="line-clamp-2 text-xl font-black leading-8 group-hover:text-[#b11226]">{title}</h2>

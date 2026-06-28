@@ -87,6 +87,10 @@ model Post {
   category  Category? @relation(fields: [category_id], references: [id])
   tags      PostTag[]
   revisions PostRevision[]
+
+  @@index([status, published_at])
+  @@index([category_id, status, published_at])
+  @@index([status, scheduled_at])
 }
 
 model Category {
@@ -195,4 +199,7 @@ model PageView {
   is_bot     Boolean  @default(false)
   bot_name   String?
   created_at DateTime @default(now())
+
+  @@index([created_at])
+  @@index([is_bot, created_at])
 }

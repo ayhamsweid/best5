@@ -68,7 +68,7 @@ const LatestPosts: React.FC<{
                 {cover ? (
                   <img
                     src={cover}
-                    alt={postTitle || ''}
+                    alt={postTitle || (lang === 'ar' ? 'مقال من Best5' : 'Best5 article')}
                     loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />

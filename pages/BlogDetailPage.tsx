@@ -115,7 +115,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
   const canonical = `/${lang}/blog/${slug}`;
   const ogImage = post.og_image_url || post.cover_image_url;
   const canonicalUrl = canonical?.startsWith('http') ? canonical : `${siteUrl}${canonical}`;
-  const authorName = post.author?.full_name || 'Besiktas City Guide';
+  const authorName = post.author?.full_name || 'Best5';
   const content = lang === 'ar' ? post.content_ar : post.content_en;
   const blocks = Array.isArray(post.content_blocks_json) ? post.content_blocks_json : [];
   const publishedAt = post.published_at
@@ -177,7 +177,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
 
   return (
     <div className="bg-[#F9FAFB] text-[#111827]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      <Seo title={`${seoTitle || title} | Besiktas City Guide`} description={seoDesc || excerpt} canonical={canonicalUrl} image={ogImage} type="article" url={canonicalUrl} />
+      <Seo title={`${seoTitle || title} | Best5`} description={seoDesc || excerpt} canonical={canonicalUrl} image={ogImage} type="article" url={canonicalUrl} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -220,7 +220,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
           {post.cover_image_url && (
             <img
               src={post.cover_image_url}
-              alt=""
+              alt={title}
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover opacity-35"
             />
@@ -315,7 +315,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
                     className="group overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
                   >
                     {related.cover_image_url ? (
-                      <img src={related.cover_image_url} alt="" loading="lazy" className="h-44 w-full object-cover transition duration-500 group-hover:scale-105" />
+                      <img src={related.cover_image_url} alt={relatedTitle} loading="lazy" className="h-44 w-full object-cover transition duration-500 group-hover:scale-105" />
                     ) : (
                       <div className="h-44 w-full bg-[#fff1f1]" />
                     )}

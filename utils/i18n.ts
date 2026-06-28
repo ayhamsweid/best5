@@ -16,7 +16,7 @@ const ar: Dictionary = {
   posts: 'المقالات',
   tags: 'الوسوم',
   settings: 'الإعدادات',
-  welcome: 'دليل بشكتاش',
+  welcome: 'Best5',
   admin: 'لوحة الإدارة'
 };
 
@@ -34,7 +34,7 @@ const en: Dictionary = {
   posts: 'Posts',
   tags: 'Tags',
   settings: 'Settings',
-  welcome: 'Besiktas City Guide',
+  welcome: 'Best5',
   admin: 'Admin Panel'
 };
 

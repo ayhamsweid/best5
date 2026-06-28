@@ -71,7 +71,13 @@ const CategoriesIndexPage: React.FC = () => {
 
   return (
     <div className="bg-[#fbf7f2] px-4 py-16 text-[#151515] md:px-8" dir={isArabic ? 'rtl' : 'ltr'}>
-      <Seo title={isArabic ? 'كل الأقسام | أفضل 5' : 'All Categories | Best 5'} canonical={`/${lang}/categories`} />
+      <Seo
+        title={isArabic ? 'كل الأقسام | Best5' : 'All Categories | Best5'}
+        description={isArabic
+          ? 'تصفح أقسام Best5 واعثر على أفضل المطاعم والفنادق والجامعات والمتاجر والأماكن في تركيا.'
+          : 'Browse Best5 categories and find top restaurants, hotels, universities, stores, and places across Turkey.'}
+        canonical={`/${lang}/categories`}
+      />
       <div className="mx-auto max-w-7xl">
         <div className={isArabic ? 'text-right' : 'text-left'}>
           <div className="mb-3 text-xs font-black uppercase tracking-[0.28em] text-[#b11226]">

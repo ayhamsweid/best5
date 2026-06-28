@@ -38,7 +38,13 @@ const CategoryPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-20 text-[#111827]">
-      <Seo title={`Category: ${title || slug}`} canonical={`/${lang}/category/${slug}`} />
+      <Seo
+        title={`${title || slug} | Best5`}
+        description={lang === 'ar'
+          ? `اكتشف أحدث أدلة ومقارنات Best5 ضمن قسم ${title || slug} واختر الأنسب لك بسهولة.`
+          : `Explore the latest Best5 guides and comparisons for ${title || slug} and choose the right option with confidence.`}
+        canonical={`/${lang}/category/${slug}`}
+      />
       <h2 className="text-3xl font-black capitalize">{title || slug}</h2>
       <p className="text-gray-500 mt-2">Latest posts in this category.</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">

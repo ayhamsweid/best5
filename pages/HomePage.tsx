@@ -610,7 +610,13 @@ const HomePage: React.FC = () => {
         setTilt({ x, y });
       }}
     >
-      <Seo title={isArabic ? 'أفضل 5 | دليلك الشامل' : 'Best 5 | Your Complete Guide'} canonical={`/${lang}`} />
+      <Seo
+        title={isArabic ? 'Best5 | دليلك الشامل لأفضل الخيارات في تركيا' : 'Best5 | Your Guide to the Best in Turkey'}
+        description={isArabic
+          ? 'اكتشف أفضل 5 مطاعم وفنادق وجامعات وأماكن وخدمات في تركيا من خلال أدلة مختصرة ومقارنات عملية ومحدثة.'
+          : 'Discover the best restaurants, hotels, universities, places, and services in Turkey through concise, practical, up-to-date guides.'}
+        canonical={`/${lang}`}
+      />
       <section className="relative min-h-[calc(100vh-76px)] px-4 py-12 md:px-8 md:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(177,18,38,0.12),transparent_28%),radial-gradient(circle_at_80%_15%,rgba(217,154,36,0.18),transparent_24%)]" />
         <div className="absolute inset-x-0 top-16 h-px bg-gradient-to-l from-transparent via-[#b11226]/20 to-transparent" />
@@ -718,7 +724,7 @@ const HomePage: React.FC = () => {
                     aria-label={card.title}
                   >
                     <div className="h-44 overflow-hidden rounded-2xl bg-[#f3f4f0]">
-                      <img src={card.cover} alt="" draggable={false} className="h-full w-full object-cover" />
+                      <img src={card.cover} alt={card.title} draggable={false} className="h-full w-full object-cover" />
                     </div>
                     <div className="mt-4 flex items-center justify-end gap-3">
                       <span className="rounded-full bg-[#f59e0b]/20 px-3 py-1 text-xs font-black text-[#7f5600]">
@@ -806,7 +812,7 @@ const HomePage: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  <img src={item.cover} alt="" className="hidden h-24 w-32 rounded-2xl object-cover md:block" />
+                  <img src={item.cover} alt={item.title} className="hidden h-24 w-32 rounded-2xl object-cover md:block" />
                 </Link>
               );
             })}
@@ -838,7 +844,11 @@ const HomePage: React.FC = () => {
             key={`city-map-${selectedCity}`}
             className="city-switch-panel relative min-h-[360px] overflow-hidden rounded-[2rem] border border-[#e8e1db] bg-white shadow-sm"
           >
-            <img src={images.map} alt="" className="absolute inset-0 h-full w-full object-cover opacity-75" />
+            <img
+              src={images.map}
+              alt={isArabic ? `خريطة ${selectedCityName}` : `${selectedCityName} map`}
+              className="absolute inset-0 h-full w-full object-cover opacity-75"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-[#151515]/80 to-transparent" />
             <div className={`absolute bottom-6 text-white ${isArabic ? 'right-6 text-right' : 'left-6 text-left'}`}>
               <MapPin className="mb-3 h-8 w-8 text-[#d99a24]" />
@@ -880,7 +890,7 @@ const HomePage: React.FC = () => {
                   className="home-reveal-visible group overflow-hidden rounded-[2rem] border border-[#e8e1db] bg-white shadow-sm transition hover:-translate-y-2 hover:shadow-2xl"
                 >
                   <div className="h-56 overflow-hidden">
-                    <img src={item.cover} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
+                    <img src={item.cover} alt={item.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
                   </div>
                   <div className={`p-6 ${isArabic ? 'text-right' : 'text-left'}`}>
                     <span className="inline-flex items-center gap-2 rounded-full bg-[#f59e0b]/20 px-3 py-1 text-xs font-black text-[#7f5600]">

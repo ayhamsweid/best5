@@ -48,10 +48,10 @@ const Categories: React.FC = () => {
     return null;
   };
 
-  const renderIcon = (value?: string | null) => {
+  const renderIcon = (value?: string | null, alt = '') => {
     if (!value) return <DynamicIcon name="folder" className="w-6 h-6" fallback={() => null} />;
     if (value.startsWith('http') || value.startsWith('/')) {
-      return <img src={value} alt="" className="w-6 h-6 object-contain" />;
+      return <img src={value} alt={alt} className="w-6 h-6 object-contain" />;
     }
     const resolved = resolveIconName(value);
     if (resolved) return <DynamicIcon name={resolved} className="w-6 h-6" fallback={() => null} />;
@@ -67,7 +67,7 @@ const Categories: React.FC = () => {
           return (
           <Link key={cat.id || idx} to={`/${lang}/category/${slug}`} className="flex flex-col items-center gap-3 group min-w-[60px]">
             <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center text-gray-700 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
-              {renderIcon(cat.icon)}
+              {renderIcon(cat.icon, name)}
             </div>
             <span className="text-sm font-bold text-gray-700 group-hover:text-primary transition-colors">{name}</span>
           </Link>

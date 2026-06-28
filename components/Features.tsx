@@ -10,7 +10,7 @@ const Features: React.FC<{ config?: FeaturesConfig }> = ({ config }) => {
   const { lang } = useLang();
   const copy = useMemo(
     () => ({
-      heading: config?.heading?.[lang] || (lang === 'ar' ? 'لماذا تختار دليل بشكتاش؟' : 'Why choose Besiktas City Guide?'),
+      heading: config?.heading?.[lang] || (lang === 'ar' ? 'لماذا تختار Best5؟' : 'Why choose Best5?'),
       sub:
         config?.sub?.[lang] ||
         (lang === 'ar'

@@ -164,7 +164,7 @@ createServer(async (request, response) => {
       return;
     }
     if (url.pathname === '/') {
-      response.writeHead(302, { Location: '/ar' });
+      response.writeHead(301, { Location: '/ar' });
       response.end();
       return;
     }

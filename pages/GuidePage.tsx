@@ -90,7 +90,11 @@ const GuidePage: React.FC = () => {
   if (!guide) {
     return (
       <>
-        <Seo title={lang === 'ar' ? 'الدليل غير موجود | Best5' : 'Guide not found | Best5'} status={404} />
+        <Seo
+          title={lang === 'ar' ? 'الدليل غير موجود | Best5' : 'Guide not found | Best5'}
+          description={lang === 'ar' ? 'الدليل المطلوب غير موجود على Best5.' : 'The requested Best5 guide could not be found.'}
+          status={404}
+        />
         <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
           <div className="text-gray-500">Guide not found</div>
         </div>
@@ -168,7 +172,7 @@ const GuidePage: React.FC = () => {
 
       <footer className="mt-12 bg-[#111827] text-white/70">
         <div className="max-w-6xl mx-auto px-6 py-10 text-xs">
-          © 2026 Besiktas City Guide. All rights reserved.
+          © 2026 Best5. All rights reserved.
         </div>
       </footer>
     </div>

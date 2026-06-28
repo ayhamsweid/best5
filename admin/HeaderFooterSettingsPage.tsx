@@ -42,7 +42,7 @@ type SettingsShape = {
 };
 
 const defaultHeader = (): HeaderConfig => ({
-  logoTitle: { ar: 'دليل بشكتاش', en: 'Besiktas City Guide' },
+  logoTitle: { ar: 'Best5', en: 'Best5' },
   logoSubtitle: { ar: 'دليل المدينة', en: 'City Guide' },
   logoImageUrl: '',
   navLinks: [
@@ -56,7 +56,7 @@ const defaultHeader = (): HeaderConfig => ({
 });
 
 const defaultFooter = (): FooterConfig => ({
-  brandTitle: { ar: 'دليل بشكتاش', en: 'Besiktas City Guide' },
+  brandTitle: { ar: 'Best5', en: 'Best5' },
   about: {
     ar: 'المنصة الموثوقة الأولى لاستكشاف معالم ومطاعم منطقة بشكتاش في اسطنبول.',
     en: 'The trusted platform to explore Beşiktaş landmarks and restaurants.'
@@ -73,7 +73,7 @@ const defaultFooter = (): FooterConfig => ({
   ],
   address: { ar: 'سنان باشا، بشكتاش، اسطنبول، تركيا', en: 'Sinan Pasha, Beşiktaş, Istanbul, Turkey' },
   email: 'hello@besiktasguide.com',
-  copyright: { ar: '© 2026 دليل بشكتاش. جميع الحقوق محفوظة.', en: '© 2026 Besiktas City Guide. All rights reserved.' },
+  copyright: { ar: '© 2026 Best5. جميع الحقوق محفوظة.', en: '© 2026 Best5. All rights reserved.' },
   credit: { ar: 'تصميم وتطوير بواسطة فريق بشكتاش', en: 'Designed and built by the Beşiktaş team' },
   showLatestPosts: true
 });

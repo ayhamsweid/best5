@@ -193,7 +193,7 @@ export class SeoRenderService {
     }
 
     const seoTitle = (lang === 'ar' ? post.seo_title_ar : post.seo_title_en) || (lang === 'ar' ? post.title_ar : post.title_en);
-    const title = `${seoTitle} | Besiktas City Guide`;
+    const title = `${seoTitle} | Best5`;
     const excerpt = (lang === 'ar' ? post.seo_desc_ar : post.seo_desc_en) || (lang === 'ar' ? post.excerpt_ar : post.excerpt_en);
     const localizedTitle = lang === 'ar' ? post.title_ar : post.title_en;
     const canonicalPath = `/${lang}/blog/${encodeURIComponent(lang === 'ar' ? post.slug_ar : post.slug_en)}`;

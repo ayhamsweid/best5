@@ -106,7 +106,10 @@ const AboutPage: React.FC = () => {
   return (
     <>
       <Seo
-        title={lang === 'ar' ? 'من نحن | Best 5' : 'About us | Best 5'}
+        title={lang === 'ar' ? 'من نحن | Best5' : 'About us | Best5'}
+        description={lang === 'ar'
+          ? 'تعرف على Best5 ومنهجنا في البحث والمقارنة واختيار أفضل خمسة خيارات في كل مجال.'
+          : 'Learn about Best5 and how we research, compare, and select the top five options in every category.'}
         canonical={`/${lang}/about`}
       />
       <div className="bg-background-light text-slate-900 transition-colors duration-300">

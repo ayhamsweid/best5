@@ -30,7 +30,13 @@ const BlogListPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-20 text-[#111827]">
-      <Seo title={`${t(lang, 'blog')} | Besiktas City Guide`} canonical={`/${lang}/blog`} />
+      <Seo
+        title={`${t(lang, 'blog')} | Best5`}
+        description={lang === 'ar'
+          ? 'تصفح أحدث مقالات وأدلة Best5 لاكتشاف أفضل الأماكن والخدمات والتجارب في تركيا.'
+          : 'Browse the latest Best5 articles and guides to discover top places, services, and experiences in Turkey.'}
+        canonical={`/${lang}/blog`}
+      />
       <div className="flex items-end justify-between gap-6 mb-10">
         <div>
           <h2 className="text-3xl font-black">{t(lang, 'blog')}</h2>
