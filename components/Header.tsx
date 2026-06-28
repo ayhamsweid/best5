@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicSettings } from '../services/api';
 import SearchSuggestions from './SearchSuggestions';
+import { useInitialData } from '../context/InitialDataContext';
 
 type Localized = { ar?: string; en?: string };
 type HeaderConfig = {
@@ -17,8 +18,9 @@ const Header: React.FC = () => {
   const { lang, otherLang, switchPath } = useLang();
   const navigate = useNavigate();
   const isArabic = lang === 'ar';
+  const { settings } = useInitialData();
   const [hidden, setHidden] = useState(false);
-  const [config, setConfig] = useState<HeaderConfig | null>(null);
+  const [config, setConfig] = useState<HeaderConfig | null>(() => settings?.header_json || null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileCloseProgress, setMobileCloseProgress] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);

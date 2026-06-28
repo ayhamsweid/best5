@@ -3,11 +3,13 @@ import { Compass, MapPin, Mail } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicPosts, fetchPublicSettings } from '../services/api';
 import { Link } from 'react-router-dom';
+import { useInitialData } from '../context/InitialDataContext';
 
 const Footer: React.FC = () => {
   const { lang } = useLang();
-  const [latestPosts, setLatestPosts] = useState<any[]>([]);
-  const [config, setConfig] = useState<any>(null);
+  const { posts: initialPosts, settings } = useInitialData();
+  const [latestPosts, setLatestPosts] = useState<any[]>(() => initialPosts?.slice(0, 4) || []);
+  const [config, setConfig] = useState<any>(() => settings?.footer_json || null);
 
   const copy = useMemo(() => {
     return {

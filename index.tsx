@@ -7,13 +7,16 @@ if (!rootElement) {
   throw new Error("Could not find root element to mount to");
 }
 
-const root = ReactDOM.createRoot(rootElement);
-root.render(
+const app = (
   <React.StrictMode>
-    <App />
+    <App initialData={window.__INITIAL_DATA__} />
   </React.StrictMode>
 );
 
-requestAnimationFrame(() => {
-  document.body.classList.add('app-ready');
-});
+if (rootElement.hasChildNodes()) {
+  ReactDOM.hydrateRoot(rootElement, app);
+} else {
+  ReactDOM.createRoot(rootElement).render(app);
+}
+
+document.body.classList.add('app-ready');

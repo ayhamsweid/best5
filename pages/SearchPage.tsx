@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import Seo from '../components/Seo';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicPosts } from '../services/api';
+import { useInitialData } from '../context/InitialDataContext';
 
 const normalize = (value: string) =>
   value
@@ -22,16 +23,18 @@ const SearchPage: React.FC = () => {
   const q = params.get('q')?.trim() ?? '';
   const { lang } = useLang();
   const isArabic = lang === 'ar';
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initialData = useInitialData();
+  const initialPosts = initialData.lang === lang ? initialData.posts : undefined;
+  const [posts, setPosts] = useState<any[]>(() => initialPosts || []);
+  const [loading, setLoading] = useState(() => !initialPosts);
 
   useEffect(() => {
-    setLoading(true);
+    if (!initialPosts) setLoading(true);
     fetchPublicPosts(lang)
       .then((data) => setPosts(Array.isArray(data) ? data : []))
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
-  }, [lang]);
+  }, [initialPosts, lang]);
 
   const results = useMemo(() => {
     const clean = normalize(q);

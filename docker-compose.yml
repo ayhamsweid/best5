@@ -56,13 +56,29 @@ services:
     volumes:
       - ./server/uploads:/app/uploads
 
+  renderer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: renderer
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      API_INTERNAL_URL: http://api:4000/api
+      PUBLIC_SITE_URL: https://best5.com.tr
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      target: web
     restart: unless-stopped
     depends_on:
       - api
+      - renderer
     ports:
       - "3000:80"
 

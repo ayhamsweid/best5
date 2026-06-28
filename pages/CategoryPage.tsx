@@ -3,12 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import Seo from '../components/Seo';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicCategories, fetchPublicPosts } from '../services/api';
+import { useInitialData } from '../context/InitialDataContext';
 
 const CategoryPage: React.FC = () => {
   const { slug } = useParams();
   const { lang } = useLang();
-  const [posts, setPosts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const { categoryPosts: initialCategoryPosts, categories: initialCategories } = useInitialData();
+  const [posts, setPosts] = useState<any[]>(() => initialCategoryPosts || []);
+  const [categories, setCategories] = useState<any[]>(() => initialCategories || []);
 
   useEffect(() => {
     fetchPublicCategories()

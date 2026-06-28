@@ -5,6 +5,7 @@ import { useLang } from '../hooks/useLang';
 import { fetchPublicSettings } from '../services/api';
 import Markdown from '../components/Markdown';
 import { staticPageContent } from '../data/staticPageContent';
+import { useInitialData } from '../context/InitialDataContext';
 
 const pageMap = {
   privacy: { title: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' }, key: 'privacy' },
@@ -20,8 +21,9 @@ type PageKey = keyof typeof pageMap;
 const StaticPage: React.FC<{ slug?: PageKey }> = ({ slug: slugOverride }) => {
   const { slug } = useParams();
   const { lang } = useLang();
-  const [pages, setPages] = useState<any>(null);
-  const [pagesMeta, setPagesMeta] = useState<any>(null);
+  const { settings } = useInitialData();
+  const [pages, setPages] = useState<any>(() => settings?.pages_json || null);
+  const [pagesMeta, setPagesMeta] = useState<any>(() => settings?.pages_meta_json || null);
 
   useEffect(() => {
     fetchPublicSettings()
@@ -63,7 +65,7 @@ const StaticPage: React.FC<{ slug?: PageKey }> = ({ slug: slugOverride }) => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-20 text-[#111827]">
-      <Seo title={`${title} | Besiktas City Guide`} description={description} image={ogImage} />
+      <Seo title={`${title} | Besiktas City Guide`} description={description} canonical={`/${lang}/${activeSlug}`} image={ogImage} />
       <h1 className="text-3xl md:text-4xl font-black mb-6">{title}</h1>
       <Markdown content={content} />
     </div>

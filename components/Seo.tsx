@@ -1,13 +1,7 @@
 import { useEffect } from 'react';
+import { SeoData, useSeoCollector } from '../context/SeoContext';
 
-interface SeoProps {
-  title: string;
-  description?: string;
-  canonical?: string;
-  image?: string;
-  type?: string;
-  url?: string;
-}
+type SeoProps = SeoData;
 
 const setMeta = (name: string, content?: string) => {
   if (!content) return;
@@ -42,7 +36,12 @@ const setMetaProperty = (property: string, content?: string) => {
   tag.content = content;
 };
 
-const Seo: React.FC<SeoProps> = ({ title, description, canonical, image, type = 'website', url }) => {
+const Seo: React.FC<SeoProps> = ({ title, description, canonical, image, type = 'website', url, status }) => {
+  const collectSeo = useSeoCollector();
+  if (typeof document === 'undefined' && collectSeo) {
+    collectSeo({ title, description, canonical, image, type, url, status });
+  }
+
   useEffect(() => {
     document.title = title;
     setMeta('description', description);

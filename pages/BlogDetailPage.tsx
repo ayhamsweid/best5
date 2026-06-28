@@ -4,6 +4,7 @@ import Seo from '../components/Seo';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicPost, fetchPublicPosts } from '../services/api';
 import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
+import { useInitialData, useSiteUrl } from '../context/InitialDataContext';
 
 interface BlogDetailPageProps {
   overridePost?: any;
@@ -38,8 +39,10 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
   const { slug } = useParams();
   const { lang: routeLang } = useLang();
   const lang = overrideLang || routeLang;
-  const [post, setPost] = useState<any | null>(null);
-  const [allPosts, setAllPosts] = useState<any[]>([]);
+  const initialData = useInitialData();
+  const siteUrl = useSiteUrl();
+  const [post, setPost] = useState<any | null>(() => overridePost || initialData.post || null);
+  const [allPosts, setAllPosts] = useState<any[]>(() => initialData.posts || []);
 
   useEffect(() => {
     if (overridePost) {
@@ -111,11 +114,13 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
   const seoDesc = lang === 'ar' ? post.seo_desc_ar : post.seo_desc_en;
   const canonical = `/${lang}/blog/${slug}`;
   const ogImage = post.og_image_url || post.cover_image_url;
-  const canonicalUrl = canonical?.startsWith('http') ? canonical : `${window.location.origin}${canonical}`;
+  const canonicalUrl = canonical?.startsWith('http') ? canonical : `${siteUrl}${canonical}`;
   const authorName = post.author?.full_name || 'Besiktas City Guide';
   const content = lang === 'ar' ? post.content_ar : post.content_en;
   const blocks = Array.isArray(post.content_blocks_json) ? post.content_blocks_json : [];
-  const publishedAt = post.published_at ? new Date(post.published_at).toLocaleDateString() : '';
+  const publishedAt = post.published_at
+    ? new Date(post.published_at).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { timeZone: 'UTC' })
+    : '';
   const faqItems = blocks.filter((block: any) => block.type === 'faq');
   const faqJsonLd = faqItems.length
     ? {
@@ -142,13 +147,13 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
         '@type': 'ListItem',
         position: 1,
         name: lang === 'ar' ? 'الرئيسية' : 'Home',
-        item: `${window.location.origin}/${lang}`
+        item: `${siteUrl}/${lang}`
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: lang === 'ar' ? 'المدونة' : 'Blog',
-        item: `${window.location.origin}/${lang}/blog`
+        item: `${siteUrl}/${lang}/blog`
       },
       {
         '@type': 'ListItem',

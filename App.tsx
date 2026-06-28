@@ -5,19 +5,20 @@ import AdminLayout from './routes/AdminLayout';
 import RequireAuth from './routes/RequireAuth';
 import { AuthProvider } from './context/AuthContext';
 import { RouteTransitionProvider } from './context/RouteTransitionContext';
+import { InitialData, InitialDataProvider } from './context/InitialDataContext';
+import HomePage from './pages/HomePage';
+import BlogListPage from './pages/BlogListPage';
+import BlogDetailPage from './pages/BlogDetailPage';
+import CategoriesIndexPage from './pages/CategoriesIndexPage';
+import CategoryPage from './pages/CategoryPage';
+import SearchPage from './pages/SearchPage';
+import ComparePage from './pages/ComparePage';
+import GuidePage from './pages/GuidePage';
+import AboutPage from './pages/AboutPage';
+import StaticPage from './pages/StaticPage';
+import NotFoundPage from './pages/NotFoundPage';
 
-const HomePage = lazy(() => import('./pages/HomePage'));
-const BlogListPage = lazy(() => import('./pages/BlogListPage'));
-const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage'));
 const PublicPostPreviewPage = lazy(() => import('./pages/PublicPostPreviewPage'));
-const CategoriesIndexPage = lazy(() => import('./pages/CategoriesIndexPage'));
-const CategoryPage = lazy(() => import('./pages/CategoryPage'));
-const SearchPage = lazy(() => import('./pages/SearchPage'));
-const ComparePage = lazy(() => import('./pages/ComparePage'));
-const GuidePage = lazy(() => import('./pages/GuidePage'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-const StaticPage = lazy(() => import('./pages/StaticPage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const LoginPage = lazy(() => import('./admin/LoginPage'));
 const DashboardPage = lazy(() => import('./admin/DashboardPage'));
@@ -45,7 +46,7 @@ const PublicLanguageLayout: React.FC = () => {
   return <PublicLayout />;
 };
 
-const AppRoutes: React.FC = () => {
+export const AppRoutes: React.FC = () => {
   const location = useLocation();
   const [displayLocation, setDisplayLocation] = useState(location);
   const [isPending, startTransition] = useTransition();
@@ -114,12 +115,20 @@ const AppRoutes: React.FC = () => {
   );
 };
 
-function App() {
+export const AppContent: React.FC<{ initialData?: InitialData }> = ({ initialData }) => {
   return (
-    <BrowserRouter>
+    <InitialDataProvider data={initialData}>
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>
+    </InitialDataProvider>
+  );
+};
+
+function App({ initialData }: { initialData?: InitialData }) {
+  return (
+    <BrowserRouter>
+      <AppContent initialData={initialData} />
     </BrowserRouter>
   );
 }
