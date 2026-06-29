@@ -16,7 +16,6 @@ Public site + Admin panel + NestJS API in a single repo.
 4. Start Postgres: `docker compose up -d db`
 5. Run migrations: `npx prisma migrate dev`
 6. Start API: `npm run start:dev`
-7. API docs: `http://localhost:4000/api/docs`
 
 ## Containers
 

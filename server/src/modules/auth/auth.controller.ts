@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Logger, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -15,7 +14,6 @@ export class AuthController {
 
   constructor(
     private auth: AuthService,
-    private jwt: JwtService,
     private prisma: PrismaService,
     private logs: LogsService
   ) {}
@@ -63,16 +61,18 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refresh(@Req() req: any, @Res({ passthrough: true }) res: Response, @Body() body: any) {
-    const token = body?.refresh_token;
-    const refreshToken = token || (body?.refresh && body.refresh) || null;
-    const cookieRefresh = req?.cookies?.refresh_token;
-    const value = refreshToken || cookieRefresh;
-    if (!value) return { ok: false };
-    const payload = this.jwt.verify(value, { secret: process.env.JWT_REFRESH_SECRET || 'dev-refresh' });
-    const access = this.auth.signAccessToken(payload);
+  async refresh(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    const value = req?.cookies?.refresh_token;
+    if (!value) throw new UnauthorizedException('Refresh token required');
+    const user = await this.auth.validateRefreshToken(value);
+    const access = this.auth.signAccessToken(user);
+    const refresh = this.auth.signRefreshToken(user);
     const csrf = randomBytes(24).toString('hex');
     res.cookie('access_token', access, this.cookieOptions());
+    res.cookie('refresh_token', refresh, {
+      ...this.cookieOptions(),
+      maxAge: 1000 * Number(process.env.JWT_REFRESH_TTL || 604800)
+    });
     res.cookie('csrf_token', csrf, { ...this.cookieOptions(), httpOnly: false });
     return { ok: true };
   }
@@ -82,7 +82,8 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'lax' as const,
       secure: process.env.COOKIE_SECURE === 'true',
-      domain: process.env.COOKIE_DOMAIN || undefined
+      domain: process.env.COOKIE_DOMAIN || undefined,
+      path: '/'
     };
   }
 }

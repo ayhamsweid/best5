@@ -24,7 +24,6 @@ export class SitemapService {
     const staticLastmod = settings?.updated_at?.toISOString();
 
     const staticUrls = [
-      { loc: `${baseUrl}/`, lastmod: staticLastmod },
       { loc: `${baseUrl}/ar`, lastmod: staticLastmod },
       { loc: `${baseUrl}/en`, lastmod: staticLastmod },
       { loc: `${baseUrl}/ar/blog`, lastmod: staticLastmod },
@@ -42,9 +41,7 @@ export class SitemapService {
       { loc: `${baseUrl}/ar/cookies`, lastmod: staticLastmod },
       { loc: `${baseUrl}/en/cookies`, lastmod: staticLastmod },
       { loc: `${baseUrl}/ar/faq`, lastmod: staticLastmod },
-      { loc: `${baseUrl}/en/faq`, lastmod: staticLastmod },
-      { loc: `${baseUrl}/ar/search`, lastmod: staticLastmod },
-      { loc: `${baseUrl}/en/search`, lastmod: staticLastmod }
+      { loc: `${baseUrl}/en/faq`, lastmod: staticLastmod }
     ];
 
     const categories = await this.prisma.category.findMany({
@@ -76,7 +73,7 @@ export class SitemapService {
     });
 
     posts.forEach((post) => {
-      const lastmod = (post.published_at || post.updated_at)?.toISOString();
+      const lastmod = (post.updated_at || post.published_at)?.toISOString();
       if (post.slug_ar) {
         urls.push({ loc: `${baseUrl}/ar/blog/${encodeURIComponent(post.slug_ar)}`, lastmod });
       }

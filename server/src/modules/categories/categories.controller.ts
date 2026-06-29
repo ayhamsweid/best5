@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client';
 import { CategoriesService } from './categories.service';
 import { LogsService } from '../logs/logs.service';
 import { CurrentUser } from '../auth/decorators/user.decorator';
+import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -27,7 +28,7 @@ export class CategoriesController {
   @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Post()
   async create(
-    @Body() body: { name_ar: string; name_en: string; icon?: string | null },
+    @Body() body: CreateCategoryDto,
     @CurrentUser() user: any
   ) {
     const created = await this.categories.create(body);

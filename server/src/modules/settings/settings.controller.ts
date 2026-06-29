@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client';
 import { SettingsService } from './settings.service';
 import { LogsService } from '../logs/logs.service';
 import { CurrentUser } from '../auth/decorators/user.decorator';
+import { UpdateSettingsDto } from './dto/update-settings.dto';
 
 @Controller('settings')
 export class SettingsController {
@@ -26,7 +27,7 @@ export class SettingsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Patch()
-  async update(@Body() body: any, @CurrentUser() user: any) {
+  async update(@Body() body: UpdateSettingsDto, @CurrentUser() user: any) {
     const before = await this.settings.get();
     const updated = await this.settings.update(body);
     await this.logs.log(user.id, 'UPDATE', 'SETTINGS', 'singleton', before, updated);

@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { ValidationPipe, RequestMethod } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
@@ -12,13 +11,9 @@ import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.set('trust proxy', 1);
-  app.use(
-    helmet({
-      // Swagger UI relies on inline scripts/styles; disable CSP to avoid a blank page.
-      contentSecurityPolicy: false
-    })
-  );
+  const trustProxyHops = Number(process.env.TRUST_PROXY_HOPS || 0);
+  app.set('trust proxy', Number.isInteger(trustProxyHops) && trustProxyHops > 0 ? trustProxyHops : false);
+  app.use(helmet());
   const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000')
     .split(',')
     .map((origin) => origin.trim())
@@ -50,7 +45,19 @@ async function bootstrap() {
     rateLimit({
       windowMs: 1000 * Number(process.env.RATE_LIMIT_WINDOW_SEC || 60),
       max: Number(process.env.RATE_LIMIT_MAX || 120),
-      skip: (req) => req.path === '/api/seo/render' || req.path.startsWith('/uploads/')
+      skip: (req) => {
+        if (req.path.startsWith('/uploads/')) return true;
+        const remoteAddress = req.socket.remoteAddress || '';
+        const isPrivateDockerAddress =
+          remoteAddress.startsWith('172.') ||
+          remoteAddress.startsWith('10.') ||
+          remoteAddress.startsWith('192.168.') ||
+          remoteAddress.startsWith('::ffff:172.') ||
+          remoteAddress.startsWith('::ffff:10.') ||
+          remoteAddress.startsWith('::ffff:192.168.');
+        const hasForwardedClient = Boolean(req.headers['x-forwarded-for']);
+        return req.method === 'GET' && isPrivateDockerAddress && !hasForwardedClient;
+      }
     })
   );
   const prisma = app.get(PrismaService);
@@ -88,7 +95,7 @@ async function bootstrap() {
     if (!req.path.startsWith('/api')) return next();
     const method = req.method?.toUpperCase?.() || 'GET';
     if (['GET', 'HEAD', 'OPTIONS'].includes(method)) return next();
-    const allowList = ['/api/auth/login', '/api/auth/refresh'];
+    const allowList = ['/api/auth/login'];
     if (allowList.includes(req.path)) return next();
     const hasAuthCookie = req.cookies?.access_token || req.cookies?.refresh_token;
     if (!hasAuthCookie) return next();
@@ -99,22 +106,26 @@ async function bootstrap() {
     }
     return next();
   });
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true
+  }));
   app.setGlobalPrefix('api', {
     exclude: [{ path: 'sitemap.xml', method: RequestMethod.GET }]
   });
   const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-  app.useStaticAssets(path.resolve(uploadDir), { prefix: '/uploads' });
-
-  if (process.env.NODE_ENV !== 'production') {
-    const config = new DocumentBuilder()
-      .setTitle('Best5 API')
-      .setDescription('Admin + public API')
-      .setVersion('1.0')
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, document);
-  }
+  app.useStaticAssets(path.resolve(uploadDir), {
+    prefix: '/uploads',
+    setHeaders: (res, filePath) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+      const safeImage = /\.(png|jpe?g|webp|gif)$/i.test(filePath);
+      if (!safeImage) {
+        res.setHeader('Content-Disposition', 'attachment');
+      }
+    }
+  });
 
   await app.listen(4000);
 }

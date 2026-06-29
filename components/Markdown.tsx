@@ -1,4 +1,5 @@
 import React from 'react';
+import { safeLinkUrl } from '../utils/contentSecurity';
 
 const escapeHtml = (input: string) =>
   input
@@ -7,6 +8,17 @@ const escapeHtml = (input: string) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+
+const renderInline = (value: string) =>
+  escapeHtml(value)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, (_match, label, url) => {
+      const safeUrl = safeLinkUrl(url);
+      return safeUrl
+        ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${label}</a>`
+        : label;
+    });
 
 const renderMarkdown = (md: string) => {
   const lines = md.split(/\r?\n/);
@@ -48,19 +60,13 @@ const renderMarkdown = (md: string) => {
         html.push('<ul>');
         inList = true;
       }
-      const content = escapeHtml(line.slice(2))
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/_(.+?)_/g, '<em>$1</em>')
-        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+      const content = renderInline(line.slice(2));
       html.push(`<li>${content}</li>`);
       return;
     }
 
     closeList();
-    const paragraph = escapeHtml(line)
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/_(.+?)_/g, '<em>$1</em>')
-      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+    const paragraph = renderInline(line);
     html.push(`<p>${paragraph}</p>`);
   });
 

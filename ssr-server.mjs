@@ -9,6 +9,8 @@ const template = await readFile(path.join(rootDir, 'dist', 'index.html'), 'utf8'
 const apiBase = (process.env.API_INTERNAL_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
 const siteUrl = (process.env.PUBLIC_SITE_URL || 'https://best5.com.tr').replace(/\/+$/, '');
 const port = Number(process.env.PORT || 3001);
+const apiCache = new Map();
+const apiCacheTtlMs = Math.max(1_000, Number(process.env.SSR_API_CACHE_TTL_MS || 30_000));
 
 const escapeHtml = (value = '') =>
   String(value)
@@ -33,15 +35,77 @@ const absoluteUrl = (value) => {
   }
 };
 
-const getJson = async (endpoint, fallback) => {
+const getJson = async (endpoint, fallback, cacheTtlMs = apiCacheTtlMs) => {
+  const cached = apiCache.get(endpoint);
+  if (cached && cached.expiresAt > Date.now()) return cached.promise;
+
+  const promise = (async () => {
   try {
     const response = await fetch(`${apiBase}${endpoint}`, {
       headers: { Accept: 'application/json' }
     });
-    if (!response.ok) return fallback;
+      if (response.status === 404) return fallback;
+      if (!response.ok) {
+        const error = new Error(`Internal API returned ${response.status}`);
+        error.status = response.status;
+        throw error;
+      }
     return await response.json();
-  } catch {
-    return fallback;
+    } catch (error) {
+      apiCache.delete(endpoint);
+      throw error;
+    }
+  })();
+
+  apiCache.set(endpoint, {
+    expiresAt: Date.now() + cacheTtlMs,
+    promise
+  });
+  return promise;
+};
+
+const localizedPostPath = (lang, post) => {
+  if (!post) return null;
+  const slug = lang === 'ar' ? post.slug_ar : post.slug_en;
+  return slug ? `/${lang}/blog/${encodeURIComponent(slug)}` : null;
+};
+
+const redirectForAliasedPost = (url, initialData) => {
+  if (!initialData.post) return null;
+  const parts = url.pathname.split('/').filter(Boolean);
+  if (parts[1] !== 'blog' || parts.length !== 3) return null;
+  const canonicalPath = localizedPostPath(initialData.lang, initialData.post);
+  if (!canonicalPath) return null;
+  const requestedPath = `/${parts[0]}/blog/${encodeURIComponent(decodeURIComponent(parts[2]))}`;
+  return requestedPath === canonicalPath ? null : canonicalPath;
+};
+
+const transientStatus = (error) => {
+  const status = Number(error?.status);
+  return status === 429 || status >= 500 ? 503 : 500;
+};
+
+const retryAfter = (error) => {
+  const status = Number(error?.status);
+  return status === 429 || status >= 500 ? '30' : undefined;
+};
+
+const writeServiceError = (response, error) => {
+  const status = transientStatus(error);
+  const headers = {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': 'no-store'
+  };
+  const after = retryAfter(error);
+  if (after) headers['Retry-After'] = after;
+  response.writeHead(status, headers);
+  response.end(status === 503 ? 'Service temporarily unavailable' : 'Unable to render page');
+};
+
+const pruneApiCache = () => {
+  const now = Date.now();
+  for (const [key, value] of apiCache) {
+    if (value.expiresAt <= now) apiCache.delete(key);
   }
 };
 
@@ -168,7 +232,17 @@ createServer(async (request, response) => {
       response.end();
       return;
     }
+    pruneApiCache();
     const initialData = await loadInitialData(url);
+    const aliasRedirect = redirectForAliasedPost(url, initialData);
+    if (aliasRedirect) {
+      response.writeHead(301, {
+        Location: aliasRedirect,
+        'Cache-Control': 'public, max-age=3600'
+      });
+      response.end();
+      return;
+    }
     const result = render(`${url.pathname}${url.search}`, initialData);
     const status = result.seo?.status || initialData.status || 200;
     const lang = initialData.lang;
@@ -189,8 +263,7 @@ createServer(async (request, response) => {
     response.end(html);
   } catch (error) {
     console.error(error);
-    response.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
-    response.end('Unable to render page');
+    writeServiceError(response, error);
   }
 }).listen(port, '0.0.0.0', () => {
   console.log(`SSR renderer listening on ${port}`);
