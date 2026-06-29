@@ -13,8 +13,16 @@ dist-ssr
 dist-server
 *.local
 .env
+.env.*
+!.env.example
 server/.env
+server/.env.*
+!server/.env.example
 server/uploads
+db_raw_data_backup/
+*.sql
+*.dump
+*.backup
 .stitch
 
 # Editor directories and files

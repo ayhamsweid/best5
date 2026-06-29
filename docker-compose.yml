@@ -21,10 +21,14 @@ services:
   db:
     image: postgres:16
     restart: unless-stopped
-    ports:
-      - "5432:5432"
+    environment:
+      POSTGRES_USER: best5_user
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD:?Set DB_ADMIN_PASSWORD in .env}
+      POSTGRES_DB: besiktas
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD:?Set DB_APP_PASSWORD in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./deployment/init-db.sh:/docker-entrypoint-initdb.d/10-create-app-role.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U best5_user -d besiktas"]
       interval: 5s
@@ -40,21 +44,35 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://best5_user:Best5Db1212@db:5432/besiktas
-      JWT_ACCESS_SECRET: change-me-access
-      JWT_REFRESH_SECRET: change-me-refresh
+      DATABASE_URL: postgresql://best5_app:${DB_APP_PASSWORD:?Set DB_APP_PASSWORD in .env}@db:5432/besiktas
+      MIGRATION_DATABASE_URL: postgresql://best5_user:${DB_ADMIN_PASSWORD:?Set DB_ADMIN_PASSWORD in .env}@db:5432/besiktas
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Set JWT_ACCESS_SECRET in .env}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Set JWT_REFRESH_SECRET in .env}
+      JWT_ISSUER: best5-api
+      JWT_AUDIENCE: best5-admin
       JWT_ACCESS_TTL: "900"
       JWT_REFRESH_TTL: "604800"
-      COOKIE_SECURE: "false"
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      TRUST_PROXY_HOPS: "1"
       CORS_ORIGINS: http://localhost:3000,http://localhost:8080
       PUBLIC_SITE_URL: https://best5.com.tr
       SPA_TEMPLATE_URL: http://web/index.html
       UPLOAD_DIR: /app/uploads
-      ENABLE_DB_TOOLS: "1"
-    ports:
-      - "4000:4000"
+      ENABLE_DB_TOOLS: "0"
     volumes:
       - ./server/uploads:/app/uploads
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/settings/public').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   renderer:
     build:
@@ -63,12 +81,25 @@ services:
       target: renderer
     restart: unless-stopped
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: "3001"
       API_INTERNAL_URL: http://api:4000/api
       PUBLIC_SITE_URL: https://best5.com.tr
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   web:
     build:
@@ -77,10 +108,19 @@ services:
       target: web
     restart: unless-stopped
     depends_on:
-      - api
-      - renderer
+      api:
+        condition: service_healthy
+      renderer:
+        condition: service_healthy
     ports:
-      - "3000:80"
+      - "127.0.0.1:3000:80"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

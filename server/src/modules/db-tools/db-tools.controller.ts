@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseGuards, UseInterceptors, Res } from '@nestjs/common';
+import { BadRequestException, Controller, Post, UploadedFile, UseGuards, UseInterceptors, Res } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -31,6 +31,19 @@ export class DbToolsController {
   @Post('restore')
   @UseInterceptors(
     FileInterceptor('file', {
+      limits: {
+        fileSize: 25 * 1024 * 1024,
+        files: 1,
+        fields: 0,
+        parts: 1
+      },
+      fileFilter: (_req, file, cb) => {
+        if (path.extname(file.originalname).toLowerCase() !== '.sql') {
+          cb(new BadRequestException('Only .sql backups are accepted'), false);
+          return;
+        }
+        cb(null, true);
+      },
       storage: diskStorage({
         destination: (_req, _file, cb) => cb(null, os.tmpdir()),
         filename: (_req, file, cb) => cb(null, `restore-${Date.now()}${path.extname(file.originalname) || '.sql'}`)
@@ -38,8 +51,12 @@ export class DbToolsController {
     })
   )
   async restore(@UploadedFile() file: Express.Multer.File) {
-    await this.tools.restore(file.path);
-    fs.unlink(file.path, () => null);
-    return { ok: true };
+    if (!file?.path) throw new BadRequestException('Backup file is required');
+    try {
+      await this.tools.restore(file.path);
+      return { ok: true };
+    } finally {
+      fs.unlink(file.path, () => null);
+    }
   }
 }

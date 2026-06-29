@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { DynamicIcon, iconNames } from 'lucide-react/dynamic';
 import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicCategories } from '../services/api';
 import { useInitialData } from '../context/InitialDataContext';
+import ConfiguredIcon from './ConfiguredIcon';
 
 const Categories: React.FC = () => {
   const { lang } = useLang();
@@ -29,35 +29,6 @@ const Categories: React.FC = () => {
 
   const list = categories.length ? categories : fallback;
 
-  const iconSet = useMemo(() => new Set(iconNames), []);
-  const normalizeIconName = (value?: string | null) => {
-    const raw = (value || '').trim();
-    if (!raw) return null;
-    const cleaned = raw
-      .replace(/^Lucide/i, '')
-      .replace(/Icon$/i, '')
-      .replace(/[_\s]+/g, '-')
-      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-      .toLowerCase();
-    return cleaned;
-  };
-  const resolveIconName = (value?: string | null) => {
-    const name = normalizeIconName(value);
-    if (!name) return null;
-    if (iconSet.has(name)) return name;
-    return null;
-  };
-
-  const renderIcon = (value?: string | null, alt = '') => {
-    if (!value) return <DynamicIcon name="folder" className="w-6 h-6" fallback={() => null} />;
-    if (value.startsWith('http') || value.startsWith('/')) {
-      return <img src={value} alt={alt} className="w-6 h-6 object-contain" />;
-    }
-    const resolved = resolveIconName(value);
-    if (resolved) return <DynamicIcon name={resolved} className="w-6 h-6" fallback={() => null} />;
-    return <DynamicIcon name="folder" className="w-6 h-6" fallback={() => null} />;
-  };
-
   return (
     <div className="relative -mt-14 z-20 px-4 mb-20">
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl py-6 px-4 md:px-10 flex flex-wrap justify-between items-center gap-4 border border-gray-100">
@@ -67,7 +38,7 @@ const Categories: React.FC = () => {
           return (
           <Link key={cat.id || idx} to={`/${lang}/category/${slug}`} className="flex flex-col items-center gap-3 group min-w-[60px]">
             <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center text-gray-700 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
-              {renderIcon(cat.icon, name)}
+              <ConfiguredIcon value={cat.icon} alt={name} className="w-6 h-6" />
             </div>
             <span className="text-sm font-bold text-gray-700 group-hover:text-primary transition-colors">{name}</span>
           </Link>

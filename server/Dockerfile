@@ -5,8 +5,11 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
 RUN npm ci
-COPY . .
+COPY --chown=node:node . .
 RUN npm run prisma:generate
 RUN npm run build
+RUN npm prune --omit=dev && npm cache clean --force
+RUN mkdir -p /app/uploads && chown -R node:node /app
+USER node
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "DATABASE_URL=\"$MIGRATION_DATABASE_URL\" npx prisma migrate deploy && node dist/main.js"]

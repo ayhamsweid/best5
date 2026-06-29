@@ -12,6 +12,12 @@ const slugify = (value: string) =>
     .replace(/\s+/g, '-')
     .slice(0, 80);
 
+const legacyPostSlugIds: Record<string, string> = {
+  'best-5-kebab-restaurants-in-beşiktaş-2026-guide': '05afee3f-bc32-48f7-a146-6193fabe5111',
+  'افضل-خمس-مطاعم-كباب-في-بشكتاش-2026': '05afee3f-bc32-48f7-a146-6193fabe5111',
+  test: 'f9cac92a-e888-48be-b782-1e60d5544678'
+};
+
 @Injectable()
 export class PostsService {
   constructor(private prisma: PrismaService) {}
@@ -207,11 +213,31 @@ export class PostsService {
       }
     });
     if (primary) return primary;
-    return this.prisma.post.findFirst({
+    const crossLanguage = await this.prisma.post.findFirst({
       where: {
         status: PostStatus.PUBLISHED,
         published_at: { not: null },
         ...(lang === 'ar' ? { slug_en: slug } : { slug_ar: slug })
+      },
+      include: {
+        author: { select: { full_name: true } },
+        category: true,
+        tags: {
+          include: {
+            tag: true
+          }
+        }
+      }
+    });
+    if (crossLanguage) return crossLanguage;
+
+    const legacyId = legacyPostSlugIds[slug];
+    if (!legacyId) return null;
+    return this.prisma.post.findFirst({
+      where: {
+        id: legacyId,
+        status: PostStatus.PUBLISHED,
+        published_at: { not: null }
       },
       include: {
         author: { select: { full_name: true } },

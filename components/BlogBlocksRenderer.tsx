@@ -1,5 +1,6 @@
 import React from 'react';
 import { BadgeCheck, CheckCircle, Clock, Crown, Leaf, Map, MapPin, Phone, Sparkles, Star, TrendingUp, XCircle, Zap } from 'lucide-react';
+import { safeEmbedUrl, safeLinkUrl, safeResourceUrl, sanitizeContentHtml } from '../utils/contentSecurity';
 
 type Lang = 'ar' | 'en';
 
@@ -84,7 +85,7 @@ const RatingStars: React.FC<{ rating: any; id: string }> = ({ rating, id }) => {
 
 const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, fallbackHtml }) => {
   if (!blocks.length && fallbackHtml) {
-    return <div dangerouslySetInnerHTML={{ __html: fallbackHtml }} />;
+    return <div dangerouslySetInnerHTML={{ __html: sanitizeContentHtml(fallbackHtml) }} />;
   }
 
   const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -113,9 +114,9 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
         if (block.type === 'image') {
           return (
             <figure key={block.id} className="space-y-2">
-              {block.data?.url && (
+              {safeResourceUrl(block.data?.url) && (
                 <img
-                  src={block.data.url}
+                  src={safeResourceUrl(block.data.url)}
                   alt={pick(block.data?.caption, lang) || (lang === 'ar' ? 'صورة توضيحية للدليل' : 'Guide illustration')}
                   loading="lazy"
                   className="rounded-2xl w-full object-cover"
@@ -128,7 +129,7 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
         if (block.type === 'gallery') {
           return (
             <div key={block.id} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {(block.data?.urls || []).filter(Boolean).map((url: string, idx: number) => (
+              {(block.data?.urls || []).map(safeResourceUrl).filter(Boolean).map((url: string, idx: number) => (
                 <img
                   key={`${block.id}-${idx}`}
                   src={url}
@@ -141,14 +142,17 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           );
         }
         if (block.type === 'map') {
+          const embedUrl = safeEmbedUrl(block.data?.embedUrl);
           return (
             <div key={block.id} className="rounded-2xl overflow-hidden border border-[#E5E7EB]">
-              {block.data?.embedUrl ? (
+              {embedUrl ? (
                 <iframe
-                  src={block.data.embedUrl}
+                  src={embedUrl}
                   className="w-full h-64"
                   loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
+                  referrerPolicy="no-referrer"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  title={lang === 'ar' ? 'خريطة' : 'Map'}
                 />
               ) : (
                 <div className="p-4 text-gray-500">Map embed URL missing</div>
@@ -157,16 +161,19 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           );
         }
         if (block.type === 'video') {
+          const embedUrl = safeEmbedUrl(block.data?.embedUrl);
           return (
             <div key={block.id} className="rounded-2xl overflow-hidden border border-[#E5E7EB]">
-              {block.data?.embedUrl ? (
+              {embedUrl ? (
                 <iframe
-                  src={block.data.embedUrl}
+                  src={embedUrl}
                   className="w-full h-64"
                   loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
+                  referrerPolicy="no-referrer"
+                  sandbox="allow-scripts allow-same-origin allow-presentation"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  title={lang === 'ar' ? 'فيديو' : 'Video'}
                 />
               ) : (
                 <div className="p-4 text-gray-500">Video embed URL missing</div>
@@ -175,11 +182,12 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           );
         }
         if (block.type === 'cta') {
+          const ctaUrl = safeLinkUrl(block.data?.url);
           return (
             <div key={block.id} className="rounded-2xl bg-[#fff1f1] border border-[#f2c9ce] p-5 flex items-center justify-between gap-4">
               <div className="font-semibold text-[#0f172a]">{pick(block.data?.label, lang) || 'CTA'}</div>
-              {block.data?.url && (
-                <a className="rounded-full bg-[#b11226] px-4 py-2 text-xs font-bold text-white" href={block.data.url} target="_blank" rel="noreferrer">
+              {ctaUrl && (
+                <a className="rounded-full bg-[#b11226] px-4 py-2 text-xs font-bold text-white" href={ctaUrl} target="_blank" rel="noopener noreferrer">
                   {lang === 'ar' ? 'اذهب' : 'Go'}
                 </a>
               )}
@@ -287,7 +295,9 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           const price = pick(block.data?.price, lang);
           const pros = localizedList(block.data?.pros, lang);
           const cons = localizedList(block.data?.cons, lang);
-          const galleryUrls = (Array.isArray(block.data?.galleryUrls) ? block.data.galleryUrls : []).filter(Boolean);
+          const galleryUrls = (Array.isArray(block.data?.galleryUrls) ? block.data.galleryUrls : [])
+            .map(safeResourceUrl)
+            .filter(Boolean);
           const mapUrl = normalizeMapUrl(block.data?.mapUrl, [title, address].filter(Boolean).join(' '));
           return (
             <div key={block.id} className="bg-white rounded-3xl border border-[#E5E7EB] shadow-xl overflow-hidden relative">
@@ -302,7 +312,7 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                   <div className="w-full md:w-2/5 space-y-4">
                     <div className="aspect-square rounded-2xl overflow-hidden shadow-inner group bg-[#111827]">
                       <BlockImage
-                        src={block.data?.coverUrl}
+                        src={safeResourceUrl(block.data?.coverUrl)}
                         alt={title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         fallbackClassName="w-full h-full"

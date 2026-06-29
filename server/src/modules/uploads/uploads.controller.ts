@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,6 +7,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { assertSafeUploadedImage, imageUploadOptions } from '../../common/image-upload';
 
 @Controller('uploads')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -116,45 +116,9 @@ export class UploadsController {
   }
 
   @Post('images')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      limits: {
-        fileSize: 1024 * 1024 * Number(process.env.MAX_UPLOAD_MB || 5)
-      },
-      fileFilter: (_req, file, cb) => {
-        const allowed = (process.env.ALLOWED_UPLOAD_MIME || 'image/png,image/jpeg,image/webp,image/gif')
-          .split(',')
-          .map((value) => value.trim())
-          .filter(Boolean);
-        const allowedExt = (process.env.ALLOWED_UPLOAD_EXT || '.png,.jpg,.jpeg,.webp,.gif')
-          .split(',')
-          .map((value) => value.trim().toLowerCase())
-          .filter(Boolean);
-        const ext = path.extname(file.originalname).toLowerCase();
-        if (allowed.includes(file.mimetype)) {
-          if (allowedExt.length === 0 || allowedExt.includes(ext)) {
-            cb(null, true);
-            return;
-          }
-          cb(new BadRequestException('Unsupported file extension'), false);
-          return;
-        }
-        cb(new BadRequestException('Unsupported file type'), false);
-      },
-      storage: diskStorage({
-        destination: (_req, _file, cb) => {
-          const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-          fs.mkdirSync(uploadDir, { recursive: true });
-          cb(null, uploadDir);
-        },
-        filename: (_req, file, cb) => {
-          const ext = path.extname(file.originalname);
-          cb(null, `${Date.now()}${ext}`);
-        }
-      })
-    })
-  )
+  @UseInterceptors(FileInterceptor('file', imageUploadOptions()))
   async upload(@UploadedFile() file: Express.Multer.File) {
+    assertSafeUploadedImage(file);
     await this.prisma.mediaAsset.create({
       data: {
         name: file.filename,

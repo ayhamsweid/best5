@@ -5,6 +5,7 @@ import { useLang } from '../hooks/useLang';
 import { fetchPublicPost, fetchPublicPosts } from '../services/api';
 import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
 import { useInitialData, useSiteUrl } from '../context/InitialDataContext';
+import { safeJsonForScript, sanitizeContentHtml } from '../utils/contentSecurity';
 
 interface BlogDetailPageProps {
   overridePost?: any;
@@ -118,8 +119,9 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
   const authorName = post.author?.full_name || 'Best5';
   const content = lang === 'ar' ? post.content_ar : post.content_en;
   const blocks = Array.isArray(post.content_blocks_json) ? post.content_blocks_json : [];
-  const publishedAt = post.published_at
-    ? new Date(post.published_at).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { timeZone: 'UTC' })
+  const lastUpdatedAt = post.updated_at || post.published_at;
+  const publishedAt = lastUpdatedAt
+    ? new Date(lastUpdatedAt).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { timeZone: 'UTC' })
     : '';
   const faqItems = blocks.filter((block: any) => block.type === 'faq');
   const faqJsonLd = faqItems.length
@@ -181,7 +183,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonForScript({
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             headline: seoTitle || title,
@@ -203,14 +205,14 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbJsonLd)
+          __html: safeJsonForScript(breadcrumbJsonLd)
         }}
       />
       {faqJsonLd && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(faqJsonLd)
+            __html: safeJsonForScript(faqJsonLd)
           }}
         />
       )}
@@ -275,7 +277,10 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
 
         <div className="lg:col-span-9 space-y-10">
           {!blocks.length && content ? (
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6" dangerouslySetInnerHTML={{ __html: content }} />
+            <div
+              className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6"
+              dangerouslySetInnerHTML={{ __html: sanitizeContentHtml(content) }}
+            />
           ) : (
             blocks.map((block: any) => (
               <section key={block.id} id={`block-${block.id}`} className="scroll-mt-28">

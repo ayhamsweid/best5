@@ -6,14 +6,16 @@ RUN npm ci
 
 COPY . .
 RUN npm run build
+RUN npm prune --omit=dev && npm cache clean --force
 
 FROM node:20-alpine AS renderer
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/dist-server ./dist-server
-COPY ssr-server.mjs ./
+COPY --chown=node:node --from=build /app/node_modules ./node_modules
+COPY --chown=node:node --from=build /app/dist ./dist
+COPY --chown=node:node --from=build /app/dist-server ./dist-server
+COPY --chown=node:node ssr-server.mjs ./
+USER node
 EXPOSE 3001
 CMD ["node", "ssr-server.mjs"]
 

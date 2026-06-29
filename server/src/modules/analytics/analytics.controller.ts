@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AnalyticsService } from './analytics.service';
 import { Request } from 'express';
+import { TrackPageViewDto } from './dto/track-page-view.dto';
 
 const botRegex =
   /(googlebot|bingbot|yandexbot|duckduckbot|baiduspider|slurp|facebot|facebookexternalhit|twitterbot|linkedinbot|telegrambot|whatsapp|pinterest|ahrefsbot|semrushbot|mj12bot|dotbot|petalbot|applebot|claudebot|anthropic|openai|gptbot|perplexitybot|YouBot|CCBot|omgilibot|seznambot)/i;
@@ -11,10 +12,7 @@ export class AnalyticsController {
   constructor(private analytics: AnalyticsService) {}
 
   @Post('track')
-  track(@Body() body: { path?: string; lang?: string; referrer?: string }, @Req() req: Request) {
-    if (!body?.path) {
-      return { ok: false };
-    }
+  track(@Body() body: TrackPageViewDto, @Req() req: Request) {
     if (botRegex.test(req.get('user-agent') || '')) {
       return { ok: true };
     }

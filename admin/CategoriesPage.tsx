@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { DynamicIcon, iconNames } from 'lucide-react/dynamic';
 import { createCategory, fetchCategories } from '../services/api';
+import ConfiguredIcon, { resolveIconName, supportedIconNames } from '../components/ConfiguredIcon';
 
 const CategoriesPage: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
@@ -38,33 +38,8 @@ const CategoriesPage: React.FC = () => {
     }
   };
 
-  const iconSet = useMemo(() => new Set(iconNames), []);
-  const normalizeIconName = (value?: string | null) => {
-    const raw = (value || '').trim();
-    if (!raw) return null;
-    const cleaned = raw
-      .replace(/^Lucide/i, '')
-      .replace(/Icon$/i, '')
-      .replace(/[_\s]+/g, '-')
-      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-      .toLowerCase();
-    return cleaned;
-  };
-  const resolveIconName = (value?: string | null) => {
-    const name = normalizeIconName(value);
-    if (!name) return null;
-    if (iconSet.has(name)) return name;
-    return null;
-  };
-
   const renderIcon = (value?: string | null) => {
-    if (!value) return <DynamicIcon name="folder" className="w-5 h-5" fallback={() => null} />;
-    if (value.startsWith('http') || value.startsWith('/')) {
-      return <img src={value} alt="" className="w-5 h-5 object-contain" />;
-    }
-    const resolved = resolveIconName(value);
-    if (resolved) return <DynamicIcon name={resolved} className="w-5 h-5" fallback={() => null} />;
-    return <DynamicIcon name="folder" className="w-5 h-5" fallback={() => null} />;
+    return <ConfiguredIcon value={value} className="w-5 h-5" />;
   };
 
   const iconHint = useMemo(() => {
@@ -74,7 +49,7 @@ const CategoriesPage: React.FC = () => {
     if (resolved) return `Lucide icon: ${resolved}`;
     if (match.startsWith('http') || match.startsWith('/')) return 'Image URL';
     return 'Unknown icon name';
-  }, [icon, iconSet]);
+  }, [icon]);
 
   return (
     <div>
@@ -101,7 +76,7 @@ const CategoriesPage: React.FC = () => {
             rel="noreferrer"
             className="underline hover:text-white"
           >
-            Browse icons
+            Supported icons ({supportedIconNames.length})
           </a>
         </span>
         <button

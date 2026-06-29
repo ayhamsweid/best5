@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client';
 import { TagsService } from './tags.service';
 import { LogsService } from '../logs/logs.service';
 import { CurrentUser } from '../auth/decorators/user.decorator';
+import { CreateTagDto } from './dto/create-tag.dto';
 
 @Controller('tags')
 export class TagsController {
@@ -26,7 +27,7 @@ export class TagsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Post()
-  async create(@Body() body: { name_ar: string; name_en: string }, @CurrentUser() user: any) {
+  async create(@Body() body: CreateTagDto, @CurrentUser() user: any) {
     const created = await this.tags.create(body);
     await this.logs.log(user.id, 'CREATE', 'TAG', created.id, null, created);
     return created;

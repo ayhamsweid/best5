@@ -18,8 +18,8 @@ export class NotificationsService {
   }
 
   markRead(userId: string, id: string) {
-    return this.prisma.notification.update({
-      where: { id },
+    return this.prisma.notification.updateMany({
+      where: { id, user_id: userId },
       data: { is_read: true }
     });
   }

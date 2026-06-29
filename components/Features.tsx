@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { DynamicIcon, iconNames } from 'lucide-react/dynamic';
 import { useLang } from '../hooks/useLang';
+import ConfiguredIcon, { resolveIconName } from './ConfiguredIcon';
 
 type Localized = { ar?: string; en?: string };
 type FeatureItem = { title?: Localized; text?: Localized; icon?: string; tone?: string };
@@ -43,24 +43,6 @@ const Features: React.FC<{ config?: FeaturesConfig }> = ({ config }) => {
     [config, lang]
   );
 
-  const iconSet = useMemo(() => new Set(iconNames), []);
-  const normalizeIconName = (value?: string | null) => {
-    const raw = (value || '').trim();
-    if (!raw) return null;
-    return raw
-      .replace(/^Lucide/i, '')
-      .replace(/Icon$/i, '')
-      .replace(/[_\s]+/g, '-')
-      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-      .toLowerCase();
-  };
-  const resolveIconName = (value?: string | null) => {
-    const name = normalizeIconName(value);
-    if (!name) return null;
-    if (iconSet.has(name)) return name;
-    return null;
-  };
-
   const toneClasses = (tone?: string, idx = 0) => {
     const key = (tone || '').toLowerCase();
     if (key === 'teal') return 'bg-teal-900/50 text-teal-400 border-teal-500/20';
@@ -87,7 +69,7 @@ const Features: React.FC<{ config?: FeaturesConfig }> = ({ config }) => {
             return (
               <div key={`${iconName}-${idx}`} className="flex flex-col items-center">
                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border ${toneClasses(item.tone, idx)}`}>
-                  <DynamicIcon name={iconName} className="w-8 h-8" fallback={() => null} />
+                  <ConfiguredIcon value={iconName} className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold mb-3">{pick(item.title)}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed max-w-xs">{pick(item.text)}</p>

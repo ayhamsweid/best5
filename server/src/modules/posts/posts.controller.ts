@@ -10,8 +10,7 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import path from 'path';
+import { assertSafeUploadedImage, imageUploadOptions } from '../../common/image-upload';
 
 @Controller('posts')
 export class PostsController {
@@ -122,23 +121,9 @@ export class PostsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER)
   @Post(':id/cover')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: (_req, _file, cb) => {
-          const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-          const fs = require('fs');
-          fs.mkdirSync(uploadDir, { recursive: true });
-          cb(null, uploadDir);
-        },
-        filename: (_req, file, cb) => {
-          const ext = path.extname(file.originalname);
-          cb(null, `${Date.now()}${ext}`);
-        }
-      })
-    })
-  )
+  @UseInterceptors(FileInterceptor('file', imageUploadOptions()))
   async uploadCover(@Param('id') id: string, @UploadedFile() file: Express.Multer.File, @CurrentUser() user: any) {
+    assertSafeUploadedImage(file);
     const before = await this.posts.findOne(id);
     const updated = await this.posts.update(id, { cover_image_url: `/uploads/${file.filename}` });
     await this.logs.log(user.id, 'UPDATE', 'POST', id, before, updated);
