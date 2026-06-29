@@ -1472,25 +1472,33 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
       <div className="flex items-center gap-3">
         <button
           onClick={() => setContentLang('ar')}
-          className={`px-3 py-1 rounded-full text-xs ${contentLang === 'ar' ? 'bg-primary text-[#0f172a]' : 'bg-white/10 text-white'}`}
+          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+            contentLang === 'ar'
+              ? 'bg-primary text-white border-primary'
+              : 'bg-white text-[#111827] border-[#E5E7EB] hover:bg-[#F3F4F6]'
+          }`}
         >
           AR
         </button>
         <button
           onClick={() => setContentLang('en')}
-          className={`px-3 py-1 rounded-full text-xs ${contentLang === 'en' ? 'bg-primary text-[#0f172a]' : 'bg-white/10 text-white'}`}
+          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+            contentLang === 'en'
+              ? 'bg-primary text-white border-primary'
+              : 'bg-white text-[#111827] border-[#E5E7EB] hover:bg-[#F3F4F6]'
+          }`}
         >
           EN
         </button>
         <button
           onClick={() => setBuilderMode((v) => !v)}
-          className="px-3 py-1 rounded-full text-xs bg-white/10 text-white"
+          className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-[#111827] border border-[#E5E7EB] hover:bg-[#F3F4F6] transition"
         >
           {builderMode ? 'Builder Mode' : 'Form Mode'}
         </button>
         <button
           onClick={() => importInputRef.current?.click()}
-          className="px-3 py-1 rounded-full text-xs bg-white/10 text-white"
+          className="px-4 py-1.5 rounded-full text-xs font-bold bg-primary text-white border border-primary shadow-sm hover:brightness-95 transition"
         >
           Import JSON
         </button>
