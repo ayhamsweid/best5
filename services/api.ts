@@ -76,10 +76,38 @@ export const deleteUpload = (name: string, force = false) =>
   request<{ ok: boolean; reason?: string }>(`/uploads/images/${encodeURIComponent(name)}${force ? '?force=1' : ''}`, { method: 'DELETE' });
 export const updateUploadTags = (name: string, tags: string[]) =>
   request(`/uploads/images/${encodeURIComponent(name)}`, { method: 'PATCH', body: JSON.stringify({ tags }) });
+
+const postWriteFields = new Set([
+  'title_ar',
+  'title_en',
+  'excerpt_ar',
+  'excerpt_en',
+  'content_ar',
+  'content_en',
+  'cover_image_url',
+  'status',
+  'published_at',
+  'scheduled_at',
+  'category_id',
+  'tag_ids',
+  'seo_title_ar',
+  'seo_title_en',
+  'seo_desc_ar',
+  'seo_desc_en',
+  'canonical_url',
+  'og_image_url',
+  'content_blocks_json'
+]);
+
+const writablePostPayload = (payload: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(payload).filter(([key, value]) => postWriteFields.has(key) && value !== undefined)
+  );
+
 export const createPost = (payload: Record<string, unknown>) =>
-  request('/posts', { method: 'POST', body: JSON.stringify(payload) });
+  request('/posts', { method: 'POST', body: JSON.stringify(writablePostPayload(payload)) });
 export const updatePost = (id: string, payload: Record<string, unknown>) =>
-  request(`/posts/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+  request(`/posts/${id}`, { method: 'PATCH', body: JSON.stringify(writablePostPayload(payload)) });
 
 export const fetchCategories = () => request('/categories');
 export const fetchPublicCategories = () => request('/categories/public');

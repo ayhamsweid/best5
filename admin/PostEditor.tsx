@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
 import { fetchCategories, fetchTags, fetchUploads, uploadImage, createCategory, createTag } from '../services/api';
-import { parseImportedPostJson } from '../utils/postJsonImport';
+import { parseImportedPostJson, resolveImportedPostValues } from '../utils/postJsonImport';
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
@@ -360,10 +360,11 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
       const raw = await file.text();
       const imported = parseImportedPostJson(raw);
       const importedBlocks = (imported.blocks || []).map((block) => ({ ...block, id: block?.id || makeId() })) as Block[];
+      const importedValues = resolveImportedPostValues(imported, categories, tags);
       setBlocks(importedBlocks);
       onChange({
         ...values,
-        ...imported.values,
+        ...importedValues,
         content_blocks_json: importedBlocks
       });
       setSelectedId(importedBlocks[0]?.id || null);
