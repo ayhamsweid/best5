@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 import { PostStatus } from '@prisma/client';
 
 export class CreatePostDto {
@@ -29,6 +29,15 @@ export class CreatePostDto {
   @IsOptional()
   @IsString()
   category_id?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true })
+  tag_ids?: string[];
+
+  @IsOptional()
+  @IsString()
+  cover_image_url?: string;
 
   @IsOptional()
   @IsString()

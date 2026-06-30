@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { uploadImage, fetchUploads, fetchCategories, fetchTags, createCategory, createTag } from '../services/api';
-import { parseImportedPostJson } from '../utils/postJsonImport';
+import { parseImportedPostJson, resolveImportedPostValues } from '../utils/postJsonImport';
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
@@ -300,11 +300,12 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
       const raw = await file.text();
       const imported = parseImportedPostJson(raw);
       const importedBlocks = (imported.blocks || []).map((block) => ({ ...block, id: block?.id || makeId() })) as Block[];
+      const importedValues = resolveImportedPostValues(imported, categories, tags);
       recordHistory();
       setBlocks(importedBlocks);
       onChange({
         ...latestValuesRef.current,
-        ...imported.values,
+        ...importedValues,
         content_blocks_json: importedBlocks
       });
       setSelectedId(importedBlocks[0]?.id || null);

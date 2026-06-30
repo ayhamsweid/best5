@@ -252,7 +252,16 @@ export class PostsService {
   }
 
   findOne(id: string) {
-    return this.prisma.post.findUnique({ where: { id } });
+    return this.prisma.post.findUnique({
+      where: { id },
+      include: {
+        tags: {
+          include: {
+            tag: true
+          }
+        }
+      }
+    });
   }
 
   previewById(id: string) {
@@ -263,6 +272,7 @@ export class PostsService {
   }
 
   create(authorId: string, data: CreatePostDto) {
+    const { tag_ids, ...postData } = data;
     const slugEn = slugify(data.title_en);
     const slugAr = slugify(data.title_ar);
     const publishedAt = data.published_at ? new Date(data.published_at) : undefined;
@@ -270,7 +280,7 @@ export class PostsService {
     const now = new Date();
     return this.prisma.post.create({
       data: {
-        ...data,
+        ...postData,
         slug_en: slugEn,
         slug_ar: slugAr,
         author_id: authorId,
@@ -278,22 +288,48 @@ export class PostsService {
         scheduled_at: scheduledAt,
         content_blocks_json: data.content_blocks_json ?? undefined,
         content_ar: data.content_ar ?? '',
-        content_en: data.content_en ?? ''
+        content_en: data.content_en ?? '',
+        tags: tag_ids?.length
+          ? { create: tag_ids.map((tag_id) => ({ tag_id })) }
+          : undefined
+      },
+      include: {
+        tags: {
+          include: {
+            tag: true
+          }
+        }
       }
     });
   }
 
   update(id: string, data: UpdatePostDto) {
+    const { tag_ids, ...postData } = data;
     const publishedAt = data.published_at ? new Date(data.published_at) : undefined;
     const scheduledAt = data.scheduled_at ? new Date(data.scheduled_at) : undefined;
     const now = new Date();
     return this.prisma.post.update({
       where: { id },
       data: {
-        ...data,
+        ...postData,
         published_at: data.status === PostStatus.PUBLISHED ? publishedAt || now : publishedAt,
         scheduled_at: scheduledAt,
-        content_blocks_json: data.content_blocks_json ?? undefined
+        content_blocks_json: data.content_blocks_json ?? undefined,
+        ...(tag_ids
+          ? {
+              tags: {
+                deleteMany: {},
+                create: tag_ids.map((tag_id) => ({ tag_id }))
+              }
+            }
+          : {})
+      },
+      include: {
+        tags: {
+          include: {
+            tag: true
+          }
+        }
       }
     });
   }
