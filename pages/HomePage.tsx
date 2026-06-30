@@ -613,8 +613,8 @@ const HomePage: React.FC = () => {
       <Seo
         title={isArabic ? 'Best5 | دليلك الشامل لأفضل الخيارات في تركيا' : 'Best5 | Your Guide to the Best in Turkey'}
         description={isArabic
-          ? 'اكتشف أفضل 5 مطاعم وفنادق وجامعات وأماكن وخدمات في تركيا من خلال أدلة مختصرة ومقارنات عملية ومحدثة.'
-          : 'Discover the best restaurants, hotels, universities, places, and services in Turkey through concise, practical, up-to-date guides.'}
+          ? 'اكتشف أفضل الخيارات في تركيا مع Best5: أدلة ومقارنات محدثة لأفضل المطاعم والفنادق والجامعات والمتاجر والأماكن السياحية، لتختار بثقة وسهولة.'
+          : 'Discover Turkey with Best5: updated guides and practical comparisons for top restaurants, hotels, universities, shops, and attractions.'}
         canonical={`/${lang}`}
       />
       <section className="relative min-h-[calc(100vh-76px)] px-4 py-12 md:px-8 md:py-20">
