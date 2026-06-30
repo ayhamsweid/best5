@@ -141,8 +141,8 @@ export class SeoRenderService {
     ]);
     const title = lang === 'ar' ? 'Best5 | دليلك لاختيار الأفضل' : 'Best5 | Your guide to the best';
     const description = lang === 'ar'
-      ? 'أدلة ومقارنات عملية تساعدك على اكتشاف أفضل الأماكن والخدمات في تركيا.'
-      : 'Practical guides and comparisons for discovering the best places and services in Turkey.';
+      ? 'اكتشف أفضل الخيارات في تركيا مع Best5: أدلة ومقارنات محدثة لأفضل المطاعم والفنادق والجامعات والمتاجر والأماكن السياحية، لتختار بثقة وسهولة.'
+      : 'Discover Turkey with Best5: updated guides and practical comparisons for top restaurants, hotels, universities, shops, and attractions.';
     const content =
       `<section><h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p></section>` +
       this.postList(posts, lang) +
