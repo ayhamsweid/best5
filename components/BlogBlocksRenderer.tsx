@@ -299,6 +299,34 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
             .map(safeResourceUrl)
             .filter(Boolean);
           const mapUrl = normalizeMapUrl(block.data?.mapUrl, [title, address].filter(Boolean).join(' '));
+          const showMapButton = block.data?.mapButtonVisible !== false;
+          const mapButtonLabel =
+            pick(block.data?.mapButtonLabel, lang).trim() ||
+            (lang === 'ar' ? 'عرض على خرائط قوقل' : 'Open in Google Maps');
+          const actionButtons = (
+            Array.isArray(block.data?.actionButtons)
+              ? block.data.actionButtons
+              : block.data?.extraButtonVisible === true
+                ? [
+                    {
+                      label: block.data?.extraButtonLabel,
+                      url: block.data?.extraButtonUrl,
+                      clickable: block.data?.extraButtonClickable,
+                      visible: true
+                    }
+                  ]
+                : []
+          )
+            .map((button: any) => {
+              const url = safeLinkUrl(button?.url);
+              return {
+                label: pick(button?.label, lang).trim() || (lang === 'ar' ? 'زر إضافي' : 'Additional action'),
+                url,
+                clickable: button?.clickable !== false && Boolean(url),
+                visible: button?.visible !== false
+              };
+            })
+            .filter((button: any) => button.visible && button.label);
           return (
             <div key={block.id} className="bg-white rounded-3xl border border-[#E5E7EB] shadow-xl overflow-hidden relative">
               {block.data?.rank && (
@@ -425,11 +453,38 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                   )}
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {mapUrl && (
-                    <a className="flex-1 min-w-[180px] flex items-center justify-center gap-2 bg-[#b11226] text-white py-3 rounded-xl font-black text-sm shadow-xl shadow-[#b11226]/20" href={mapUrl} target="_blank" rel="noreferrer">
-                      <MapPin className="w-4 h-4" />
-                      {lang === 'ar' ? 'فتح في خرائط جوجل' : 'Open in Google Maps'}
-                    </a>
+                  {((showMapButton && mapUrl) || actionButtons.length > 0) && (
+                    <div className="flex min-w-[180px] flex-1 flex-col gap-2">
+                      {showMapButton && mapUrl && (
+                        <a className="flex items-center justify-center gap-2 bg-[#b11226] text-white py-3 rounded-xl font-black text-sm shadow-xl shadow-[#b11226]/20" href={mapUrl} target="_blank" rel="noreferrer">
+                          <MapPin className="w-4 h-4" />
+                          {mapButtonLabel}
+                        </a>
+                      )}
+                      {actionButtons.map((button: any, buttonIdx: number) => (
+                        button.clickable ? (
+                          <a
+                            key={`${block.id}-action-${buttonIdx}`}
+                            className="flex items-center justify-center gap-2 rounded-xl bg-[#111827] py-3 text-sm font-black text-white shadow-lg transition hover:bg-[#1f2937]"
+                            href={button.url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <Sparkles className="h-4 w-4" />
+                            {button.label}
+                          </a>
+                        ) : (
+                          <div
+                            key={`${block.id}-action-${buttonIdx}`}
+                            className="flex cursor-default items-center justify-center gap-2 rounded-xl bg-[#111827] py-3 text-sm font-black text-white"
+                            aria-disabled="true"
+                          >
+                            <Sparkles className="h-4 w-4" />
+                            {button.label}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   )}
                   {block.data?.phone && (
                     <a className="px-8 flex items-center justify-center gap-2 border-2 border-[#b11226] text-[#b11226] py-3 rounded-xl font-black text-sm hover:bg-[#b11226]/10" href={`tel:${block.data.phone}`}>

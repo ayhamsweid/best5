@@ -130,7 +130,7 @@ const Header: React.FC = () => {
             <Compass className="h-8 w-8 shrink-0 text-primary" />
           )}
           <div className="text-gray-900">
-            <h1 className="text-xl font-black leading-none">{logoTitle}</h1>
+            <div className="text-xl font-black leading-none">{logoTitle}</div>
             <span className="text-[10px] tracking-widest opacity-70 uppercase">{logoSubtitle}</span>
           </div>
         </Link>

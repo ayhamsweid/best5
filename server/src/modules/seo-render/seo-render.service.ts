@@ -47,6 +47,19 @@ const absoluteUrl = (baseUrl: string, value?: string | null) => {
   return `${baseUrl}${value.startsWith('/') ? '' : '/'}${value}`;
 };
 
+const safeHref = (value: unknown) => {
+  if (typeof value !== 'string') return '';
+  const candidate = value.trim();
+  if (!candidate) return '';
+  if (candidate.startsWith('/') && !candidate.startsWith('//')) return candidate;
+  try {
+    const url = new URL(candidate);
+    return ['http:', 'https:', 'mailto:', 'tel:'].includes(url.protocol) ? url.toString() : '';
+  } catch {
+    return '';
+  }
+};
+
 @Injectable()
 export class SeoRenderService {
   private templateCache: { html: string; expiresAt: number } | null = null;
@@ -325,7 +338,30 @@ export class SeoRenderService {
       if (block.type === 'restaurant') {
         const pros = (data.pros || []).map((item: any) => `<li>${escapeHtml(pick(item, lang))}</li>`).join('');
         const cons = (data.cons || []).map((item: any) => `<li>${escapeHtml(pick(item, lang))}</li>`).join('');
-        return `<section><h2>${escapeHtml(pick(data.name, lang))}</h2><p>${escapeHtml(pick(data.description, lang))}</p><p>${escapeHtml(pick(data.address, lang))}</p>${pros ? `<ul>${pros}</ul>` : ''}${cons ? `<ul>${cons}</ul>` : ''}</section>`;
+        const name = pick(data.name, lang);
+        const address = pick(data.address, lang);
+        const mapLabel = pick(data.mapButtonLabel, lang) || (lang === 'ar' ? 'عرض على خرائط قوقل' : 'Open in Google Maps');
+        const explicitMapUrl = safeHref(data.mapUrl);
+        const mapUrl = explicitMapUrl || (name || address
+          ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([name, address].filter(Boolean).join(' '))}`
+          : '');
+        const mapButton = data.mapButtonVisible !== false && mapUrl
+          ? `<p><a href="${escapeHtml(mapUrl)}">${escapeHtml(mapLabel)}</a></p>`
+          : '';
+        const actionButtons = (Array.isArray(data.actionButtons)
+          ? data.actionButtons
+          : data.extraButtonVisible === true
+            ? [{ label: data.extraButtonLabel, url: data.extraButtonUrl, clickable: data.extraButtonClickable, visible: true }]
+            : []
+        ).map((button: any) => {
+          const label = pick(button.label, lang) || (lang === 'ar' ? 'زر إضافي' : 'Additional action');
+          const url = safeHref(button.url);
+          if (button.visible === false || !label) return '';
+          return button.clickable !== false && url
+            ? `<p><a href="${escapeHtml(url)}">${escapeHtml(label)}</a></p>`
+            : `<p>${escapeHtml(label)}</p>`;
+        }).join('');
+        return `<section><h2>${escapeHtml(name)}</h2><p>${escapeHtml(pick(data.description, lang))}</p><p>${escapeHtml(address)}</p>${pros ? `<ul>${pros}</ul>` : ''}${cons ? `<ul>${cons}</ul>` : ''}${mapButton}${actionButtons}</section>`;
       }
       if (block.type === 'faq') return `<section><h2>${escapeHtml(pick(data.title, lang))}</h2>${(data.items || []).map((item: any) => `<h3>${escapeHtml(pick(item.q, lang))}</h3><p>${escapeHtml(pick(item.a, lang))}</p>`).join('')}</section>`;
       return '';
