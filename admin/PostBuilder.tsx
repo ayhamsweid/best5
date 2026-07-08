@@ -4,6 +4,7 @@ import { parseImportedPostJson, resolveImportedPostValues } from '../utils/postJ
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
+type ActionButton = { id?: string; label?: Localized; url?: string; clickable?: boolean; visible?: boolean };
 
 type Block =
   | { id: string; type: 'heading'; data: { text: Localized; level: number } }
@@ -37,6 +38,13 @@ type Block =
         distance?: Localized;
         price?: Localized;
         mapUrl?: string;
+        mapButtonVisible?: boolean;
+        mapButtonLabel?: Localized;
+        extraButtonVisible?: boolean;
+        extraButtonLabel?: Localized;
+        extraButtonUrl?: string;
+        extraButtonClickable?: boolean;
+        actionButtons?: ActionButton[];
         phone?: string;
       };
     };
@@ -145,6 +153,34 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
   const updateBlock = (id: string, data: any) => {
     recordHistory();
     setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, data } : b)));
+  };
+
+  const normalizeActionButtons = (data: any): ActionButton[] => {
+    if (Array.isArray(data?.actionButtons)) {
+      return data.actionButtons.map((button: ActionButton) => ({
+        id: button.id || makeId(),
+        label: button.label || { ar: '', en: '' },
+        url: button.url || '',
+        clickable: button.clickable !== false,
+        visible: button.visible !== false
+      }));
+    }
+    if (data?.extraButtonVisible === true) {
+      return [
+        {
+          id: makeId(),
+          label: data.extraButtonLabel || { ar: 'زر إضافي', en: 'Additional action' },
+          url: data.extraButtonUrl || '',
+          clickable: data.extraButtonClickable !== false,
+          visible: true
+        }
+      ];
+    }
+    return [];
+  };
+
+  const updateRestaurantActionButtons = (block: Extract<Block, { type: 'restaurant' }>, buttons: ActionButton[]) => {
+    updateBlock(block.id, { ...block.data, actionButtons: buttons });
   };
 
   const removeBlock = (id: string) => {
@@ -400,6 +436,13 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               distance: { ar: '', en: '' },
               price: { ar: '', en: '' },
               mapUrl: '',
+              mapButtonVisible: true,
+              mapButtonLabel: { ar: 'عرض على خرائط قوقل', en: 'Open in Google Maps' },
+              extraButtonVisible: false,
+              extraButtonLabel: { ar: 'زر إضافي', en: 'Additional action' },
+              extraButtonUrl: '',
+              extraButtonClickable: true,
+              actionButtons: [],
               phone: ''
             }
           }
@@ -915,6 +958,143 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Map URL" value={block.data.mapUrl || ''} onChange={(e) => updateBlock(block.id, { ...block.data, mapUrl: e.target.value })} />
             <input className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Phone" value={block.data.phone || ''} onChange={(e) => updateBlock(block.id, { ...block.data, phone: e.target.value })} />
+          </div>
+          <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
+            <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+              <input
+                type="checkbox"
+                checked={block.data.mapButtonVisible !== false}
+                onChange={(e) => updateBlock(block.id, { ...block.data, mapButtonVisible: e.target.checked })}
+              />
+              Show “Open in Maps” button / إظهار زر الخرائط
+            </label>
+            <input
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400"
+              placeholder={contentLang === 'ar' ? 'نص زر الخرائط' : 'Map button label'}
+              value={getLocalized(block.data.mapButtonLabel, contentLang === 'ar' ? 'عرض على خرائط قوقل' : 'Open in Google Maps')}
+              onChange={(e) => updateBlock(block.id, { ...block.data, mapButtonLabel: setLocalized(block.data.mapButtonLabel, e.target.value) })}
+            />
+          </div>
+          <div className="hidden space-y-3 rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
+            <div className="flex flex-wrap items-center gap-5">
+              <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={block.data.extraButtonVisible === true}
+                  onChange={(e) => updateBlock(block.id, { ...block.data, extraButtonVisible: e.target.checked })}
+                />
+                Add button below maps / إضافة زر تحت الخرائط
+              </label>
+              <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={block.data.extraButtonClickable !== false}
+                  onChange={(e) => updateBlock(block.id, { ...block.data, extraButtonClickable: e.target.checked })}
+                />
+                Clickable / قابل للنقر
+              </label>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <input
+                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400"
+                placeholder={contentLang === 'ar' ? 'نص الزر الإضافي' : 'Additional button label'}
+                value={getLocalized(block.data.extraButtonLabel, contentLang === 'ar' ? 'زر إضافي' : 'Additional action')}
+                onChange={(e) => updateBlock(block.id, { ...block.data, extraButtonLabel: setLocalized(block.data.extraButtonLabel, e.target.value) })}
+              />
+              <input
+                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 disabled:opacity-70"
+                placeholder="Additional button URL"
+                disabled={block.data.extraButtonClickable === false}
+                value={block.data.extraButtonUrl || ''}
+                onChange={(e) => updateBlock(block.id, { ...block.data, extraButtonUrl: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-3 text-gray-900 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-xs font-bold text-gray-800">Custom buttons / أزرار إضافية</div>
+                <div className="text-[11px] text-gray-500">Add any number of buttons below the maps button.</div>
+              </div>
+              <button
+                type="button"
+                className="rounded-lg bg-[#b11226] px-3 py-2 text-xs font-bold text-white"
+                onClick={() =>
+                  updateRestaurantActionButtons(block, [
+                    ...normalizeActionButtons(block.data),
+                    { id: makeId(), label: { ar: 'زر إضافي', en: 'Additional action' }, url: '', clickable: true, visible: true }
+                  ])
+                }
+              >
+                + Add button
+              </button>
+            </div>
+            {normalizeActionButtons(block.data).length === 0 && (
+              <div className="rounded-lg border border-dashed border-gray-200 p-3 text-xs text-gray-500">No custom buttons yet.</div>
+            )}
+            {normalizeActionButtons(block.data).map((button, idx) => {
+              const buttons = normalizeActionButtons(block.data);
+              return (
+                <div key={button.id || idx} className="space-y-2 rounded-lg border border-gray-100 bg-gray-50 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={button.visible !== false}
+                        onChange={(e) => {
+                          const next = [...buttons];
+                          next[idx] = { ...button, visible: e.target.checked };
+                          updateRestaurantActionButtons(block, next);
+                        }}
+                      />
+                      Visible
+                    </label>
+                    <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={button.clickable !== false}
+                        onChange={(e) => {
+                          const next = [...buttons];
+                          next[idx] = { ...button, clickable: e.target.checked };
+                          updateRestaurantActionButtons(block, next);
+                        }}
+                      />
+                      Clickable
+                    </label>
+                    <button
+                      type="button"
+                      className="text-xs font-bold text-red-600"
+                      onClick={() => updateRestaurantActionButtons(block, buttons.filter((_, buttonIdx) => buttonIdx !== idx))}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input
+                      className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400"
+                      placeholder={contentLang === 'ar' ? 'نص الزر' : 'Button label'}
+                      value={getLocalized(button.label, contentLang === 'ar' ? 'زر إضافي' : 'Additional action')}
+                      onChange={(e) => {
+                        const next = [...buttons];
+                        next[idx] = { ...button, label: setLocalized(button.label, e.target.value) };
+                        updateRestaurantActionButtons(block, next);
+                      }}
+                    />
+                    <input
+                      className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 disabled:opacity-70"
+                      placeholder="Button URL"
+                      disabled={button.clickable === false}
+                      value={button.url || ''}
+                      onChange={(e) => {
+                        const next = [...buttons];
+                        next[idx] = { ...button, url: e.target.value };
+                        updateRestaurantActionButtons(block, next);
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <div className="space-y-2">
             <div className="text-xs text-gray-300">Pros</div>
