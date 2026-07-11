@@ -364,9 +364,9 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                       </div>
                     )}
                   </div>
-                  <div className="flex-1 space-y-6">
-                    <div>
-                      <h2 className="text-2xl md:text-3xl font-black mb-1 text-[#111827]">
+                  <div className="flex-1 min-w-0 space-y-6">
+                    <div className={block.data?.rank ? 'pe-16 md:pe-20' : undefined}>
+                      <h2 className="text-2xl md:text-3xl font-black mb-1 text-[#111827] break-words [overflow-wrap:anywhere] leading-tight">
                         {title} {location && <span className="text-gray-400 text-lg font-medium">/ {location}</span>}
                       </h2>
                       <div className="flex items-center gap-3">
