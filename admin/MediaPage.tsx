@@ -16,10 +16,9 @@ const MediaPage: React.FC = () => {
   }, []);
 
   const filtered = useMemo(() => {
-    const sorted = [...files].sort((a, b) => b.name.localeCompare(a.name));
-    if (!query) return sorted;
+    if (!query) return files;
     const q = query.toLowerCase();
-    return sorted.filter((file) => file.name.toLowerCase().includes(q));
+    return files.filter((file) => file.name.toLowerCase().includes(q));
   }, [files, query]);
 
   const tagFiltered = useMemo(() => {
@@ -54,34 +53,11 @@ const MediaPage: React.FC = () => {
     setFiles((prev) => prev.filter((f) => f.name !== name));
   };
 
-  const compressImage = async (file: File, maxWidth = 1600, quality = 0.8) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject();
-      img.src = url;
-    });
-    const scale = Math.min(1, maxWidth / img.width);
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.round(img.width * scale);
-    canvas.height = Math.round(img.height * scale);
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Canvas not supported');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const blob: Blob = await new Promise((resolve) =>
-      canvas.toBlob((b) => resolve(b as Blob), 'image/jpeg', quality)
-    );
-    URL.revokeObjectURL(url);
-    return new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' });
-  };
-
   const onUpload = async (file?: File | null) => {
     if (!file) return;
     setUploading(true);
     try {
-      const compressed = await compressImage(file);
-      const result = await uploadImage(compressed);
+      const result = await uploadImage(file);
       setFiles((prev) => [{ name: result.url.split('/').pop() || result.url, url: result.url }, ...prev]);
       setMessage('Uploaded successfully');
       setTimeout(() => setMessage(null), 2000);

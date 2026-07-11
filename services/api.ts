@@ -50,10 +50,43 @@ export const fetchPopularPosts = (lang: 'ar' | 'en', days = 7, limit = 5) =>
   request(`/posts/public/popular?lang=${lang}&days=${days}&limit=${limit}`);
 export const fetchPublicPost = (lang: 'ar' | 'en', slug: string) => request(`/posts/public/${slug}?lang=${lang}`);
 
+const prepareImageForUpload = async (file: File, maxWidth = 1600, quality = 0.8) => {
+  const image = new Image();
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('The selected image could not be read'));
+      image.src = objectUrl;
+    });
+
+    const scale = Math.min(1, maxWidth / image.width);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(image.width * scale);
+    canvas.height = Math.round(image.height * scale);
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Image processing is not supported by this browser');
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (result) => result ? resolve(result) : reject(new Error('Failed to process the image')),
+        'image/jpeg',
+        quality
+      );
+    });
+
+    return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
+
 export const uploadImage = async (file: File) => {
   const csrf = getCsrfToken();
   const form = new FormData();
-  form.append('file', file);
+  form.append('file', await prepareImageForUpload(file));
   const res = await fetch(`${API_BASE}/uploads/images`, {
     method: 'POST',
     credentials: 'include',
