@@ -423,6 +423,8 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     try {
       const result = await uploadImage(file);
       onUrl(result.url);
+    } catch (error: any) {
+      alert(error?.message || 'Image upload failed');
     } finally {
       setUploading((prev) => ({ ...prev, [blockId]: false }));
     }
