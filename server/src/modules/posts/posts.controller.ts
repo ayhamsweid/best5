@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, ForbiddenException, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostStatus, UserRole } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -116,6 +116,15 @@ export class PostsController {
     }
     await this.logs.log(user.id, 'UPDATE', 'POST', id, before, updated);
     return updated;
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
+  @Delete(':id')
+  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+    const deleted = await this.posts.remove(id);
+    await this.logs.log(user.id, 'DELETE', 'POST', id, deleted, null);
+    return { ok: true };
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

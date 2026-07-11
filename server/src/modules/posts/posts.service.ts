@@ -334,6 +334,19 @@ export class PostsService {
     });
   }
 
+  async remove(id: string) {
+    const post = await this.findOne(id);
+    if (!post) throw new NotFoundException('Post not found');
+
+    await this.prisma.$transaction([
+      this.prisma.postTag.deleteMany({ where: { post_id: id } }),
+      this.prisma.postRevision.deleteMany({ where: { post_id: id } }),
+      this.prisma.post.delete({ where: { id } })
+    ]);
+
+    return post;
+  }
+
   createRevision(post: any, editorId?: string) {
     if (!post?.id) return null;
     const snapshot = {
