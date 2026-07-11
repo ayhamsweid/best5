@@ -1,6 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 import { diskStorage } from 'multer';
-import { randomUUID } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -33,6 +32,24 @@ const detectImageType = (header: Buffer) => {
   return null;
 };
 
+const availableFilename = (uploadDir: string, originalName: string) => {
+  const extension = path.extname(originalName).toLowerCase();
+  const rawBase = path.basename(originalName, path.extname(originalName));
+  const safeBase = rawBase
+    .normalize('NFKC')
+    .replace(/[^\p{L}\p{N}._-]+/gu, '-')
+    .replace(/^[._-]+|[._-]+$/g, '')
+    .slice(0, 120) || 'image';
+
+  let candidate = `${safeBase}${extension}`;
+  let suffix = 1;
+  while (fs.existsSync(path.join(uploadDir, candidate))) {
+    candidate = `${safeBase}_${suffix}${extension}`;
+    suffix += 1;
+  }
+  return candidate;
+};
+
 export const imageUploadOptions = () => ({
   limits: {
     fileSize: 1024 * 1024 * Math.max(1, Number(process.env.MAX_UPLOAD_MB || 5)),
@@ -56,8 +73,8 @@ export const imageUploadOptions = () => ({
       cb(null, uploadDir);
     },
     filename: (_req, file, cb) => {
-      const extension = path.extname(file.originalname).toLowerCase();
-      cb(null, `${randomUUID()}${extension}`);
+      const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+      cb(null, availableFilename(uploadDir, file.originalname));
     }
   })
 });

@@ -71,6 +71,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
   const lastIdRef = useRef<string | null>(null);
   const [showMedia, setShowMedia] = useState(false);
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
+  const [mediaQuery, setMediaQuery] = useState('');
   const [mediaTarget, setMediaTarget] = useState<{ type: 'cover' | 'image' | 'gallery'; blockId?: string } | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
@@ -100,6 +101,11 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     if (!showMedia) return;
     fetchUploads().then(setMediaFiles).catch(() => setMediaFiles([]));
   }, [showMedia]);
+
+  const filteredMediaFiles = useMemo(() => {
+    const query = mediaQuery.trim().toLowerCase();
+    return query ? mediaFiles.filter((file) => file.name.toLowerCase().includes(query)) : mediaFiles;
+  }, [mediaFiles, mediaQuery]);
 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => setCategories([]));
@@ -1901,6 +1907,13 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
             </div>
             <div className="flex items-center gap-3 mb-4">
               <input
+                type="search"
+                value={mediaQuery}
+                onChange={(e) => setMediaQuery(e.target.value)}
+                placeholder="Search by filename..."
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+              />
+              <input
                 type="file"
                 accept="image/*"
                 className="text-xs text-gray-300"
@@ -1916,7 +1929,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
               <div className="text-xs text-gray-400">No images uploaded yet.</div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-[60vh] overflow-auto">
-                {mediaFiles.map((file) => (
+                {filteredMediaFiles.map((file) => (
                   <button
                     key={file.url}
                     onClick={() => pickMedia(file.url)}
