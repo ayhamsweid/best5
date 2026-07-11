@@ -1,12 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchPosts } from '../services/api';
+import { deletePost, fetchPosts } from '../services/api';
 
 const PostsListPage: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('ALL');
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const onDelete = async (post: any) => {
+    const title = post.title_en || post.title_ar || 'this post';
+    if (!confirm(`Delete "${title}" permanently?`)) return;
+    setDeletingId(post.id);
+    setError(null);
+    try {
+      await deletePost(post.id);
+      setPosts((current) => current.filter((item) => item.id !== post.id));
+    } catch (e: any) {
+      setError(e?.message || 'Failed to delete post');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   useEffect(() => {
     fetchPosts()
@@ -67,6 +83,14 @@ const PostsListPage: React.FC = () => {
             <div className="flex items-center gap-3">
               <span className="text-[10px] px-3 py-1 rounded-full bg-white/10 border border-white/10">{post.status}</span>
               <Link to={`/admin/posts/edit/${post.id}`} className="text-xs underline">Edit</Link>
+              <button
+                type="button"
+                onClick={() => onDelete(post)}
+                disabled={deletingId === post.id}
+                className="text-xs px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-200 hover:bg-red-500/30 disabled:opacity-50"
+              >
+                {deletingId === post.id ? 'Deleting...' : 'Delete'}
+              </button>
             </div>
           </div>
         ))}
