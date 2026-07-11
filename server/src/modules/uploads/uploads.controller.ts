@@ -15,6 +15,30 @@ import { assertSafeUploadedImage, imageUploadOptions } from '../../common/image-
 export class UploadsController {
   constructor(private prisma: PrismaService) {}
 
+  private async ensureUniqueAssetFilename(file: Express.Multer.File) {
+    const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+    const extension = path.extname(file.filename).toLowerCase();
+    const base = path.basename(file.filename, extension);
+    let candidate = file.filename;
+    let suffix = 1;
+
+    while (await this.prisma.mediaAsset.findUnique({ where: { name: candidate }, select: { id: true } })) {
+      candidate = `${base}_${suffix}${extension}`;
+      suffix += 1;
+      while (fs.existsSync(path.join(uploadDir, candidate))) {
+        candidate = `${base}_${suffix}${extension}`;
+        suffix += 1;
+      }
+    }
+
+    if (candidate !== file.filename) {
+      const nextPath = path.join(uploadDir, candidate);
+      fs.renameSync(file.path, nextPath);
+      file.filename = candidate;
+      file.path = nextPath;
+    }
+  }
+
   private async usageCountMap(urls: string[]) {
     const posts = await this.prisma.post.findMany({
       select: {
@@ -119,14 +143,20 @@ export class UploadsController {
   @UseInterceptors(FileInterceptor('file', imageUploadOptions()))
   async upload(@UploadedFile() file: Express.Multer.File) {
     assertSafeUploadedImage(file);
-    await this.prisma.mediaAsset.create({
-      data: {
-        name: file.filename,
-        url: `/uploads/${file.filename}`,
-        size: file.size,
-        mime: file.mimetype
-      }
-    });
+    await this.ensureUniqueAssetFilename(file);
+    try {
+      await this.prisma.mediaAsset.create({
+        data: {
+          name: file.filename,
+          url: `/uploads/${file.filename}`,
+          size: file.size,
+          mime: file.mimetype
+        }
+      });
+    } catch (error) {
+      fs.rmSync(file.path, { force: true });
+      throw error;
+    }
     return { url: `/uploads/${file.filename}` };
   }
 }
