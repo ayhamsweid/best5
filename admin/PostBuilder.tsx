@@ -87,7 +87,12 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
   const [showMedia, setShowMedia] = useState(false);
   const [mediaFiles, setMediaFiles] = useState<{ name: string; url: string }[]>([]);
+  const [mediaQuery, setMediaQuery] = useState('');
   const [mediaTarget, setMediaTarget] = useState<{ type: 'cover' | 'image' | 'gallery'; blockId?: string } | null>(null);
+  const filteredMediaFiles = useMemo(() => {
+    const query = mediaQuery.trim().toLowerCase();
+    return query ? mediaFiles.filter((file) => file.name.toLowerCase().includes(query)) : mediaFiles;
+  }, [mediaFiles, mediaQuery]);
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
   const [newCategoryAr, setNewCategoryAr] = useState('');
@@ -1666,6 +1671,13 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             </div>
             <div className="flex items-center gap-3 mb-4">
               <input
+                type="search"
+                value={mediaQuery}
+                onChange={(e) => setMediaQuery(e.target.value)}
+                placeholder="Search by filename..."
+                className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+              />
+              <input
                 type="file"
                 accept="image/*"
                 className="text-xs text-gray-300"
@@ -1678,13 +1690,14 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
               />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-[60vh] overflow-auto">
-              {mediaFiles.map((file) => (
+              {filteredMediaFiles.map((file) => (
                 <button
                   key={file.url}
                   onClick={() => pickMedia(file.url)}
                   className="group border border-white/10 rounded-xl overflow-hidden hover:border-primary transition"
                 >
                   <img src={file.url} alt={file.name} className="w-full h-28 object-cover group-hover:scale-105 transition-transform" />
+                  <div className="px-2 py-2 text-[10px] text-gray-300 truncate" title={file.name}>{file.name}</div>
                 </button>
               ))}
             </div>
