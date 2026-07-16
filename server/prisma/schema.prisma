@@ -71,6 +71,7 @@ model Post {
   cover_image_url String?
   status          PostStatus @default(DRAFT)
   published_at    DateTime?
+  content_reviewed_at DateTime?
   scheduled_at    DateTime?
   author_id       String
   category_id     String?

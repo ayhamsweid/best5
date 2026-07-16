@@ -25,6 +25,22 @@ const setCanonical = (href?: string) => {
   link.href = href;
 };
 
+const setAlternate = (hreflang: string, href?: string) => {
+  const selector = `link[rel="alternate"][hreflang="${hreflang}"]`;
+  let link = document.querySelector(selector) as HTMLLinkElement | null;
+  if (!href) {
+    link?.remove();
+    return;
+  }
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'alternate';
+    link.hreflang = hreflang;
+    document.head.appendChild(link);
+  }
+  link.href = href;
+};
+
 const setMetaProperty = (property: string, content?: string) => {
   if (!content) return;
   let tag = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement | null;
@@ -36,10 +52,10 @@ const setMetaProperty = (property: string, content?: string) => {
   tag.content = content;
 };
 
-const Seo: React.FC<SeoProps> = ({ title, description, canonical, image, type = 'website', url, status }) => {
+const Seo: React.FC<SeoProps> = ({ title, description, canonical, image, type = 'website', url, status, alternates }) => {
   const collectSeo = useSeoCollector();
   if (typeof document === 'undefined' && collectSeo) {
-    collectSeo({ title, description, canonical, image, type, url, status });
+    collectSeo({ title, description, canonical, image, type, url, status, alternates });
   }
 
   useEffect(() => {
@@ -55,7 +71,10 @@ const Seo: React.FC<SeoProps> = ({ title, description, canonical, image, type = 
     setMeta('twitter:title', title);
     setMeta('twitter:description', description);
     setMeta('twitter:image', image);
-  }, [title, description, canonical, image, type, url]);
+    setAlternate('ar', alternates?.ar);
+    setAlternate('en', alternates?.en);
+    setAlternate('x-default', alternates?.xDefault);
+  }, [title, description, canonical, image, type, url, alternates?.ar, alternates?.en, alternates?.xDefault]);
 
   return null;
 };

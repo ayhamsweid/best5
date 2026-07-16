@@ -8,6 +8,7 @@ import Ga4Loader from '../components/Ga4Loader';
 import ContentLoading from '../components/ContentLoading';
 import { useRouteTransition } from '../context/RouteTransitionContext';
 import { useInitialData } from '../context/InitialDataContext';
+import { LanguageSwitchProvider } from '../context/LanguageSwitchContext';
 
 const PublicLayout: React.FC = () => {
   const { lang } = useLang();
@@ -30,21 +31,23 @@ const PublicLayout: React.FC = () => {
     trackPageView({ path: location.pathname + location.search, lang }).catch(() => null);
   }, [location.pathname, location.search, lang]);
   return (
-    <div className="font-sans text-gray-900 bg-gray-50 min-h-screen flex flex-col">
-      <Ga4Loader measurementId={ga4} />
-      <Header />
-      <main className="flex-grow relative">
-        <Suspense fallback={<ContentLoading />}>
-          <Outlet />
-        </Suspense>
-        {isPending && (
-          <div className="pointer-events-none absolute inset-0 z-10 bg-gray-50/95">
-            <ContentLoading />
-          </div>
-        )}
-      </main>
-      <Footer />
-    </div>
+    <LanguageSwitchProvider>
+      <div className="font-sans text-gray-900 bg-gray-50 min-h-screen flex flex-col">
+        <Ga4Loader measurementId={ga4} />
+        <Header />
+        <main className="flex-grow relative">
+          <Suspense fallback={<ContentLoading />}>
+            <Outlet />
+          </Suspense>
+          {isPending && (
+            <div className="pointer-events-none absolute inset-0 z-10 bg-gray-50/95">
+              <ContentLoading />
+            </div>
+          )}
+        </main>
+        <Footer />
+      </div>
+    </LanguageSwitchProvider>
   );
 };
 

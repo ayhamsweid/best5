@@ -50,7 +50,7 @@ export class SitemapService {
 
     const posts = await this.prisma.post.findMany({
       where: { status: PostStatus.PUBLISHED },
-      select: { slug_ar: true, slug_en: true, updated_at: true, published_at: true }
+      select: { slug_ar: true, slug_en: true, content_reviewed_at: true, published_at: true }
     });
 
     const urls: Array<{ loc: string; lastmod?: string }> = [];
@@ -73,7 +73,7 @@ export class SitemapService {
     });
 
     posts.forEach((post) => {
-      const lastmod = (post.updated_at || post.published_at)?.toISOString();
+      const lastmod = (post.content_reviewed_at || post.published_at)?.toISOString();
       if (post.slug_ar) {
         urls.push({ loc: `${baseUrl}/ar/blog/${encodeURIComponent(post.slug_ar)}`, lastmod });
       }

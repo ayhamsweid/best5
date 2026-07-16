@@ -39,6 +39,7 @@ export class PostsService {
     cover_image_url: true,
     category_id: true,
     published_at: true,
+    content_reviewed_at: true,
     updated_at: true,
     category: true,
     tags: {
@@ -272,10 +273,11 @@ export class PostsService {
   }
 
   create(authorId: string, data: CreatePostDto) {
-    const { tag_ids, ...postData } = data;
+    const { tag_ids, content_reviewed_at, ...postData } = data;
     const slugEn = slugify(data.title_en);
     const slugAr = slugify(data.title_ar);
     const publishedAt = data.published_at ? new Date(data.published_at) : undefined;
+    const contentReviewedAt = content_reviewed_at ? new Date(content_reviewed_at) : undefined;
     const scheduledAt = data.scheduled_at ? new Date(data.scheduled_at) : undefined;
     const now = new Date();
     return this.prisma.post.create({
@@ -285,6 +287,7 @@ export class PostsService {
         slug_ar: slugAr,
         author_id: authorId,
         published_at: data.status === PostStatus.PUBLISHED ? publishedAt || now : publishedAt,
+        content_reviewed_at: contentReviewedAt,
         scheduled_at: scheduledAt,
         content_blocks_json: data.content_blocks_json ?? undefined,
         content_ar: data.content_ar ?? '',
@@ -304,8 +307,9 @@ export class PostsService {
   }
 
   update(id: string, data: UpdatePostDto) {
-    const { tag_ids, ...postData } = data;
+    const { tag_ids, content_reviewed_at, ...postData } = data;
     const publishedAt = data.published_at ? new Date(data.published_at) : undefined;
+    const contentReviewedAt = content_reviewed_at ? new Date(content_reviewed_at) : undefined;
     const scheduledAt = data.scheduled_at ? new Date(data.scheduled_at) : undefined;
     const now = new Date();
     return this.prisma.post.update({
@@ -313,6 +317,7 @@ export class PostsService {
       data: {
         ...postData,
         published_at: data.status === PostStatus.PUBLISHED ? publishedAt || now : publishedAt,
+        content_reviewed_at: contentReviewedAt,
         scheduled_at: scheduledAt,
         content_blocks_json: data.content_blocks_json ?? undefined,
         ...(tag_ids
@@ -362,6 +367,7 @@ export class PostsService {
       cover_image_url: post.cover_image_url,
       status: post.status,
       published_at: post.published_at,
+      content_reviewed_at: post.content_reviewed_at,
       scheduled_at: post.scheduled_at,
       category_id: post.category_id,
       seo_title_ar: post.seo_title_ar,
@@ -411,6 +417,7 @@ export class PostsService {
         cover_image_url: snapshot.cover_image_url ?? null,
         status: snapshot.status,
         published_at: snapshot.published_at ? new Date(snapshot.published_at) : null,
+        content_reviewed_at: snapshot.content_reviewed_at ? new Date(snapshot.content_reviewed_at) : null,
         scheduled_at: snapshot.scheduled_at ? new Date(snapshot.scheduled_at) : null,
         category_id: snapshot.category_id ?? null,
         seo_title_ar: snapshot.seo_title_ar ?? null,

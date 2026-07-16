@@ -195,8 +195,9 @@ const renderHead = (seo, status, url, initialData) => {
       alternateEnPath = `/en/category/${encodeURIComponent(category.slug_en)}`;
     }
   }
-  const alternateAr = absoluteUrl(alternateArPath);
-  const alternateEn = absoluteUrl(alternateEnPath);
+  const alternateAr = absoluteUrl(seo?.alternates?.ar || alternateArPath);
+  const alternateEn = absoluteUrl(seo?.alternates?.en || alternateEnPath);
+  const alternateDefault = absoluteUrl(seo?.alternates?.xDefault || alternateEnPath || alternateArPath);
   const section = url.pathname.split('/').filter(Boolean)[1] || '';
   const robots = status === 404 || section === 'search' ? 'noindex,follow' : 'index,follow';
   return [
@@ -206,7 +207,7 @@ const renderHead = (seo, status, url, initialData) => {
     canonical ? `<link rel="canonical" href="${escapeHtml(canonical)}">` : '',
     status !== 404 && alternateAr ? `<link rel="alternate" hreflang="ar" href="${escapeHtml(alternateAr)}">` : '',
     status !== 404 && alternateEn ? `<link rel="alternate" hreflang="en" href="${escapeHtml(alternateEn)}">` : '',
-    status !== 404 && alternateAr ? `<link rel="alternate" hreflang="x-default" href="${escapeHtml(alternateAr)}">` : '',
+    status !== 404 && alternateDefault ? `<link rel="alternate" hreflang="x-default" href="${escapeHtml(alternateDefault)}">` : '',
     `<meta property="og:title" content="${escapeHtml(title)}">`,
     description ? `<meta property="og:description" content="${escapeHtml(description)}">` : '',
     `<meta property="og:type" content="${escapeHtml(seo?.type || 'website')}">`,

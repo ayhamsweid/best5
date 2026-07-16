@@ -5,6 +5,7 @@ import { useLang } from '../hooks/useLang';
 import { fetchPublicSettings } from '../services/api';
 import SearchSuggestions from './SearchSuggestions';
 import { useInitialData } from '../context/InitialDataContext';
+import { useLanguageSwitch } from '../context/LanguageSwitchContext';
 
 type Localized = { ar?: string; en?: string };
 type HeaderConfig = {
@@ -16,6 +17,8 @@ type HeaderConfig = {
 
 const Header: React.FC = () => {
   const { lang, otherLang, switchPath } = useLang();
+  const { translatedPath } = useLanguageSwitch();
+  const languageHref = translatedPath || switchPath;
   const navigate = useNavigate();
   const isArabic = lang === 'ar';
   const { settings } = useInitialData();
@@ -196,7 +199,16 @@ const Header: React.FC = () => {
           </div>
 
           {config?.showLangSwitch !== false && (
-            <Link to={switchPath} className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-xs hover:bg-gray-100 transition">
+            <Link
+              to={languageHref}
+              hrefLang={otherLang}
+              lang={otherLang}
+              onClick={() => {
+                setMobileOpen(false);
+                setSearchOpen(false);
+              }}
+              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-xs hover:bg-gray-100 transition"
+            >
               <Globe className="w-3 h-3" />
               <span>{otherLang.toUpperCase()}</span>
             </Link>
