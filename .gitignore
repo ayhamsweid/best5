@@ -21,6 +21,7 @@ server/.env.*
 server/uploads
 db_raw_data_backup/
 *.sql
+!server/prisma/migrations/**/migration.sql
 *.dump
 *.backup
 .stitch

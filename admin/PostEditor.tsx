@@ -1524,6 +1524,15 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
           value={isoToLocalDateTime(values.published_at)}
           onChange={(e) => update('published_at', localDateTimeToIso(e.target.value))}
+          aria-label="Published at"
+        />
+        <input
+          type="datetime-local"
+          className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
+          value={isoToLocalDateTime(values.content_reviewed_at)}
+          onChange={(e) => update('content_reviewed_at', localDateTimeToIso(e.target.value))}
+          aria-label="Content reviewed at"
+          title="Content reviewed at"
         />
         <input
           type="datetime-local"

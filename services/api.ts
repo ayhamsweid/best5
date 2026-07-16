@@ -120,6 +120,7 @@ const postWriteFields = new Set([
   'cover_image_url',
   'status',
   'published_at',
+  'content_reviewed_at',
   'scheduled_at',
   'category_id',
   'tag_ids',

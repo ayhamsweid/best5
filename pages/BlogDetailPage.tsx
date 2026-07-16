@@ -6,6 +6,7 @@ import { fetchPublicPost, fetchPublicPosts } from '../services/api';
 import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
 import { useInitialData, useSiteUrl } from '../context/InitialDataContext';
 import { safeJsonForScript, sanitizeContentHtml } from '../utils/contentSecurity';
+import { useLanguageSwitch } from '../context/LanguageSwitchContext';
 
 interface BlogDetailPageProps {
   overridePost?: any;
@@ -42,6 +43,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
   const lang = overrideLang || routeLang;
   const initialData = useInitialData();
   const siteUrl = useSiteUrl();
+  const { setTranslatedPath } = useLanguageSwitch();
   const [post, setPost] = useState<any | null>(() => overridePost || initialData.post || null);
   const [allPosts, setAllPosts] = useState<any[]>(() => initialData.posts || []);
 
@@ -61,6 +63,19 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
       .then((items: any) => setAllPosts(Array.isArray(items) ? items : []))
       .catch(() => setAllPosts([]));
   }, [lang]);
+
+  useEffect(() => {
+    if (!post) {
+      setTranslatedPath(undefined);
+      return;
+    }
+
+    const translatedSlug = lang === 'ar' ? post.slug_en : post.slug_ar;
+    const targetLang = lang === 'ar' ? 'en' : 'ar';
+    setTranslatedPath(translatedSlug ? `/${targetLang}/blog/${translatedSlug}` : `/${targetLang}/blog`);
+
+    return () => setTranslatedPath(undefined);
+  }, [post, lang, setTranslatedPath]);
 
   const pills = useMemo(
     () =>
@@ -113,16 +128,21 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
   const excerpt = lang === 'ar' ? post.excerpt_ar : post.excerpt_en;
   const seoTitle = lang === 'ar' ? post.seo_title_ar : post.seo_title_en;
   const seoDesc = lang === 'ar' ? post.seo_desc_ar : post.seo_desc_en;
-  const canonical = `/${lang}/blog/${slug}`;
+  const localizedSlug = lang === 'ar' ? post.slug_ar : post.slug_en;
+  const canonical = `/${lang}/blog/${localizedSlug || slug}`;
   const ogImage = post.og_image_url || post.cover_image_url;
   const canonicalUrl = canonical?.startsWith('http') ? canonical : `${siteUrl}${canonical}`;
   const authorName = post.author?.full_name || 'Best5';
   const content = lang === 'ar' ? post.content_ar : post.content_en;
   const blocks = Array.isArray(post.content_blocks_json) ? post.content_blocks_json : [];
-  const lastUpdatedAt = post.updated_at || post.published_at;
-  const publishedAt = lastUpdatedAt
-    ? new Date(lastUpdatedAt).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { timeZone: 'UTC' })
+  const displayedUpdateDate = post.content_reviewed_at || post.published_at;
+  const publishedAt = displayedUpdateDate
+    ? new Date(displayedUpdateDate).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { timeZone: 'UTC' })
     : '';
+  const arUrl = post.slug_ar ? `${siteUrl}/ar/blog/${post.slug_ar}` : undefined;
+  const enUrl = post.slug_en ? `${siteUrl}/en/blog/${post.slug_en}` : undefined;
+  const rawSeoTitle = seoTitle || title;
+  const finalSeoTitle = rawSeoTitle.includes('Best5') ? rawSeoTitle : `${rawSeoTitle} | Best5`;
   const faqItems = blocks.filter((block: any) => block.type === 'faq');
   const faqJsonLd = faqItems.length
     ? {
@@ -179,7 +199,15 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
 
   return (
     <div className="bg-[#F9FAFB] text-[#111827]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-      <Seo title={`${seoTitle || title} | Best5`} description={seoDesc || excerpt} canonical={canonicalUrl} image={ogImage} type="article" url={canonicalUrl} />
+      <Seo
+        title={finalSeoTitle}
+        description={seoDesc || excerpt}
+        canonical={canonicalUrl}
+        image={ogImage}
+        type="article"
+        url={canonicalUrl}
+        alternates={{ ar: arUrl, en: enUrl, xDefault: enUrl || arUrl }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -190,11 +218,21 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
             description: seoDesc || excerpt,
             image: ogImage ? [ogImage] : undefined,
             datePublished: post.published_at || undefined,
-            dateModified: post.updated_at || undefined,
+            dateModified: post.content_reviewed_at || post.published_at || undefined,
             author: {
               '@type': 'Person',
               name: authorName
             },
+            publisher: {
+              '@type': 'Organization',
+              name: 'Best5',
+              logo: {
+                '@type': 'ImageObject',
+                url: `${siteUrl}/favicon.png`
+              }
+            },
+            inLanguage: lang,
+            url: canonicalUrl,
             mainEntityOfPage: {
               '@type': 'WebPage',
               '@id': canonicalUrl
@@ -223,7 +261,11 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
             <img
               src={post.cover_image_url}
               alt={title}
-              loading="lazy"
+              width={1600}
+              height={900}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover opacity-35"
             />
           )}
@@ -240,9 +282,12 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
                   {pill}
                 </span>
               ))}
-              <button className="rounded-full bg-[#b11226] px-5 py-2.5 text-xs font-bold text-white">
+              <a
+                href={tocItems[0] ? `#${tocItems[0].id}` : '#article-content'}
+                className="rounded-full bg-[#b11226] px-5 py-2.5 text-xs font-bold text-white"
+              >
                 {lang === 'ar' ? 'اكتشف القائمة' : 'Explore list'}
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -275,7 +320,7 @@ const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ overridePost, overrideL
           </div>
         </aside>
 
-        <div className="lg:col-span-9 space-y-10">
+        <div id="article-content" className="lg:col-span-9 space-y-10">
           {!blocks.length && content ? (
             <div
               className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6"

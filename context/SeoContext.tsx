@@ -8,6 +8,11 @@ export type SeoData = {
   type?: string;
   url?: string;
   status?: number;
+  alternates?: {
+    ar?: string;
+    en?: string;
+    xDefault?: string;
+  };
 };
 
 type SeoCollector = (data: SeoData) => void;

@@ -69,6 +69,10 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsDateString()
+  content_reviewed_at?: string;
+
+  @IsOptional()
+  @IsDateString()
   scheduled_at?: string;
 
   @IsOptional()
