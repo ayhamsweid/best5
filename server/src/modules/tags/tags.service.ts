@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 const slugify = (value: string) =>
   value
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .trim()
     .replace(/\s+/g, '-')
     .slice(0, 80);

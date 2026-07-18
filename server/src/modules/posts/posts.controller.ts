@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostStatus, UserRole } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -29,9 +29,11 @@ export class PostsController {
   }
 
   @Get('public/:slug')
-  publicDetail(@Param('slug') slug: string, @Query('lang') lang?: string) {
+  async publicDetail(@Param('slug') slug: string, @Query('lang') lang?: string) {
     const safeLang = lang === 'en' ? 'en' : 'ar';
-    return this.posts.publicBySlug(safeLang, slug);
+    const post = await this.posts.publicBySlug(safeLang, slug);
+    if (!post) throw new NotFoundException('Published post not found');
+    return post;
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

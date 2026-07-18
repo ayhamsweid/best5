@@ -39,7 +39,7 @@ const BlogListPage: React.FC = () => {
       />
       <div className="flex items-end justify-between gap-6 mb-10">
         <div>
-          <h2 className="text-3xl font-black">{t(lang, 'blog')}</h2>
+          <h1 className="text-3xl font-black">{t(lang, 'blog')}</h1>
           <p className="text-gray-500 mt-2">Latest stories and curated guides.</p>
         </div>
         <input

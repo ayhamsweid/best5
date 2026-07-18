@@ -153,7 +153,85 @@ For advertising enquiries, email [info@best5.com.tr](mailto:info@best5.com.tr).
 - Preferred campaign type, duration, and approximate budget.
 - Contact person's details.
 
-We will review the enquiry and provide available options when it is a suitable fit for the site.`
+    We will review the enquiry and provide available options when it is a suitable fit for the site.`
+  },
+  terms: {
+    ar: `## قبول الشروط
+باستخدام موقع Best5 فإنك توافق على هذه الشروط. إذا لم توافق عليها، يرجى التوقف عن استخدام الموقع. آخر تحديث: 18 يوليو 2026.
+
+## طبيعة المحتوى
+ينشر Best5 أدلة ومقارنات ومعلومات عامة لمساعدة القراء على اكتشاف أماكن وخدمات وخيارات في تركيا. المحتوى تحريري وإرشادي، ولا يشكل نصيحة مهنية أو ضماناً لنتيجة محددة.
+
+## دقة المعلومات
+نبذل جهداً معقولاً لمراجعة المعلومات، لكن الأسعار وساعات العمل والتوفر والتقييمات والسياسات قد تتغير. تحقق مباشرة من الجهة المعنية قبل الحجز أو الشراء أو السفر أو اتخاذ قرار مهم. يمكنك الإبلاغ عن معلومة قديمة عبر صفحة التواصل.
+
+## الروابط والخدمات الخارجية
+قد يحتوي الموقع على روابط أو خرائط أو مقاطع فيديو وخدمات تديرها جهات خارجية. لا يدير Best5 تلك الخدمات ولا يتحكم في توفرها أو شروطها أو سياسات الخصوصية الخاصة بها. أي تعامل مع جهة خارجية يتم بينك وبين تلك الجهة.
+
+## الاستخدام المقبول
+لا يجوز محاولة تعطيل الموقع أو الوصول غير المصرح به إلى أنظمته أو نسخ المحتوى آلياً بصورة تضر بالخدمة أو استخدام الموقع في نشاط غير قانوني أو مضلل. يجوز لنا تقييد الوصول عند اكتشاف إساءة استخدام أو خطر أمني.
+
+## الملكية الفكرية
+يعود محتوى وتصميم وهوية Best5 إلى أصحاب الحقوق المعنيين. يمكنك مشاركة روابط الصفحات والاقتباس القصير مع ذكر المصدر، لكن إعادة نشر أجزاء جوهرية أو استخدام الهوية التجارية يتطلب إذناً مسبقاً.
+
+## التعديلات والتواصل
+قد نحدث هذه الشروط عند تغير الموقع أو خدماته. يُنشر الإصدار المحدث في هذه الصفحة. للاستفسارات، راسلنا على [info@best5.com.tr](mailto:info@best5.com.tr).`,
+    en: `## Acceptance of these terms
+By using Best5, you agree to these terms. If you do not agree, please stop using the website. Last updated: July 18, 2026.
+
+## Nature of the content
+Best5 publishes guides, comparisons, and general information to help readers discover places, services, and options in Turkey. The content is editorial and informational; it is not professional advice or a guarantee of a particular outcome.
+
+## Accuracy of information
+We make reasonable efforts to review information, but prices, opening hours, availability, ratings, and policies can change. Verify important details directly with the relevant venue or provider before booking, buying, travelling, or making a significant decision. You can report outdated information through the Contact page.
+
+## External links and services
+The website may contain links, maps, videos, or services operated by third parties. Best5 does not operate those services and does not control their availability, terms, or privacy practices. Any transaction with a third party is between you and that party.
+
+## Acceptable use
+You must not attempt to disrupt the website, gain unauthorized access to its systems, automatically copy content in a way that harms the service, or use the website for unlawful or misleading activity. We may restrict access when abuse or a security risk is detected.
+
+## Intellectual property
+Best5 content, design, and identity belong to their respective rights holders. You may share page links and make short attributed quotations, but republication of substantial portions or use of the brand identity requires prior permission.
+
+## Changes and contact
+We may update these terms when the website or its services change. The revised version will be published on this page. For questions, email [info@best5.com.tr](mailto:info@best5.com.tr).`
+  },
+  cookies: {
+    ar: `## ما هي ملفات الارتباط؟
+ملفات الارتباط هي ملفات صغيرة قد يحفظها المتصفح لمساعدة المواقع على تشغيل بعض الوظائف وتذكر الإعدادات وقياس الاستخدام. آخر تحديث: 18 يوليو 2026.
+
+## كيف يستخدم Best5 التقنيات المشابهة؟
+قد يستخدم الموقع تخزيناً تقنياً ضرورياً لتشغيل تسجيل دخول لوحة الإدارة وحماية الجلسة. وقد تُفعّل أدوات تحليل مثل Google Analytics لقياس الزيارات والتفاعل بصورة مجمعة، بما يساعدنا على فهم أداء الصفحات وتحسين المحتوى.
+
+## خدمات الطرف الثالث
+قد تتضمن الصفحات خرائط أو فيديوهات أو محتوى من خدمات خارجية. يمكن لهذه الجهات وضع ملفات ارتباط أو جمع بيانات وفق سياساتها الخاصة عند تحميل محتواها أو التفاعل معه. لا يتحكم Best5 في ملفات الارتباط التي تديرها تلك الجهات.
+
+## خياراتك
+يمكنك حذف ملفات الارتباط أو حظرها من إعدادات المتصفح. قد يؤدي حظر التخزين الضروري إلى تعطيل بعض الوظائف، خصوصاً تسجيل الدخول إلى لوحة الإدارة. يمكنك أيضاً استخدام أدوات وإضافات المتصفح التي تحد من قياس الزيارات أو التتبع من الجهات الخارجية.
+
+## مدة الاحتفاظ والتحديثات
+تختلف مدة ملفات الارتباط بحسب الغرض والجهة التي تديرها. نراجع استخدامنا لهذه التقنيات عند تغير خدمات الموقع، وسننشر أي تحديث جوهري في هذه الصفحة.
+
+## التواصل
+للاستفسار عن الخصوصية أو استخدام ملفات الارتباط، راسلنا على [info@best5.com.tr](mailto:info@best5.com.tr).`,
+    en: `## What are cookies?
+Cookies are small files that a browser may store to help websites provide features, remember settings, and measure usage. Last updated: July 18, 2026.
+
+## How Best5 uses similar technologies
+The website may use storage that is technically necessary for admin-panel sign-in and session security. Analytics tools such as Google Analytics may also be enabled to measure visits and interactions in aggregate, helping us understand page performance and improve content.
+
+## Third-party services
+Pages may include maps, videos, or content from external services. Those providers may set cookies or collect information under their own policies when their content loads or you interact with it. Best5 does not control cookies operated by those providers.
+
+## Your choices
+You can delete or block cookies in your browser settings. Blocking necessary storage may prevent some features from working, particularly admin-panel sign-in. You may also use browser controls or extensions that limit analytics or third-party tracking.
+
+## Retention and updates
+Cookie duration varies according to its purpose and the provider operating it. We review our use of these technologies when website services change and will publish material updates on this page.
+
+## Contact
+For questions about privacy or cookie use, email [info@best5.com.tr](mailto:info@best5.com.tr).`
   },
   faq: {
     ar: `## ما هو Best5؟

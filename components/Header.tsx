@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Compass, Globe, Menu, Search, TrendingUp, X } from 'lucide-react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicSettings } from '../services/api';
 import SearchSuggestions from './SearchSuggestions';
@@ -18,10 +18,38 @@ type HeaderConfig = {
 const Header: React.FC = () => {
   const { lang, otherLang, switchPath } = useLang();
   const { translatedPath } = useLanguageSwitch();
-  const languageHref = translatedPath || switchPath;
+  const location = useLocation();
   const navigate = useNavigate();
   const isArabic = lang === 'ar';
-  const { settings } = useInitialData();
+  const initialData = useInitialData();
+  const { settings } = initialData;
+  const serverTranslatedPath = useMemo(() => {
+    const parts = location.pathname.split('/').filter(Boolean);
+    let requestedSlug = '';
+    try {
+      requestedSlug = parts[2] ? decodeURIComponent(parts[2]) : '';
+    } catch {
+      return undefined;
+    }
+
+    if (parts[1] === 'blog' && parts.length === 3 && initialData.post) {
+      const post = initialData.post;
+      const matchesInitialPost = requestedSlug === post.slug_ar || requestedSlug === post.slug_en;
+      const targetSlug = otherLang === 'ar' ? post.slug_ar : post.slug_en;
+      if (matchesInitialPost && targetSlug) return `/${otherLang}/blog/${encodeURIComponent(targetSlug)}`;
+    }
+
+    if (parts[1] === 'category' && parts.length === 3) {
+      const category = initialData.categories?.find(
+        (item) => requestedSlug === item.slug_ar || requestedSlug === item.slug_en
+      );
+      const targetSlug = category && (otherLang === 'ar' ? category.slug_ar : category.slug_en);
+      if (targetSlug) return `/${otherLang}/category/${encodeURIComponent(targetSlug)}`;
+    }
+
+    return undefined;
+  }, [initialData.categories, initialData.post, location.pathname, otherLang]);
+  const languageHref = translatedPath || serverTranslatedPath || switchPath;
   const [hidden, setHidden] = useState(false);
   const [config, setConfig] = useState<HeaderConfig | null>(() => settings?.header_json || null);
   const [mobileOpen, setMobileOpen] = useState(false);
