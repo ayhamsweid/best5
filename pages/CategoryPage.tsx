@@ -45,7 +45,7 @@ const CategoryPage: React.FC = () => {
           : `Explore the latest Best5 guides and comparisons for ${title || slug} and choose the right option with confidence.`}
         canonical={`/${lang}/category/${slug}`}
       />
-      <h2 className="text-3xl font-black capitalize">{title || slug}</h2>
+      <h1 className="text-3xl font-black capitalize">{title || slug}</h1>
       <p className="text-gray-500 mt-2">Latest posts in this category.</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {posts.map((post) => {

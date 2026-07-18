@@ -11,6 +11,17 @@ const siteUrl = (process.env.PUBLIC_SITE_URL || 'https://best5.com.tr').replace(
 const port = Number(process.env.PORT || 3001);
 const apiCache = new Map();
 const apiCacheTtlMs = Math.max(1_000, Number(process.env.SSR_API_CACHE_TTL_MS || 30_000));
+const legacyCategorySlugs = new Map([
+  ['1771560834740', 'فنادق'],
+  ['1771014524393', 'متاحف'],
+  ['1771014168963', 'أماكن'],
+  ['1771014104954', 'مطاعم'],
+  ['1771014576961', 'متاجر'],
+  ['1771014651001', 'جامعات'],
+  ['musems', 'museums'],
+  ['restorants', 'restaurants'],
+  ['store', 'stores']
+]);
 
 const escapeHtml = (value = '') =>
   String(value)
@@ -35,6 +46,14 @@ const absoluteUrl = (value) => {
   }
 };
 
+const decodePathParts = (pathname) => {
+  try {
+    return pathname.split('/').filter(Boolean).map(decodeURIComponent);
+  } catch {
+    return null;
+  }
+};
+
 const getJson = async (endpoint, fallback, cacheTtlMs = apiCacheTtlMs) => {
   const cached = apiCache.get(endpoint);
   if (cached && cached.expiresAt > Date.now()) return cached.promise;
@@ -50,7 +69,15 @@ const getJson = async (endpoint, fallback, cacheTtlMs = apiCacheTtlMs) => {
         error.status = response.status;
         throw error;
       }
-    return await response.json();
+      const body = await response.text();
+      if (!body.trim()) return fallback;
+      try {
+        return JSON.parse(body);
+      } catch {
+        const error = new Error('Internal API returned invalid JSON');
+        error.status = 502;
+        throw error;
+      }
     } catch (error) {
       apiCache.delete(endpoint);
       throw error;
@@ -76,8 +103,33 @@ const redirectForAliasedPost = (url, initialData) => {
   if (parts[1] !== 'blog' || parts.length !== 3) return null;
   const canonicalPath = localizedPostPath(initialData.lang, initialData.post);
   if (!canonicalPath) return null;
-  const requestedPath = `/${parts[0]}/blog/${encodeURIComponent(decodeURIComponent(parts[2]))}`;
+  let requestedSlug;
+  try {
+    requestedSlug = decodeURIComponent(parts[2]);
+  } catch {
+    return null;
+  }
+  const requestedPath = `/${parts[0]}/blog/${encodeURIComponent(requestedSlug)}`;
   return requestedPath === canonicalPath ? null : canonicalPath;
+};
+
+const redirectForAliasedCategory = (url, initialData) => {
+  const parts = decodePathParts(url.pathname);
+  if (!parts || parts[1] !== 'category' || parts.length !== 3) return null;
+  const requestedSlug = parts[2];
+  let category = initialData.categories?.find(
+    (item) => item.slug_ar === requestedSlug || item.slug_en === requestedSlug
+  );
+  const replacementSlug = legacyCategorySlugs.get(requestedSlug);
+  if (!category && replacementSlug) {
+    category = initialData.categories?.find(
+      (item) => item.slug_ar === replacementSlug || item.slug_en === replacementSlug
+    );
+  }
+  if (!category) return null;
+  const canonicalSlug = initialData.lang === 'ar' ? category.slug_ar : category.slug_en;
+  if (!canonicalSlug || canonicalSlug === requestedSlug) return null;
+  return `/${initialData.lang}/category/${encodeURIComponent(canonicalSlug)}`;
 };
 
 const transientStatus = (error) => {
@@ -110,7 +162,8 @@ const pruneApiCache = () => {
 };
 
 const loadInitialData = async (url) => {
-  const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+  const parts = decodePathParts(url.pathname);
+  if (!parts) return { lang: 'ar', siteUrl, status: 404 };
   const lang = parts[0] === 'en' ? 'en' : 'ar';
   const section = parts[1] || '';
   const slug = parts.slice(2).join('/');
@@ -236,9 +289,11 @@ createServer(async (request, response) => {
     pruneApiCache();
     const initialData = await loadInitialData(url);
     const aliasRedirect = redirectForAliasedPost(url, initialData);
-    if (aliasRedirect) {
+    const categoryAliasRedirect = redirectForAliasedCategory(url, initialData);
+    const canonicalRedirect = aliasRedirect || categoryAliasRedirect;
+    if (canonicalRedirect) {
       response.writeHead(301, {
-        Location: aliasRedirect,
+        Location: canonicalRedirect,
         'Cache-Control': 'public, max-age=3600'
       });
       response.end();
