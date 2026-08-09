@@ -8,6 +8,7 @@ export type SeoData = {
   type?: string;
   url?: string;
   status?: number;
+  robots?: string;
   alternates?: {
     ar?: string;
     en?: string;

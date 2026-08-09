@@ -76,6 +76,7 @@ const SearchPage: React.FC = () => {
           ? `نتائج بحث Best5 عن ${q || 'أفضل الأماكن والخدمات في تركيا'}.`
           : `Best5 search results for ${q || 'top places and services in Turkey'}.`}
         canonical={`/${lang}/search?q=${encodeURIComponent(q)}`}
+        robots="noindex,follow"
       />
       <div className="mx-auto max-w-6xl">
         <div className={isArabic ? 'text-right' : 'text-left'}>

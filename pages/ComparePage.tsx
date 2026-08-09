@@ -14,6 +14,7 @@ const ComparePage: React.FC = () => {
           ? 'مقارنة عملية من Best5 تساعدك على معرفة الفروقات واختيار الخيار الأنسب.'
           : 'A practical Best5 comparison that highlights key differences and helps you choose the right option.'}
         canonical={`/${lang}/compare/${slug}`}
+        robots="noindex,follow"
       />
       <h2 className="text-3xl font-black">Comparison: {slug}</h2>
       <p className="text-gray-500 mt-2">Comparison pages are now routable. Hook to `/api/posts?type=compare`.</p>

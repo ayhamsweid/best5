@@ -153,16 +153,16 @@ const Header: React.FC = () => {
         hidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
       ].join(' ')}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-4 md:px-8">
-        <Link to={`/${lang}`} className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 py-3 px-4 md:px-8">
+        <Link to={`/${lang}`} className="flex min-w-0 items-center gap-2 sm:gap-3">
           {config?.logoImageUrl ? (
-            <img src={config.logoImageUrl} alt={logoTitle} className="block h-12 w-12 shrink-0 rounded-xl object-contain" />
+            <img src={config.logoImageUrl} alt={logoTitle} className="block h-10 w-10 shrink-0 rounded-xl object-contain sm:h-12 sm:w-12" />
           ) : (
             <Compass className="h-8 w-8 shrink-0 text-primary" />
           )}
-          <div className="text-gray-900">
-            <div className="text-xl font-black leading-none">{logoTitle}</div>
-            <span className="text-[10px] tracking-widest opacity-70 uppercase">{logoSubtitle}</span>
+          <div className="min-w-0 text-gray-900">
+            <div className="truncate text-lg font-black leading-none sm:text-xl">{logoTitle}</div>
+            <span className="hidden text-[10px] tracking-widest opacity-70 uppercase sm:block">{logoSubtitle}</span>
           </div>
         </Link>
 
@@ -195,7 +195,7 @@ const Header: React.FC = () => {
           </NavLink>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <div className="relative hidden sm:block">
             <button
               onClick={() => setSearchOpen((open) => !open)}
@@ -235,7 +235,7 @@ const Header: React.FC = () => {
                 setMobileOpen(false);
                 setSearchOpen(false);
               }}
-              className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-full text-xs hover:bg-gray-100 transition"
+              className="flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-700 transition hover:bg-gray-100 sm:px-4"
             >
               <Globe className="w-3 h-3" />
               <span>{otherLang.toUpperCase()}</span>

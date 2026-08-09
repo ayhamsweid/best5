@@ -17,6 +17,7 @@ import GuidePage from './pages/GuidePage';
 import AboutPage from './pages/AboutPage';
 import StaticPage from './pages/StaticPage';
 import NotFoundPage from './pages/NotFoundPage';
+import AuthorPage from './pages/AuthorPage';
 
 const PublicPostPreviewPage = lazy(() => import('./pages/PublicPostPreviewPage'));
 
@@ -94,6 +95,7 @@ export const AppRoutes: React.FC = () => {
             <Route index element={<HomePage />} />
             <Route path="blog" element={<BlogListPage />} />
             <Route path="blog/:slug" element={<BlogDetailPage />} />
+            <Route path="author/:slug" element={<AuthorPage />} />
             <Route path="categories" element={<CategoriesIndexPage />} />
             <Route path="category/:slug" element={<CategoryPage />} />
             <Route path="search" element={<SearchPage />} />

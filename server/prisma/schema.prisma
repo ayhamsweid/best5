@@ -41,51 +41,64 @@ enum AuditEntityType {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  full_name     String
-  email         String   @unique
-  password_hash String
-  role          UserRole @default(CONTENT_WRITER)
-  is_active     Boolean  @default(true)
-  last_login_at DateTime?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id                    String    @id @default(uuid())
+  full_name             String
+  email                 String    @unique
+  password_hash         String
+  role                  UserRole  @default(CONTENT_WRITER)
+  is_active             Boolean   @default(true)
+  last_login_at         DateTime?
+  author_slug           String?   @unique
+  author_title_ar       String?
+  author_title_en       String?
+  author_bio_ar         String?
+  author_bio_en         String?
+  author_expertise_ar   String[]  @default([])
+  author_expertise_en   String[]  @default([])
+  author_image_url      String?
+  author_website_url    String?
+  author_social_url     String?
+  author_verified       Boolean   @default(false)
+  show_public_profile   Boolean   @default(false)
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
 
-  posts         Post[]
-  audit_logs    AuditLog[] @relation("ActorLogs")
+  posts          Post[]
+  audit_logs     AuditLog[]     @relation("ActorLogs")
   post_revisions PostRevision[] @relation("PostRevisionEditor")
-  notifications Notification[]
+  notifications  Notification[]
 }
 
 model Post {
-  id              String     @id @default(uuid())
-  title_ar        String
-  title_en        String
-  slug_ar         String     @unique
-  slug_en         String     @unique
-  excerpt_ar      String
-  excerpt_en      String
-  content_ar      String
-  content_en      String
+  id                  String     @id @default(uuid())
+  title_ar            String
+  title_en            String
+  slug_ar             String     @unique
+  slug_en             String     @unique
+  excerpt_ar          String
+  excerpt_en          String
+  content_ar          String
+  content_en          String
   content_blocks_json Json?
-  cover_image_url String?
-  status          PostStatus @default(DRAFT)
-  published_at    DateTime?
+  cover_image_url     String?
+  status              PostStatus @default(DRAFT)
+  published_at        DateTime?
   content_reviewed_at DateTime?
-  scheduled_at    DateTime?
-  author_id       String
-  category_id     String?
-  seo_title_ar    String?
-  seo_title_en    String?
-  seo_desc_ar     String?
-  seo_desc_en     String?
-  canonical_url   String?
-  og_image_url    String?
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
+  scheduled_at        DateTime?
+  author_id           String
+  category_id         String?
+  seo_title_ar        String?
+  seo_title_en        String?
+  seo_desc_ar         String?
+  seo_desc_en         String?
+  canonical_url       String?
+  og_image_url        String?
+  related_post_ids    String[]   @default([])
+  created_at          DateTime   @default(now())
+  updated_at          DateTime   @updatedAt
 
-  author    User      @relation(fields: [author_id], references: [id])
-  category  Category? @relation(fields: [category_id], references: [id])
+  author    User           @relation(fields: [author_id], references: [id])
+  category  Category?      @relation(fields: [category_id], references: [id])
   tags      PostTag[]
   revisions PostRevision[]
 
@@ -95,39 +108,45 @@ model Post {
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  name_ar   String
-  name_en   String
-  slug_ar   String   @unique
-  slug_en   String   @unique
-  icon      String?
-  posts     Post[]
+  id         String   @id @default(uuid())
+  name_ar    String
+  name_en    String
+  slug_ar    String   @unique
+  slug_en    String   @unique
+  seo_title_ar String?
+  seo_title_en String?
+  seo_desc_ar  String?
+  seo_desc_en  String?
+  intro_ar     String?
+  intro_en     String?
+  icon       String?
+  posts      Post[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model Tag {
-  id        String   @id @default(uuid())
-  name_ar   String
-  name_en   String
-  slug_ar   String   @unique
-  slug_en   String   @unique
-  posts     PostTag[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id         String    @id @default(uuid())
+  name_ar    String
+  name_en    String
+  slug_ar    String    @unique
+  slug_en    String    @unique
+  posts      PostTag[]
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }
 
 model PostTag {
   post_id String
   tag_id  String
-  post    Post @relation(fields: [post_id], references: [id])
-  tag     Tag  @relation(fields: [tag_id], references: [id])
+  post    Post   @relation(fields: [post_id], references: [id])
+  tag     Tag    @relation(fields: [tag_id], references: [id])
 
   @@id([post_id, tag_id])
 }
 
 model AuditLog {
-  id            String           @id @default(uuid())
+  id            String          @id @default(uuid())
   actor_user_id String?
   action_type   AuditActionType
   entity_type   AuditEntityType
@@ -136,7 +155,7 @@ model AuditLog {
   after_json    Json?
   ip            String?
   user_agent    String?
-  created_at    DateTime         @default(now())
+  created_at    DateTime        @default(now())
 
   actor_user User? @relation("ActorLogs", fields: [actor_user_id], references: [id])
 }
@@ -203,4 +222,16 @@ model PageView {
 
   @@index([created_at])
   @@index([is_bot, created_at])
+}
+
+model Redirect {
+  id          String   @id @default(uuid())
+  old_path    String   @unique
+  new_path    String
+  status_code Int      @default(301)
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([active])
 }

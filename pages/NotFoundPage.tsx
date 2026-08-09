@@ -13,6 +13,7 @@ const NotFoundPage: React.FC = () => {
         description={lang === 'ar'
           ? 'الصفحة التي تبحث عنها غير موجودة أو تم نقلها. يمكنك العودة إلى Best5 لاستكشاف أحدث الأدلة.'
           : 'The page you requested does not exist or has moved. Return to Best5 to explore the latest guides.'}
+        canonical={location.pathname}
         status={404}
       />
       <div className="min-h-[65vh] bg-[#F9FAFB] flex items-center justify-center px-6 py-20" dir={lang === 'ar' ? 'rtl' : 'ltr'}>

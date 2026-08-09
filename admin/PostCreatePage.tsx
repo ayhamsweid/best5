@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostEditor from './PostEditor';
 import { createPost } from '../services/api';
+import { getPostReadiness } from '../server/src/common/post-readiness';
 
 const PostCreatePage: React.FC = () => {
   const [values, setValues] = useState<Record<string, any>>({});
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const readiness = getPostReadiness(values);
 
   const onSave = async (override?: Record<string, any>) => {
     setError(null);
@@ -32,7 +34,9 @@ const PostCreatePage: React.FC = () => {
             </button>
             <button
               onClick={() => onSave({ status: 'PUBLISHED', published_at: new Date().toISOString() })}
-              className="bg-primary text-[#0f172a] px-4 py-2 rounded-lg text-sm font-semibold"
+              disabled={readiness.errors.length > 0}
+              title={readiness.errors.length ? 'Resolve publishing errors first' : 'Publish now'}
+              className="bg-primary text-[#0f172a] px-4 py-2 rounded-lg text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40"
             >
               Publish Now
             </button>

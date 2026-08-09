@@ -1,11 +1,19 @@
 import { useEffect } from 'react';
 import { SeoData, useSeoCollector } from '../context/SeoContext';
+import { useSiteUrl } from '../context/InitialDataContext';
+import { normalizeSeoData } from '../utils/seo';
 
 type SeoProps = SeoData;
 
 const setMeta = (name: string, content?: string) => {
-  if (!content) return;
-  let tag = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
+  const tags = Array.from(document.querySelectorAll(`meta[name="${name}"]`)) as HTMLMetaElement[];
+  const [existing, ...duplicates] = tags;
+  duplicates.forEach((tag) => tag.remove());
+  if (!content) {
+    existing?.remove();
+    return;
+  }
+  let tag = existing;
   if (!tag) {
     tag = document.createElement('meta');
     tag.name = name;
@@ -15,8 +23,16 @@ const setMeta = (name: string, content?: string) => {
 };
 
 const setCanonical = (href?: string) => {
-  if (!href) return;
-  let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+  const links = Array.from(
+    document.querySelectorAll('link[rel="canonical"]')
+  ) as HTMLLinkElement[];
+  const [existing, ...duplicates] = links;
+  duplicates.forEach((link) => link.remove());
+  if (!href) {
+    existing?.remove();
+    return;
+  }
+  let link = existing;
   if (!link) {
     link = document.createElement('link');
     link.rel = 'canonical';
@@ -27,11 +43,14 @@ const setCanonical = (href?: string) => {
 
 const setAlternate = (hreflang: string, href?: string) => {
   const selector = `link[rel="alternate"][hreflang="${hreflang}"]`;
-  let link = document.querySelector(selector) as HTMLLinkElement | null;
+  const links = Array.from(document.querySelectorAll(selector)) as HTMLLinkElement[];
+  const [existing, ...duplicates] = links;
+  duplicates.forEach((link) => link.remove());
   if (!href) {
-    link?.remove();
+    existing?.remove();
     return;
   }
+  let link = existing;
   if (!link) {
     link = document.createElement('link');
     link.rel = 'alternate';
@@ -42,8 +61,14 @@ const setAlternate = (hreflang: string, href?: string) => {
 };
 
 const setMetaProperty = (property: string, content?: string) => {
-  if (!content) return;
-  let tag = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement | null;
+  const tags = Array.from(document.querySelectorAll(`meta[property="${property}"]`)) as HTMLMetaElement[];
+  const [existing, ...duplicates] = tags;
+  duplicates.forEach((tag) => tag.remove());
+  if (!content) {
+    existing?.remove();
+    return;
+  }
+  let tag = existing;
   if (!tag) {
     tag = document.createElement('meta');
     tag.setAttribute('property', property);
@@ -52,29 +77,43 @@ const setMetaProperty = (property: string, content?: string) => {
   tag.content = content;
 };
 
-const Seo: React.FC<SeoProps> = ({ title, description, canonical, image, type = 'website', url, status, alternates }) => {
+const Seo: React.FC<SeoProps> = ({ title, description, canonical, image, type = 'website', url, status, robots, alternates }) => {
   const collectSeo = useSeoCollector();
+  const siteUrl = useSiteUrl();
+  const normalized = normalizeSeoData({ title, description, canonical, image, type, url, status, robots, alternates }, siteUrl);
   if (typeof document === 'undefined' && collectSeo) {
-    collectSeo({ title, description, canonical, image, type, url, status, alternates });
+    collectSeo(normalized);
   }
 
   useEffect(() => {
-    document.title = title;
-    setMeta('description', description);
-    setCanonical(canonical);
-    setMetaProperty('og:title', title);
-    setMetaProperty('og:description', description);
-    setMetaProperty('og:type', type);
-    setMetaProperty('og:url', url || canonical);
-    setMetaProperty('og:image', image);
-    setMeta('twitter:card', image ? 'summary_large_image' : 'summary');
-    setMeta('twitter:title', title);
-    setMeta('twitter:description', description);
-    setMeta('twitter:image', image);
-    setAlternate('ar', alternates?.ar);
-    setAlternate('en', alternates?.en);
-    setAlternate('x-default', alternates?.xDefault);
-  }, [title, description, canonical, image, type, url, alternates?.ar, alternates?.en, alternates?.xDefault]);
+    document.title = normalized.title;
+    setMeta('description', normalized.description);
+    setMeta('robots', normalized.robots);
+    setCanonical(normalized.canonical);
+    setMetaProperty('og:title', normalized.title);
+    setMetaProperty('og:description', normalized.description);
+    setMetaProperty('og:type', normalized.type);
+    setMetaProperty('og:url', normalized.url || normalized.canonical);
+    setMetaProperty('og:image', normalized.image);
+    setMeta('twitter:card', normalized.image ? 'summary_large_image' : 'summary');
+    setMeta('twitter:title', normalized.title);
+    setMeta('twitter:description', normalized.description);
+    setMeta('twitter:image', normalized.image);
+    setAlternate('ar', normalized.alternates?.ar);
+    setAlternate('en', normalized.alternates?.en);
+    setAlternate('x-default', normalized.alternates?.xDefault);
+  }, [
+    normalized.title,
+    normalized.description,
+    normalized.canonical,
+    normalized.image,
+    normalized.type,
+    normalized.url,
+    normalized.robots,
+    normalized.alternates?.ar,
+    normalized.alternates?.en,
+    normalized.alternates?.xDefault
+  ]);
 
   return null;
 };

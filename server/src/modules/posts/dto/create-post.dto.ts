@@ -2,17 +2,21 @@ import { IsArray, IsDateString, IsEnum, IsOptional, IsString, IsUUID } from 'cla
 import { PostStatus } from '@prisma/client';
 
 export class CreatePostDto {
+  @IsOptional()
   @IsString()
-  title_ar!: string;
+  title_ar?: string;
 
+  @IsOptional()
   @IsString()
-  title_en!: string;
+  title_en?: string;
 
+  @IsOptional()
   @IsString()
-  excerpt_ar!: string;
+  excerpt_ar?: string;
 
+  @IsOptional()
   @IsString()
-  excerpt_en!: string;
+  excerpt_en?: string;
 
   @IsOptional()
   @IsString()
@@ -34,6 +38,11 @@ export class CreatePostDto {
   @IsArray()
   @IsUUID('4', { each: true })
   tag_ids?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true })
+  related_post_ids?: string[];
 
   @IsOptional()
   @IsString()
@@ -69,7 +78,7 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsDateString()
-  content_reviewed_at?: string;
+  content_reviewed_at?: string | null;
 
   @IsOptional()
   @IsDateString()

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getMe, login as apiLogin, logout as apiLogout } from '../services/api';
+import { useLocation } from 'react-router-dom';
 
 export type Role = 'ADMIN' | 'CONTENT_WRITER' | 'EDITOR' | 'CHIEF_EDITOR';
 
@@ -21,6 +22,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,8 +39,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    refresh();
-  }, []);
+    const protectedRoute =
+      location.pathname.startsWith('/admin') ||
+      /^\/(?:ar|en)\/preview(?:\/|$)/.test(location.pathname);
+    if (protectedRoute) {
+      refresh();
+    } else {
+      setUser(null);
+      setLoading(false);
+    }
+  }, [location.pathname]);
 
   const login = async (email: string, password: string) => {
     await apiLogin(email, password);

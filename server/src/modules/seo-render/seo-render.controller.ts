@@ -9,6 +9,14 @@ export class SeoRenderController {
   @Get('render')
   async render(@Headers('x-original-uri') originalUri: string | undefined, @Res() response: Response) {
     const page = await this.renderer.render(originalUri || '/');
+    if ('location' in page && page.location) {
+      response
+        .status(page.status)
+        .set('Location', page.location)
+        .set('Cache-Control', 'public, max-age=3600')
+        .send();
+      return;
+    }
     response
       .status(page.status)
       .type('html')

@@ -1,50 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { useLang } from '../hooks/useLang';
 import Seo from '../components/Seo';
-
-const CountUp: React.FC<{ to: number; suffix?: string; duration?: number }> = ({ to, suffix = '', duration = 1200 }) => {
-  const [value, setValue] = useState(0);
-  const startRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const step = (ts: number) => {
-      if (startRef.current == null) startRef.current = ts;
-      const progress = Math.min((ts - startRef.current) / duration, 1);
-      setValue(Math.floor(progress * to));
-      if (progress < 1) {
-        rafRef.current = requestAnimationFrame(step);
-      }
-    };
-    rafRef.current = requestAnimationFrame(step);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [to, duration]);
-
-  return (
-    <span>
-      {value}
-      {suffix}
-    </span>
-  );
-};
 
 const AboutPage: React.FC = () => {
   const { lang } = useLang();
   const copy = {
-    badge: lang === 'ar' ? 'خبراء التقييم في اسطنبول' : 'Local ranking experts in Istanbul',
+    badge: lang === 'ar' ? 'منهجية Best5 التحريرية' : 'The Best5 editorial method',
     title: lang === 'ar' ? 'نختار لك أفضل 5' : 'We pick the Best 5',
     titleAccent: lang === 'ar' ? 'في كل شيء' : 'for everything',
     intro:
       lang === 'ar'
-        ? 'منصة “Best 5” تجمع لك أفضل خمس خيارات في أي مجال تفكر فيه: أكل، قهوة، أماكن، خدمات، وتسوق. توصياتنا مبنية على التجربة، الجودة، والقيمة الحقيقية.'
-        : 'Best 5 brings you the top five options in whatever you’re looking for—food, coffee, places, services, and shopping. Our picks are based on experience, quality, and real value.',
-    stats: [
-      { value: 500, suffix: '+', label: lang === 'ar' ? 'قائمة تم إعدادها' : 'Lists published' },
-      { value: 50, suffix: 'k+', label: lang === 'ar' ? 'زائر شهري' : 'Monthly visitors' },
-      { value: 4.9, suffix: '/5', label: lang === 'ar' ? 'رضا المستخدمين' : 'User satisfaction' }
-    ],
+        ? 'منصة Best5 تجمع خمسة خيارات بارزة في مجالات مثل المطاعم والأماكن والتعليم والسفر. نوضح معايير الاختيار وحدود المعلومات حتى تتمكن من المقارنة واتخاذ قرارك بنفسك.'
+        : 'Best5 brings together five notable options across restaurants, places, education, travel, and more. We explain our selection criteria and information limits so you can compare and decide for yourself.',
     whyTitle: lang === 'ar' ? 'لماذا Best 5؟' : 'Why Best 5?',
     whySubtitle:
       lang === 'ar'
@@ -55,34 +22,50 @@ const AboutPage: React.FC = () => {
         title: lang === 'ar' ? 'معايير دقيقة' : 'Clear criteria',
         text:
           lang === 'ar'
-            ? 'نقيّم كل اختيار بمعايير ثابتة تشمل الجودة، الخدمة، القيمة، وتجربة المستخدم.'
-            : 'We score every pick using consistent criteria: quality, service, value, and overall experience.'
+            ? 'نحدد معايير مناسبة لكل موضوع، مثل الجودة والقيمة والموقع والخدمات، ونشرح الفروق التي تؤثر في القرار.'
+            : 'We define criteria suited to each topic, such as quality, value, location, and services, and explain decision-relevant differences.'
       },
       {
-        title: lang === 'ar' ? 'خبراء محليون' : 'Local experts',
+        title: lang === 'ar' ? 'مصادر قابلة للمراجعة' : 'Reviewable sources',
         text:
           lang === 'ar'
-            ? 'فريقنا يعيش في اسطنبول ويعرف التفاصيل التي لا تظهر في التقييمات العشوائية.'
-            : 'Our team lives in Istanbul and knows the details you won’t find in random reviews.'
+            ? 'نفضّل المواقع الرسمية والمصادر المباشرة للمعلومات المتغيرة، ونطلب من القارئ التحقق قبل الحجز أو الشراء.'
+            : 'We prefer official and first-party sources for changing details and ask readers to verify before booking or buying.'
       },
       {
         title: lang === 'ar' ? 'تحديثات مستمرة' : 'Always updated',
         text:
           lang === 'ar'
-            ? 'نراجع القوائم باستمرار لضمان أن المعلومات والأسعار ما زالت دقيقة.'
-            : 'We continuously refresh lists to keep information and prices accurate.'
+            ? 'نعرض تاريخ المراجعة عندما يكون متاحاً، ونراجع طلبات التصحيح والمصادر الأحدث لتحديث المعلومات.'
+            : 'We show review dates when available and assess correction requests and newer sources to update information.'
       }
     ],
-    teamTitle: lang === 'ar' ? 'فريق العمل' : 'Meet the team',
-    teamSubtitle:
-      lang === 'ar'
-        ? 'مجموعة من الذواقة والخبراء لبناء قوائم أفضل 5 واقعية ومفيدة.'
-        : 'A team of experts building practical, trustworthy Best 5 lists.',
-    team: [
-      { name: lang === 'ar' ? 'أحمد يوسف' : 'Ahmed Youssef', role: lang === 'ar' ? 'مؤسس ومدير المحتوى' : 'Founder & Content Lead' },
-      { name: lang === 'ar' ? 'ليلى مراد' : 'Leila Mourad', role: lang === 'ar' ? 'خبيرة تجارب الطعام' : 'Food Experience Lead' },
-      { name: lang === 'ar' ? 'كريم حسن' : 'Karim Hassan', role: lang === 'ar' ? 'محلل قيمة وجودة' : 'Quality & Value Analyst' },
-      { name: lang === 'ar' ? 'سارة كمال' : 'Sara Kamal', role: lang === 'ar' ? 'محررة محتوى وتسويق' : 'Content & Marketing' }
+    trustTitle: lang === 'ar' ? 'كيف نعمل' : 'How we work',
+    trust: [
+      {
+        title: lang === 'ar' ? 'منهجية الاختيار' : 'Selection methodology',
+        text: lang === 'ar'
+          ? 'نبدأ بتحديد سؤال المقال والجمهور المستهدف، ثم نجمع خيارات مناسبة ونقارنها بمعايير مرتبطة بالموضوع. نختصر النتيجة إلى خمس اختيارات مفيدة مع ذكر المزايا والقيود عندما تتوفر معلومات كافية.'
+          : 'We begin with the article question and intended audience, gather suitable candidates, and compare them using topic-specific criteria. We narrow the result to five useful selections and explain strengths and limitations when sufficient information is available.'
+      },
+      {
+        title: lang === 'ar' ? 'الاستقلال التحريري والإعلانات' : 'Editorial independence and advertising',
+        text: lang === 'ar'
+          ? 'الدفع لا يضمن الظهور في قائمة أو ترتيباً إيجابياً. نميز المحتوى المدعوم بوضوح، وتبقى القرارات التحريرية منفصلة عن الاتفاقات الإعلانية.'
+          : 'Payment does not guarantee inclusion or a positive ranking. Sponsored content is clearly labelled, and editorial decisions remain separate from advertising arrangements.'
+      },
+      {
+        title: lang === 'ar' ? 'التصحيحات والتحديثات' : 'Corrections and updates',
+        text: lang === 'ar'
+          ? 'يمكن الإبلاغ عن معلومة قديمة عبر صفحة التواصل مع رابط المقال ومصدر موثوق. نراجع الطلب، ونصحح المحتوى عند ثبوت المعلومة، ونحدّث تاريخ المراجعة عند إجراء مراجعة تحريرية جوهرية.'
+          : 'Outdated information can be reported through the Contact page with the article URL and a reliable source. We review the request, correct verified information, and update the review date after a substantive editorial review.'
+      },
+      {
+        title: lang === 'ar' ? 'المؤلفون ومعايير المصادر' : 'Authors and source standards',
+        text: lang === 'ar'
+          ? 'يظهر اسم المؤلف في المقال عندما يكون متاحاً. نعتمد قدر الإمكان على المواقع الرسمية والجهات المقدمة للخدمة والوثائق المباشرة، ونستخدم المصادر الثانوية للسياق لا لاستبدال المعلومات الأصلية.'
+          : 'An author name is shown on the article when available. We prioritize official websites, service providers, and primary documents, using secondary sources for context rather than as a substitute for original information.'
+      }
     ],
     faqTitle: lang === 'ar' ? 'أسئلة شائعة' : 'FAQ',
     faqs: [
@@ -90,8 +73,8 @@ const AboutPage: React.FC = () => {
         q: lang === 'ar' ? 'كيف تختارون “أفضل 5”؟' : 'How do you choose the Best 5?',
         a:
           lang === 'ar'
-            ? 'نوازن بين الجودة والقيمة وتجربة المستخدم مع مراجعات واقعية وزيارات متعددة.'
-            : 'We balance quality, value, and user experience with real reviews and repeat visits.'
+            ? 'نحدد معايير مرتبطة بموضوع المقال، ونقارن الخيارات المتاحة، ثم نختار خمسة خيارات مع توضيح أسباب الاختيار وحدوده.'
+            : 'We set criteria relevant to the topic, compare suitable candidates, and select five options while explaining the reasoning and its limits.'
       },
       {
         q: lang === 'ar' ? 'هل يمكنني اقتراح موضوع؟' : 'Can I suggest a topic?',
@@ -131,22 +114,6 @@ const AboutPage: React.FC = () => {
             <span className="text-primary">{copy.titleAccent}</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">{copy.intro}</p>
-          <div className="flex flex-wrap justify-center gap-4">
-            {copy.stats.map((stat) => (
-              <div key={stat.label} className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/10 min-w-[140px]">
-                <div className="text-3xl font-bold text-primary">
-                  {stat.value === 4.9 ? (
-                    <span>
-                      <CountUp to={4} suffix="" />.9{stat.suffix}
-                    </span>
-                  ) : (
-                    <CountUp to={stat.value} suffix={stat.suffix} />
-                  )}
-                </div>
-                <div className="text-sm text-slate-400">{stat.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -170,23 +137,14 @@ const AboutPage: React.FC = () => {
 
       <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{copy.teamTitle}</h2>
-            <p className="text-slate-600">{copy.teamSubtitle}</p>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{copy.trustTitle}</h2>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {copy.team.map((person) => (
-              <div key={person.name} className="text-center">
-                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white overflow-hidden shadow-lg mx-auto mb-4">
-                  <img
-                    alt={person.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=800&auto=format&fit=crop"
-                  />
-                </div>
-                <h4 className="text-lg font-bold">{person.name}</h4>
-                <p className="text-sm text-slate-500">{person.role}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {copy.trust.map((item) => (
+              <div key={item.title} className="rounded-3xl border border-slate-100 bg-white p-8">
+                <h3 className="text-xl font-bold mb-4">{item.title}</h3>
+                <p className="text-slate-600 leading-8">{item.text}</p>
               </div>
             ))}
           </div>

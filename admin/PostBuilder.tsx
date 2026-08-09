@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { uploadImage, fetchUploads, fetchCategories, fetchTags, createCategory, createTag } from '../services/api';
 import { parseImportedPostJson, resolveImportedPostValues } from '../utils/postJsonImport';
+import PostReadinessPanel from './PostReadinessPanel';
+import RelatedPostsSelector from './RelatedPostsSelector';
+import { getPostReadiness } from '../server/src/common/post-readiness';
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
@@ -10,7 +13,7 @@ type Block =
   | { id: string; type: 'heading'; data: { text: Localized; level: number } }
   | { id: string; type: 'paragraph'; data: { text: Localized } }
   | { id: string; type: 'image'; data: { url: string; caption?: Localized } }
-  | { id: string; type: 'gallery'; data: { urls: string[] } }
+  | { id: string; type: 'gallery'; data: { urls: string[]; title?: Localized } }
   | { id: string; type: 'map'; data: { embedUrl: string } }
   | { id: string; type: 'video'; data: { embedUrl: string } }
   | { id: string; type: 'cta'; data: { label: Localized; url: string } }
@@ -65,6 +68,20 @@ const defaultBlocks = (): Block[] => [
   { id: makeId(), type: 'paragraph', data: { text: { ar: 'اكتب النص هنا...', en: 'Write here...' } } }
 ];
 
+const isoToLocalDateTime = (iso?: string) => {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const localDateTimeToIso = (value: string) => {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+};
+
 const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, onPreviewPublic, onSaveDraft, onPublish }) => {
   const historyRef = useRef<{ values: Record<string, any>; blocks: Block[] }[]>([]);
   const historyIndexRef = useRef(-1);
@@ -81,6 +98,10 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
     onChange({ ...latestValuesRef.current, [key]: value });
   };
   const [blocks, setBlocks] = useState<Block[]>(() => values.content_blocks_json || defaultBlocks());
+  const readiness = useMemo(
+    () => getPostReadiness({ ...values, content_blocks_json: blocks }),
+    [values, blocks]
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [contentLang, setContentLang] = useState<Lang>('ar');
@@ -408,7 +429,7 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
         : type === 'image'
         ? { id: makeId(), type, data: { url: '', caption: { ar: '', en: '' } } }
         : type === 'gallery'
-        ? { id: makeId(), type, data: { urls: [''] } }
+        ? { id: makeId(), type, data: { urls: [''], title: { ar: '', en: '' } } }
         : type === 'map'
         ? { id: makeId(), type, data: { embedUrl: '' } }
         : type === 'video'
@@ -849,6 +870,12 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             <input type="file" accept="image/*" className="text-xs text-gray-300" onChange={(e) => handleUpload(block.id, (url) => updateBlock(block.id, { ...block.data, url }), e.target.files?.[0])} />
           </div>
           {uploading[block.id] && <div className="text-xs text-gray-400">Uploading...</div>}
+          <input
+            className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="Caption / alt text"
+            value={getLocalized(block.data.caption || '')}
+            onChange={(e) => updateBlock(block.id, { ...block.data, caption: setLocalized(block.data.caption || '', e.target.value) })}
+          />
         </div>
       );
     }
@@ -856,6 +883,12 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
     if (block.type === 'gallery') {
       return (
         <div className="space-y-2">
+          <input
+            className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="Gallery title / alt text"
+            value={getLocalized(block.data.title || '')}
+            onChange={(e) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title || '', e.target.value) })}
+          />
           {block.data.urls.map((url: string, idx: number) => (
             <div key={`${block.id}-url-${idx}`} className="flex items-center gap-2">
               <input
@@ -1426,12 +1459,29 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
             <button onClick={onSaveDraft} className="bg-[#F3F4F6] text-[#111827] px-3 py-1.5 rounded-full text-xs border border-[#E5E7EB] hover:bg-[#E5E7EB] transition">
               Save Draft
             </button>
-            <button onClick={onPublish} className="bg-primary text-[#0f172a] px-3 py-1.5 rounded-full text-xs font-semibold">
+            <button
+              onClick={onPublish}
+              disabled={readiness.errors.length > 0}
+              title={readiness.errors.length ? 'Resolve publishing errors first' : 'Publish'}
+              className="bg-primary text-[#0f172a] px-3 py-1.5 rounded-full text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+            >
               Publish
             </button>
           </div>
         </div>
       </div>
+
+      <section className="max-w-7xl mx-auto px-6 pt-6">
+        <PostReadinessPanel values={{ ...values, content_blocks_json: blocks }} />
+      </section>
+
+      <section className="max-w-7xl mx-auto px-6 pt-6">
+        <RelatedPostsSelector
+          postId={values.id}
+          value={values.related_post_ids}
+          onChange={(ids) => update('related_post_ids', ids)}
+        />
+      </section>
 
       <section className="max-w-7xl mx-auto px-6 pt-6">
         <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 space-y-4">
@@ -1643,6 +1693,35 @@ const PostBuilder: React.FC<PostBuilderProps> = ({ values, onChange, onPreview, 
 
           <div className="rounded-2xl bg-white border border-[#E5E7EB] p-4 shadow-sm">
               <div className="text-xs text-gray-400 mb-3">Post Settings</div>
+              <label className="block text-xs text-gray-500 mb-3">
+                <span className="block mb-1">Content reviewed at</span>
+                <input
+                  type="datetime-local"
+                  className="w-full bg-white border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm text-gray-900"
+                  value={isoToLocalDateTime(values.content_reviewed_at)}
+                  onChange={(event) => update('content_reviewed_at', localDateTimeToIso(event.target.value))}
+                />
+              </label>
+              <div className="mb-3 rounded-xl border border-amber-500/30 bg-amber-50 p-3">
+                <div className="text-xs font-semibold text-amber-800">Published URL slugs</div>
+                <p className="mt-1 text-[11px] text-amber-700">
+                  Publish a live slug change to create its permanent redirect automatically.
+                </p>
+                <input
+                  dir="ltr"
+                  className="mt-2 w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm text-gray-900"
+                  placeholder="Arabic slug"
+                  value={values.slug_ar || ''}
+                  onChange={(event) => update('slug_ar', event.target.value)}
+                />
+                <input
+                  dir="ltr"
+                  className="mt-2 w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm text-gray-900"
+                  placeholder="English slug"
+                  value={values.slug_en || ''}
+                  onChange={(event) => update('slug_en', event.target.value)}
+                />
+              </div>
               <input className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Cover Image URL" value={values.cover_image_url || ''} onChange={(e) => update('cover_image_url', e.target.value)} />
               <div className="flex items-center gap-2 mt-2">
                 <button className="text-xs px-3 py-1 rounded-full bg-white/10 border border-white/10" onClick={() => openMedia({ type: 'cover' })}>

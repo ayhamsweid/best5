@@ -101,16 +101,21 @@ const redirectForAliasedPost = (url, initialData) => {
   if (!initialData.post) return null;
   const parts = url.pathname.split('/').filter(Boolean);
   if (parts[1] !== 'blog' || parts.length !== 3) return null;
-  const canonicalPath = localizedPostPath(initialData.lang, initialData.post);
-  if (!canonicalPath) return null;
   let requestedSlug;
   try {
     requestedSlug = decodeURIComponent(parts[2]);
   } catch {
     return null;
   }
-  const requestedPath = `/${parts[0]}/blog/${encodeURIComponent(requestedSlug)}`;
-  return requestedPath === canonicalPath ? null : canonicalPath;
+  if (requestedSlug === initialData.post.slug_ar) {
+    const canonicalPath = localizedPostPath('ar', initialData.post);
+    return parts[0] === 'ar' ? null : canonicalPath;
+  }
+  if (requestedSlug === initialData.post.slug_en) {
+    const canonicalPath = localizedPostPath('en', initialData.post);
+    return parts[0] === 'en' ? null : canonicalPath;
+  }
+  return localizedPostPath(initialData.lang, initialData.post);
 };
 
 const redirectForAliasedCategory = (url, initialData) => {
@@ -174,6 +179,7 @@ const loadInitialData = async (url) => {
     (section === 'blog' && (parts.length === 2 || parts.length === 3)) ||
     (section === 'categories' && parts.length === 2) ||
     (section === 'category' && parts.length === 3) ||
+    (section === 'author' && parts.length === 3) ||
     (section === 'search' && parts.length === 2) ||
     ((section === 'compare' || section === 'guide') && parts.length === 3) ||
     (staticSections.has(section) && parts.length === 2)
@@ -223,6 +229,11 @@ const loadInitialData = async (url) => {
     if (!exists) data.status = 404;
   }
 
+  if (section === 'author' && slug) {
+    data.author = await getJson(`/authors/public/${encodeURIComponent(slug)}`, null);
+    if (!data.author) data.status = 404;
+  }
+
   return data;
 };
 
@@ -248,11 +259,19 @@ const renderHead = (seo, status, url, initialData) => {
       alternateEnPath = `/en/category/${encodeURIComponent(category.slug_en)}`;
     }
   }
+  if (parts[1] === 'author' && initialData.author?.author_slug) {
+    const authorSlug = encodeURIComponent(initialData.author.author_slug);
+    alternateArPath = `/ar/author/${authorSlug}`;
+    alternateEnPath = `/en/author/${authorSlug}`;
+  }
   const alternateAr = absoluteUrl(seo?.alternates?.ar || alternateArPath);
   const alternateEn = absoluteUrl(seo?.alternates?.en || alternateEnPath);
   const alternateDefault = absoluteUrl(seo?.alternates?.xDefault || alternateEnPath || alternateArPath);
   const section = url.pathname.split('/').filter(Boolean)[1] || '';
-  const robots = status === 404 || section === 'search' ? 'noindex,follow' : 'index,follow';
+  const robots = seo?.robots ||
+    (status === 404 || ['search', 'compare', 'guide', 'preview'].includes(section)
+      ? 'noindex,follow'
+      : 'index,follow');
   return [
     `<title>${escapeHtml(title)}</title>`,
     description ? `<meta name="description" content="${escapeHtml(description)}">` : '',
@@ -286,14 +305,35 @@ createServer(async (request, response) => {
       response.end();
       return;
     }
+    if (url.pathname.length > 1 && url.pathname.endsWith('/')) {
+      response.writeHead(301, {
+        Location: `${url.pathname.replace(/\/+$/, '')}${url.search}`,
+        'Cache-Control': 'public, max-age=3600'
+      });
+      response.end();
+      return;
+    }
     pruneApiCache();
+    const registeredRedirect = await getJson(
+      `/redirects/public/resolve?path=${encodeURIComponent(url.pathname)}`,
+      null,
+      5_000
+    );
+    if (registeredRedirect?.location) {
+      response.writeHead(registeredRedirect.status_code || 301, {
+        Location: `${registeredRedirect.location}${url.search}`,
+        'Cache-Control': 'public, max-age=3600'
+      });
+      response.end();
+      return;
+    }
     const initialData = await loadInitialData(url);
     const aliasRedirect = redirectForAliasedPost(url, initialData);
     const categoryAliasRedirect = redirectForAliasedCategory(url, initialData);
     const canonicalRedirect = aliasRedirect || categoryAliasRedirect;
     if (canonicalRedirect) {
       response.writeHead(301, {
-        Location: canonicalRedirect,
+        Location: `${canonicalRedirect}${url.search}`,
         'Cache-Control': 'public, max-age=3600'
       });
       response.end();

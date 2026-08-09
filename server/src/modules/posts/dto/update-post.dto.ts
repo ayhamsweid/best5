@@ -12,6 +12,14 @@ export class UpdatePostDto {
 
   @IsOptional()
   @IsString()
+  slug_ar?: string;
+
+  @IsOptional()
+  @IsString()
+  slug_en?: string;
+
+  @IsOptional()
+  @IsString()
   excerpt_ar?: string;
 
   @IsOptional()
@@ -38,6 +46,11 @@ export class UpdatePostDto {
   @IsArray()
   @IsUUID('4', { each: true })
   tag_ids?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true })
+  related_post_ids?: string[];
 
   @IsOptional()
   @IsString()
@@ -73,7 +86,7 @@ export class UpdatePostDto {
 
   @IsOptional()
   @IsDateString()
-  content_reviewed_at?: string;
+  content_reviewed_at?: string | null;
 
   @IsOptional()
   @IsDateString()

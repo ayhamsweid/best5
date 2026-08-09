@@ -1,8 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PostStatus } from '@prisma/client';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { getPostReadiness } from '../../common/post-readiness';
+import { randomUUID } from 'crypto';
+import { normalizeRedirectPath } from '../redirects/redirects.service';
 
 const slugify = (value: string) =>
   value
@@ -22,6 +25,16 @@ const legacyPostSlugIds: Record<string, string> = {
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
+  private readonly publicAuthorSelect = {
+    full_name: true,
+    author_slug: true,
+    author_title_ar: true,
+    author_title_en: true,
+    author_image_url: true,
+    author_verified: true,
+    show_public_profile: true
+  } as const;
+
   private readonly viewCacheTtlMs = Math.max(5_000, Number(process.env.VIEW_COUNT_CACHE_TTL_MS) || 60_000);
   private readonly viewCountCache = new Map<number, {
     expiresAt: number;
@@ -38,6 +51,7 @@ export class PostsService {
     excerpt_en: true,
     cover_image_url: true,
     category_id: true,
+    related_post_ids: true,
     published_at: true,
     content_reviewed_at: true,
     updated_at: true,
@@ -116,6 +130,118 @@ export class PostsService {
     const arViews = views.get(post.slug_ar) || 0;
     if (post.slug_ar === post.slug_en) return arViews;
     return arViews + (views.get(post.slug_en) || 0);
+  }
+
+  private async assertPublishReady(post: Record<string, any>, excludeId?: string) {
+    const readiness = getPostReadiness(post);
+    const slugAr = post.slug_ar || slugify(post.title_ar || '');
+    const slugEn = post.slug_en || slugify(post.title_en || '');
+    if (!slugAr) readiness.errors.push('Arabic slug is required.');
+    if (!slugEn) readiness.errors.push('English slug is required.');
+    if (slugAr.startsWith('draft-') || slugEn.startsWith('draft-')) readiness.errors.push('Draft slugs must be replaced before publishing.');
+
+    if (slugAr && slugEn) {
+      const duplicate = await this.prisma.post.findFirst({
+        where: {
+          ...(excludeId ? { id: { not: excludeId } } : {}),
+          OR: [
+            { slug_ar: slugAr },
+            { slug_en: slugAr },
+            { slug_ar: slugEn },
+            { slug_en: slugEn }
+          ]
+        },
+        select: { id: true }
+      });
+      if (duplicate) readiness.errors.push('Arabic or English slug is already used by another post.');
+    }
+
+    const metadataFields = [
+      ['seo_title_ar', post.seo_title_ar],
+      ['seo_title_en', post.seo_title_en],
+      ['seo_desc_ar', post.seo_desc_ar],
+      ['seo_desc_en', post.seo_desc_en]
+    ] as const;
+    const metadataOr = metadataFields
+      .filter(([, value]) => typeof value === 'string' && value.trim())
+      .map(([field, value]) => ({
+        [field]: { equals: value.trim(), mode: 'insensitive' as const }
+      }));
+    if (metadataOr.length) {
+      const duplicateMetadata = await this.prisma.post.findMany({
+        where: {
+          ...(excludeId ? { id: { not: excludeId } } : {}),
+          OR: metadataOr
+        },
+        select: {
+          seo_title_ar: true,
+          seo_title_en: true,
+          seo_desc_ar: true,
+          seo_desc_en: true
+        }
+      });
+      for (const [field, value] of metadataFields) {
+        const normalized = typeof value === 'string' ? value.trim().toLocaleLowerCase() : '';
+        if (normalized && duplicateMetadata.some((item) =>
+          (item[field] || '').trim().toLocaleLowerCase() === normalized
+        )) {
+          readiness.errors.push(`${field} must be unique across posts.`);
+        }
+      }
+    }
+
+    if (readiness.errors.length) {
+      throw new BadRequestException({
+        message: 'Post is not ready to publish.',
+        errors: [...new Set(readiness.errors)],
+        warnings: readiness.warnings
+      });
+    }
+  }
+
+  private async validateRelatedPostIds(ids: string[] | undefined, postId?: string) {
+    if (ids === undefined) return undefined;
+    const uniqueIds = [...new Set(ids)];
+    if (uniqueIds.length !== ids.length) {
+      throw new BadRequestException('Related articles cannot contain duplicates.');
+    }
+    if (uniqueIds.length > 4) {
+      throw new BadRequestException('Select no more than 4 related articles.');
+    }
+    if (postId && uniqueIds.includes(postId)) {
+      throw new BadRequestException('A post cannot be related to itself.');
+    }
+    if (!uniqueIds.length) return uniqueIds;
+
+    const publishedCount = await this.prisma.post.count({
+      where: {
+        id: { in: uniqueIds },
+        status: PostStatus.PUBLISHED,
+        published_at: { not: null }
+      }
+    });
+    if (publishedCount !== uniqueIds.length) {
+      throw new BadRequestException('Related articles must be published posts.');
+    }
+    return uniqueIds;
+  }
+
+  private async attachManualRelatedPosts<T extends { related_post_ids?: string[] }>(post: T) {
+    const ids = post.related_post_ids || [];
+    if (!ids.length) return { ...post, related_posts: [] };
+    const related = await this.prisma.post.findMany({
+      where: {
+        id: { in: ids },
+        status: PostStatus.PUBLISHED,
+        published_at: { not: null }
+      },
+      select: this.publicListSelect
+    });
+    const byId = new Map(related.map((item) => [item.id, item]));
+    return {
+      ...post,
+      related_posts: ids.map((id) => byId.get(id)).filter(Boolean)
+    };
   }
 
   private async attachViews<T extends { slug_ar: string; slug_en: string }>(posts: T[], days = 30) {
@@ -204,7 +330,7 @@ export class PostsService {
         ...(lang === 'ar' ? { slug_ar: slug } : { slug_en: slug })
       },
       include: {
-        author: { select: { full_name: true } },
+        author: { select: this.publicAuthorSelect },
         category: true,
         tags: {
           include: {
@@ -213,7 +339,7 @@ export class PostsService {
         }
       }
     });
-    if (primary) return primary;
+    if (primary) return this.attachManualRelatedPosts(primary);
     const crossLanguage = await this.prisma.post.findFirst({
       where: {
         status: PostStatus.PUBLISHED,
@@ -221,7 +347,7 @@ export class PostsService {
         ...(lang === 'ar' ? { slug_en: slug } : { slug_ar: slug })
       },
       include: {
-        author: { select: { full_name: true } },
+        author: { select: this.publicAuthorSelect },
         category: true,
         tags: {
           include: {
@@ -230,18 +356,18 @@ export class PostsService {
         }
       }
     });
-    if (crossLanguage) return crossLanguage;
+    if (crossLanguage) return this.attachManualRelatedPosts(crossLanguage);
 
     const legacyId = legacyPostSlugIds[slug];
     if (!legacyId) return null;
-    return this.prisma.post.findFirst({
+    const legacyPost = await this.prisma.post.findFirst({
       where: {
         id: legacyId,
         status: PostStatus.PUBLISHED,
         published_at: { not: null }
       },
       include: {
-        author: { select: { full_name: true } },
+        author: { select: this.publicAuthorSelect },
         category: true,
         tags: {
           include: {
@@ -250,6 +376,7 @@ export class PostsService {
         }
       }
     });
+    return legacyPost ? this.attachManualRelatedPosts(legacyPost) : null;
   }
 
   findOne(id: string) {
@@ -268,21 +395,39 @@ export class PostsService {
   previewById(id: string) {
     return this.prisma.post.findUnique({
       where: { id },
-      include: { author: { select: { full_name: true } } }
+      include: { author: { select: this.publicAuthorSelect } }
     });
   }
 
-  create(authorId: string, data: CreatePostDto) {
+  async create(authorId: string, data: CreatePostDto) {
     const { tag_ids, content_reviewed_at, ...postData } = data;
-    const slugEn = slugify(data.title_en);
-    const slugAr = slugify(data.title_ar);
+    const relatedPostIds = await this.validateRelatedPostIds(data.related_post_ids);
+    const draftSuffix = randomUUID();
+    const slugEn = slugify(data.title_en || '') || `draft-en-${draftSuffix}`;
+    const slugAr = slugify(data.title_ar || '') || `draft-ar-${draftSuffix}`;
     const publishedAt = data.published_at ? new Date(data.published_at) : undefined;
-    const contentReviewedAt = content_reviewed_at ? new Date(content_reviewed_at) : undefined;
+    const contentReviewedAt = content_reviewed_at
+      ? new Date(content_reviewed_at)
+      : content_reviewed_at === null
+        ? null
+        : undefined;
     const scheduledAt = data.scheduled_at ? new Date(data.scheduled_at) : undefined;
     const now = new Date();
+    if (data.status === PostStatus.PUBLISHED || data.status === PostStatus.SCHEDULED) {
+      await this.assertPublishReady({
+        ...data,
+        slug_ar: slugAr,
+        slug_en: slugEn
+      });
+    }
     return this.prisma.post.create({
       data: {
         ...postData,
+        related_post_ids: relatedPostIds,
+        title_ar: data.title_ar || '',
+        title_en: data.title_en || '',
+        excerpt_ar: data.excerpt_ar || '',
+        excerpt_en: data.excerpt_en || '',
         slug_en: slugEn,
         slug_ar: slugAr,
         author_id: authorId,
@@ -306,36 +451,119 @@ export class PostsService {
     });
   }
 
-  update(id: string, data: UpdatePostDto) {
-    const { tag_ids, content_reviewed_at, ...postData } = data;
+  async update(id: string, data: UpdatePostDto) {
+    const {
+      tag_ids,
+      content_reviewed_at,
+      slug_ar: requestedSlugAr,
+      slug_en: requestedSlugEn,
+      ...postData
+    } = data;
+    const relatedPostIds = await this.validateRelatedPostIds(data.related_post_ids, id);
     const publishedAt = data.published_at ? new Date(data.published_at) : undefined;
-    const contentReviewedAt = content_reviewed_at ? new Date(content_reviewed_at) : undefined;
+    const contentReviewedAt = content_reviewed_at
+      ? new Date(content_reviewed_at)
+      : content_reviewed_at === null
+        ? null
+        : undefined;
     const scheduledAt = data.scheduled_at ? new Date(data.scheduled_at) : undefined;
     const now = new Date();
-    return this.prisma.post.update({
-      where: { id },
-      data: {
-        ...postData,
-        published_at: data.status === PostStatus.PUBLISHED ? publishedAt || now : publishedAt,
-        content_reviewed_at: contentReviewedAt,
-        scheduled_at: scheduledAt,
-        content_blocks_json: data.content_blocks_json ?? undefined,
-        ...(tag_ids
-          ? {
-              tags: {
-                deleteMany: {},
-                create: tag_ids.map((tag_id) => ({ tag_id }))
+    const existing = await this.prisma.post.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Post not found');
+    const nextSlugAr = requestedSlugAr !== undefined
+      ? slugify(requestedSlugAr)
+      : existing.slug_ar.startsWith('draft-ar-') && data.title_ar
+        ? slugify(data.title_ar) || existing.slug_ar
+        : existing.slug_ar;
+    const nextSlugEn = requestedSlugEn !== undefined
+      ? slugify(requestedSlugEn)
+      : existing.slug_en.startsWith('draft-en-') && data.title_en
+        ? slugify(data.title_en) || existing.slug_en
+        : existing.slug_en;
+    if (!nextSlugAr || !nextSlugEn) {
+      throw new BadRequestException('Arabic and English slugs are required.');
+    }
+    const slugUpdates = {
+      ...(nextSlugAr !== existing.slug_ar ? { slug_ar: nextSlugAr } : {}),
+      ...(nextSlugEn !== existing.slug_en ? { slug_en: nextSlugEn } : {})
+    };
+    const slugChanged = Boolean(slugUpdates.slug_ar || slugUpdates.slug_en);
+    const finalStatus = data.status ?? existing.status;
+    if (slugChanged && existing.status === PostStatus.PUBLISHED && finalStatus !== PostStatus.PUBLISHED) {
+      throw new BadRequestException('Keep the article published when changing a live slug so its 301 redirect can be created.');
+    }
+    if (
+      data.status === PostStatus.PUBLISHED ||
+      data.status === PostStatus.SCHEDULED ||
+      (existing.status === PostStatus.PUBLISHED && slugChanged)
+    ) {
+      await this.assertPublishReady({ ...existing, ...data, ...slugUpdates }, id);
+    }
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.post.update({
+        where: { id },
+        data: {
+          ...postData,
+          ...(relatedPostIds !== undefined ? { related_post_ids: relatedPostIds } : {}),
+          ...slugUpdates,
+          published_at: data.status === PostStatus.PUBLISHED ? publishedAt || now : publishedAt,
+          content_reviewed_at: contentReviewedAt,
+          scheduled_at: scheduledAt,
+          content_blocks_json: data.content_blocks_json ?? undefined,
+          ...(tag_ids
+            ? {
+                tags: {
+                  deleteMany: {},
+                  create: tag_ids.map((tag_id) => ({ tag_id }))
+                }
               }
+            : {})
+        },
+        include: {
+          tags: {
+            include: {
+              tag: true
             }
-          : {})
-      },
-      include: {
-        tags: {
-          include: {
-            tag: true
           }
         }
+      });
+
+      if (slugChanged && existing.status === PostStatus.PUBLISHED && finalStatus === PostStatus.PUBLISHED) {
+        const redirects = [
+          nextSlugAr !== existing.slug_ar
+            ? { old: `/ar/blog/${existing.slug_ar}`, next: `/ar/blog/${nextSlugAr}` }
+            : null,
+          nextSlugEn !== existing.slug_en
+            ? { old: `/en/blog/${existing.slug_en}`, next: `/en/blog/${nextSlugEn}` }
+            : null
+        ].filter(Boolean) as Array<{ old: string; next: string }>;
+
+        for (const redirect of redirects) {
+          const oldPath = normalizeRedirectPath(redirect.old);
+          const newPath = normalizeRedirectPath(redirect.next);
+          if (!oldPath || !newPath || oldPath === newPath) continue;
+          await tx.redirect.updateMany({
+            where: { new_path: oldPath },
+            data: { new_path: newPath }
+          });
+          await tx.redirect.upsert({
+            where: { old_path: oldPath },
+            create: {
+              old_path: oldPath,
+              new_path: newPath,
+              status_code: 301,
+              active: true
+            },
+            update: {
+              new_path: newPath,
+              status_code: 301,
+              active: true
+            }
+          });
+        }
       }
+
+      return updated;
     });
   }
 
@@ -375,7 +603,8 @@ export class PostsService {
       seo_desc_ar: post.seo_desc_ar,
       seo_desc_en: post.seo_desc_en,
       canonical_url: post.canonical_url,
-      og_image_url: post.og_image_url
+      og_image_url: post.og_image_url,
+      related_post_ids: post.related_post_ids
     };
     return this.prisma.postRevision.create({
       data: {
@@ -425,7 +654,8 @@ export class PostsService {
         seo_desc_ar: snapshot.seo_desc_ar ?? null,
         seo_desc_en: snapshot.seo_desc_en ?? null,
         canonical_url: snapshot.canonical_url ?? null,
-        og_image_url: snapshot.og_image_url ?? null
+        og_image_url: snapshot.og_image_url ?? null,
+        related_post_ids: Array.isArray(snapshot.related_post_ids) ? snapshot.related_post_ids : []
       }
     });
   }

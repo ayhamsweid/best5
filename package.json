@@ -8,6 +8,9 @@
     "build": "npm run build:client && npm run build:ssr",
     "build:client": "vite build",
     "build:ssr": "vite build --ssr entry-server.tsx --outDir dist-server",
+    "test:seo-parity": "node scripts/seo-route-parity.mjs",
+    "test:seo-audit": "node scripts/seo-audit.mjs",
+    "test:site-quality": "node scripts/site-quality-audit.mjs",
     "preview": "vite preview",
     "start:ssr": "node ssr-server.mjs"
   },

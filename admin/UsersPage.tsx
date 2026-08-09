@@ -51,7 +51,19 @@ const UsersPage: React.FC = () => {
       full_name: user.full_name,
       email: user.email,
       role: user.role,
-      is_active: user.is_active
+      is_active: user.is_active,
+      author_slug: user.author_slug || '',
+      author_title_ar: user.author_title_ar || '',
+      author_title_en: user.author_title_en || '',
+      author_bio_ar: user.author_bio_ar || '',
+      author_bio_en: user.author_bio_en || '',
+      author_expertise_ar: (user.author_expertise_ar || []).join(', '),
+      author_expertise_en: (user.author_expertise_en || []).join(', '),
+      author_image_url: user.author_image_url || '',
+      author_website_url: user.author_website_url || '',
+      author_social_url: user.author_social_url || '',
+      author_verified: !!user.author_verified,
+      show_public_profile: !!user.show_public_profile
     });
   };
 
@@ -61,9 +73,18 @@ const UsersPage: React.FC = () => {
   };
 
   const saveEdit = async (user: any) => {
-    const updated = await updateUser(user.id, editValues);
-    setUsers((prev) => prev.map((u) => (u.id === user.id ? updated : u)));
-    cancelEdit();
+    setError(null);
+    try {
+      const updated = await updateUser(user.id, {
+        ...editValues,
+        author_expertise_ar: String(editValues.author_expertise_ar || '').split(',').map((item) => item.trim()).filter(Boolean),
+        author_expertise_en: String(editValues.author_expertise_en || '').split(',').map((item) => item.trim()).filter(Boolean)
+      });
+      setUsers((prev) => prev.map((u) => (u.id === user.id ? updated : u)));
+      cancelEdit();
+    } catch (e: any) {
+      setError(e?.message || 'Failed to update author profile');
+    }
   };
 
   const onResetPassword = async (user: any) => {
@@ -202,6 +223,82 @@ const UsersPage: React.FC = () => {
                     onChange={() => setEditValues((prev) => ({ ...prev, is_active: !prev.is_active }))}
                   />
                   Active
+                </label>
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Public author slug"
+                  value={editValues.author_slug || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_slug: e.target.value }))}
+                />
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Author title (Arabic)"
+                  value={editValues.author_title_ar || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_title_ar: e.target.value }))}
+                />
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Author title (English)"
+                  value={editValues.author_title_en || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_title_en: e.target.value }))}
+                />
+                <textarea
+                  className="min-h-28 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Author bio (Arabic)"
+                  value={editValues.author_bio_ar || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_bio_ar: e.target.value }))}
+                />
+                <textarea
+                  className="min-h-28 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Author bio (English)"
+                  value={editValues.author_bio_en || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_bio_en: e.target.value }))}
+                />
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Arabic expertise, comma separated"
+                  value={editValues.author_expertise_ar || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_expertise_ar: e.target.value }))}
+                />
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="English expertise, comma separated"
+                  value={editValues.author_expertise_en || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_expertise_en: e.target.value }))}
+                />
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Profile image URL"
+                  value={editValues.author_image_url || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_image_url: e.target.value }))}
+                />
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Personal website URL"
+                  value={editValues.author_website_url || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_website_url: e.target.value }))}
+                />
+                <input
+                  className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  placeholder="Professional/social URL"
+                  value={editValues.author_social_url || ''}
+                  onChange={(e) => setEditValues((prev) => ({ ...prev, author_social_url: e.target.value }))}
+                />
+                <label className="flex items-center gap-2 text-xs text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={!!editValues.author_verified}
+                    onChange={() => setEditValues((prev) => ({ ...prev, author_verified: !prev.author_verified }))}
+                  />
+                  Verified author data
+                </label>
+                <label className="flex items-center gap-2 text-xs text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={!!editValues.show_public_profile}
+                    onChange={() => setEditValues((prev) => ({ ...prev, show_public_profile: !prev.show_public_profile }))}
+                  />
+                  Publish author profile
                 </label>
                 <div className="flex items-center gap-2">
                   <button onClick={() => saveEdit(user)} className="text-xs px-3 py-1 rounded-full bg-primary text-white">

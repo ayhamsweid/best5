@@ -1,0 +1,2 @@
+ALTER TABLE "Post"
+ADD COLUMN "related_post_ids" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

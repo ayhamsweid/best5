@@ -35,7 +35,7 @@ const PublicPostPreviewPage: React.FC = () => {
     );
   }
 
-  return <BlogDetailPage overridePost={post} overrideLang={lang} />;
+  return <BlogDetailPage overridePost={post} overrideLang={lang} robots="noindex,follow" />;
 };
 
 export default PublicPostPreviewPage;

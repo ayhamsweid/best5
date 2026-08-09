@@ -108,6 +108,7 @@ const GuidePage: React.FC = () => {
         title={guide.title}
         description={guide.description}
         canonical={`/${lang}/guide/${guide.slug}`}
+        robots="noindex,follow"
       />
       <header className="bg-[#111827] text-white">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">

@@ -49,6 +49,8 @@ export const fetchPublicPosts = (lang: 'ar' | 'en', categorySlug?: string) =>
 export const fetchPopularPosts = (lang: 'ar' | 'en', days = 7, limit = 5) =>
   request(`/posts/public/popular?lang=${lang}&days=${days}&limit=${limit}`);
 export const fetchPublicPost = (lang: 'ar' | 'en', slug: string) => request(`/posts/public/${slug}?lang=${lang}`);
+export const fetchPublicAuthor = (slug: string) =>
+  request(`/authors/public/${encodeURIComponent(slug)}`);
 
 const prepareImageForUpload = async (file: File, maxWidth = 1600, quality = 0.8) => {
   const image = new Image();
@@ -113,6 +115,8 @@ export const updateUploadTags = (name: string, tags: string[]) =>
 const postWriteFields = new Set([
   'title_ar',
   'title_en',
+  'slug_ar',
+  'slug_en',
   'excerpt_ar',
   'excerpt_en',
   'content_ar',
@@ -124,6 +128,7 @@ const postWriteFields = new Set([
   'scheduled_at',
   'category_id',
   'tag_ids',
+  'related_post_ids',
   'seo_title_ar',
   'seo_title_en',
   'seo_desc_ar',
@@ -149,6 +154,8 @@ export const fetchCategories = () => request('/categories');
 export const fetchPublicCategories = () => request('/categories/public');
 export const createCategory = (payload: Record<string, unknown>) =>
   request('/categories', { method: 'POST', body: JSON.stringify(payload) });
+export const updateCategory = (id: string, payload: Record<string, unknown>) =>
+  request(`/categories/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
 
 export const fetchTags = () => request('/tags');
 export const fetchPublicTags = () => request('/tags/public');

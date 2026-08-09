@@ -13,6 +13,7 @@ import { SitemapModule } from './modules/sitemap/sitemap.module';
 import { DbToolsModule } from './modules/db-tools/db-tools.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SeoRenderModule } from './modules/seo-render/seo-render.module';
+import { RedirectsModule } from './modules/redirects/redirects.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SeoRenderModule } from './modules/seo-render/seo-render.module';
     SitemapModule,
     DbToolsModule,
     NotificationsModule,
+    RedirectsModule,
     SeoRenderModule
   ]
 })

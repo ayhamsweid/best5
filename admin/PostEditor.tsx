@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import BlogBlocksRenderer from '../components/BlogBlocksRenderer';
 import { fetchCategories, fetchTags, fetchUploads, uploadImage, createCategory, createTag } from '../services/api';
 import { parseImportedPostJson, resolveImportedPostValues } from '../utils/postJsonImport';
+import PostReadinessPanel from './PostReadinessPanel';
+import RelatedPostsSelector from './RelatedPostsSelector';
 
 type Lang = 'ar' | 'en';
 type Localized = string | { ar?: string; en?: string };
@@ -16,7 +18,7 @@ type Block =
   | { id: string; type: 'heading'; data: { text: Localized; level: number } }
   | { id: string; type: 'paragraph'; data: { text: Localized } }
   | { id: string; type: 'image'; data: { url: string; caption?: Localized } }
-  | { id: string; type: 'gallery'; data: { urls: string[] } }
+  | { id: string; type: 'gallery'; data: { urls: string[]; title?: Localized } }
   | { id: string; type: 'map'; data: { embedUrl: string } }
   | { id: string; type: 'video'; data: { embedUrl: string } }
   | { id: string; type: 'cta'; data: { label: Localized; url: string } }
@@ -143,9 +145,9 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
   };
 
   const localDateTimeToIso = (localValue: string) => {
-    if (!localValue) return '';
+    if (!localValue) return null;
     const d = new Date(localValue);
-    if (Number.isNaN(d.getTime())) return '';
+    if (Number.isNaN(d.getTime())) return null;
     return d.toISOString();
   };
 
@@ -307,7 +309,7 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
         : type === 'image'
         ? { id: makeId(), type, data: { url: '', caption: { ar: '', en: '' } } }
         : type === 'gallery'
-        ? { id: makeId(), type, data: { urls: [''] } }
+        ? { id: makeId(), type, data: { urls: [''], title: { ar: '', en: '' } } }
         : type === 'map'
         ? { id: makeId(), type, data: { embedUrl: '' } }
         : type === 'video'
@@ -884,6 +886,12 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
     if (block.type === 'gallery') {
       return (
         <div className="space-y-2">
+          <input
+            className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm"
+            placeholder="Gallery title / alt text"
+            value={getLocalized(block.data.title || '')}
+            onChange={(e) => updateBlock(block.id, { ...block.data, title: setLocalized(block.data.title || '', e.target.value) })}
+          />
           {block.data.urls.map((url: string, idx: number) => (
             <input
               key={`${block.id}-url-${idx}`}
@@ -1507,6 +1515,12 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
 
   return (
     <div className="space-y-6">
+      <PostReadinessPanel values={{ ...values, content_blocks_json: blocks }} />
+      <RelatedPostsSelector
+        postId={values.id}
+        value={values.related_post_ids}
+        onChange={(ids) => update('related_post_ids', ids)}
+      />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <select
           className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
@@ -1526,14 +1540,15 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           onChange={(e) => update('published_at', localDateTimeToIso(e.target.value))}
           aria-label="Published at"
         />
-        <input
-          type="datetime-local"
-          className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
-          value={isoToLocalDateTime(values.content_reviewed_at)}
-          onChange={(e) => update('content_reviewed_at', localDateTimeToIso(e.target.value))}
-          aria-label="Content reviewed at"
-          title="Content reviewed at"
-        />
+        <label className="space-y-1 text-xs text-gray-300">
+          <span>Content reviewed at</span>
+          <input
+            type="datetime-local"
+            className="w-full bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
+            value={isoToLocalDateTime(values.content_reviewed_at)}
+            onChange={(e) => update('content_reviewed_at', localDateTimeToIso(e.target.value))}
+          />
+        </label>
         <input
           type="datetime-local"
           className="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-sm"
@@ -1541,6 +1556,34 @@ const PostEditor: React.FC<PostEditorProps> = ({ values, onChange }) => {
           onChange={(e) => update('scheduled_at', localDateTimeToIso(e.target.value))}
         />
       </div>
+      {values.id && (
+        <div className="rounded-2xl border border-amber-400/30 bg-amber-400/5 p-4">
+          <div className="text-xs font-semibold text-amber-200">Published URL slugs</div>
+          <p className="mt-1 text-[11px] text-gray-400">
+            Changing a live slug while publishing creates a permanent one-hop redirect from the previous URL.
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <label className="space-y-1 text-xs text-gray-300">
+              <span>Arabic slug</span>
+              <input
+                dir="ltr"
+                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm"
+                value={values.slug_ar || ''}
+                onChange={(event) => update('slug_ar', event.target.value)}
+              />
+            </label>
+            <label className="space-y-1 text-xs text-gray-300">
+              <span>English slug</span>
+              <input
+                dir="ltr"
+                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm"
+                value={values.slug_en || ''}
+                onChange={(event) => update('slug_en', event.target.value)}
+              />
+            </label>
+          </div>
+        </div>
+      )}
       <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
         <div className="text-xs text-gray-300 mb-3">SEO (optional)</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

@@ -9,6 +9,7 @@ export type InitialData = {
   categories?: any[];
   tags?: any[];
   post?: any | null;
+  author?: any | null;
   status?: number;
   siteUrl?: string;
 };

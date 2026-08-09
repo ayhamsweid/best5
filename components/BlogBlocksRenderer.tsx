@@ -13,7 +13,7 @@ interface BlogBlocksRendererProps {
 const pick = (value: any, lang: Lang) => {
   if (value == null) return '';
   if (typeof value === 'string') return value;
-  return value?.[lang] ?? value?.ar ?? value?.en ?? '';
+  return value?.[lang] ?? '';
 };
 
 const hasText = (value: any, lang: Lang) => pick(value, lang).trim().length > 0;
@@ -38,23 +38,19 @@ const normalizeMapUrl = (value: unknown, fallbackQuery: string) => {
     : '';
 };
 
-const BlockImage: React.FC<{ src?: string; alt?: string; className?: string; fallbackClassName?: string }> = ({
+const BlockImage: React.FC<{ src?: string; alt?: string; className?: string; width?: number; height?: number }> = ({
   src,
   alt = '',
   className = '',
-  fallbackClassName = ''
+  width = 1200,
+  height = 675
 }) => {
   const [failed, setFailed] = React.useState(false);
+  React.useEffect(() => setFailed(false), [src]);
 
-  if (!src || failed) {
-    return (
-      <div className={`flex items-center justify-center bg-[#111827] text-white/70 text-xs ${fallbackClassName || className}`}>
-        No image
-      </div>
-    );
-  }
+  if (!src || failed) return null;
 
-  return <img className={className} src={src} alt={alt} loading="lazy" onError={() => setFailed(true)} />;
+  return <img className={className} src={src} alt={alt} width={width} height={height} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
 };
 
 const parseRating = (value: any) => {
@@ -103,38 +99,41 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
     <div className="space-y-6 text-sm text-gray-700 leading-relaxed">
       {blocks.map((block: any) => {
         if (block.type === 'heading') {
+          const heading = pick(block.data?.text, lang);
+          if (!heading) return null;
           const Tag = (`h${block.data?.level || 2}` as keyof JSX.IntrinsicElements);
           const size =
             block.data?.level === 1 ? 'text-3xl' : block.data?.level === 3 ? 'text-xl' : block.data?.level === 4 ? 'text-lg' : 'text-2xl';
-          return <Tag key={block.id} className={`font-black text-[#111827] ${size}`}>{pick(block.data?.text, lang)}</Tag>;
+          return <Tag key={block.id} className={`font-black text-[#111827] ${size}`}>{heading}</Tag>;
         }
         if (block.type === 'paragraph') {
-          return <p key={block.id} className="text-gray-600">{pick(block.data?.text, lang)}</p>;
+          const paragraph = pick(block.data?.text, lang);
+          return paragraph ? <p key={block.id} className="text-gray-600">{paragraph}</p> : null;
         }
         if (block.type === 'image') {
+          const imageUrl = safeResourceUrl(block.data?.url);
+          const caption = pick(block.data?.caption, lang);
+          if (!imageUrl || !caption) return null;
           return (
             <figure key={block.id} className="space-y-2">
-              {safeResourceUrl(block.data?.url) && (
-                <img
-                  src={safeResourceUrl(block.data.url)}
-                  alt={pick(block.data?.caption, lang) || (lang === 'ar' ? 'صورة توضيحية للدليل' : 'Guide illustration')}
-                  loading="lazy"
-                  className="rounded-2xl w-full object-cover"
-                />
-              )}
-              {block.data?.caption && <figcaption className="text-xs text-gray-500">{pick(block.data.caption, lang)}</figcaption>}
+              <BlockImage src={imageUrl} alt={caption} width={1200} height={675} className="aspect-video rounded-2xl w-full object-cover" />
+              <figcaption className="text-xs text-gray-500">{caption}</figcaption>
             </figure>
           );
         }
         if (block.type === 'gallery') {
+          const galleryTitle = pick(block.data?.title, lang);
+          const galleryUrls = (block.data?.urls || []).map(safeResourceUrl).filter(Boolean);
+          if (!galleryTitle || !galleryUrls.length) return null;
           return (
             <div key={block.id} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {(block.data?.urls || []).map(safeResourceUrl).filter(Boolean).map((url: string, idx: number) => (
-                <img
+              {galleryUrls.map((url: string, idx: number) => (
+                <BlockImage
                   key={`${block.id}-${idx}`}
                   src={url}
-                  alt={`${pick(block.data?.title, lang) || (lang === 'ar' ? 'معرض الصور' : 'Image gallery')} ${idx + 1}`}
-                  loading="lazy"
+                  alt={`${galleryTitle} ${idx + 1}`}
+                  width={600}
+                  height={400}
                   className="rounded-xl object-cover h-40 w-full"
                 />
               ))}
@@ -143,29 +142,26 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
         }
         if (block.type === 'map') {
           const embedUrl = safeEmbedUrl(block.data?.embedUrl);
+          if (!embedUrl) return null;
           return (
             <div key={block.id} className="rounded-2xl overflow-hidden border border-[#E5E7EB]">
-              {embedUrl ? (
-                <iframe
+              <iframe
                   src={embedUrl}
                   className="w-full h-64"
                   loading="lazy"
                   referrerPolicy="no-referrer"
                   sandbox="allow-scripts allow-same-origin allow-popups"
                   title={lang === 'ar' ? 'خريطة' : 'Map'}
-                />
-              ) : (
-                <div className="p-4 text-gray-500">Map embed URL missing</div>
-              )}
+              />
             </div>
           );
         }
         if (block.type === 'video') {
           const embedUrl = safeEmbedUrl(block.data?.embedUrl);
+          if (!embedUrl) return null;
           return (
             <div key={block.id} className="rounded-2xl overflow-hidden border border-[#E5E7EB]">
-              {embedUrl ? (
-                <iframe
+              <iframe
                   src={embedUrl}
                   className="w-full h-64"
                   loading="lazy"
@@ -174,18 +170,17 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   title={lang === 'ar' ? 'فيديو' : 'Video'}
-                />
-              ) : (
-                <div className="p-4 text-gray-500">Video embed URL missing</div>
-              )}
+              />
             </div>
           );
         }
         if (block.type === 'cta') {
           const ctaUrl = safeLinkUrl(block.data?.url);
+          const ctaLabel = pick(block.data?.label, lang);
+          if (!ctaLabel) return null;
           return (
             <div key={block.id} className="rounded-2xl bg-[#fff1f1] border border-[#f2c9ce] p-5 flex items-center justify-between gap-4">
-              <div className="font-semibold text-[#0f172a]">{pick(block.data?.label, lang) || 'CTA'}</div>
+              <div className="font-semibold text-[#0f172a]">{ctaLabel}</div>
               {ctaUrl && (
                 <a className="rounded-full bg-[#b11226] px-4 py-2 text-xs font-bold text-white" href={ctaUrl} target="_blank" rel="noopener noreferrer">
                   {lang === 'ar' ? 'اذهب' : 'Go'}
@@ -195,11 +190,13 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           );
         }
         if (block.type === 'summary') {
+          const summaryItems = localizedList(block.data?.items, lang);
+          if (!summaryItems.length) return null;
           return (
             <div key={block.id} className="rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] p-5">
               <div className="font-black text-[#111827] mb-3">{pick(block.data?.title, lang) || (lang === 'ar' ? 'ملخص سريع' : 'Quick Summary')}</div>
               <ul className="list-disc ps-5 text-gray-600 space-y-1">
-                {(block.data?.items || []).filter(Boolean).map((item: any, idx: number) => (
+                {summaryItems.map((item: any, idx: number) => (
                   <li key={`${block.id}-item-${idx}`}>{pick(item, lang)}</li>
                 ))}
               </ul>
@@ -207,6 +204,13 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           );
         }
         if (block.type === 'comparison') {
+          const columns = (block.data?.headers || [])
+            .map((header: any, index: number) => ({ index, label: pick(header, lang) }))
+            .filter((column: { label: string }) => column.label);
+          const rows = (block.data?.rows || []).filter((row: any[]) =>
+            columns.some((column: { index: number }) => hasText(row[column.index], lang))
+          );
+          if (!columns.length || !rows.length) return null;
           return (
             <div key={block.id} className="rounded-2xl border border-[#E5E7EB] overflow-hidden bg-white">
               {block.data?.title && (
@@ -216,17 +220,17 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                 <table className="w-full text-sm">
                   <thead className="bg-[#F9FAFB] text-gray-500 text-xs">
                     <tr>
-                      {(block.data?.headers || []).map((h: any, idx: number) => (
-                        <th key={`${block.id}-h-${idx}`} className="px-4 py-3 text-start">{pick(h, lang)}</th>
+                      {columns.map((column: { index: number; label: string }) => (
+                        <th key={`${block.id}-h-${column.index}`} className="px-4 py-3 text-start">{column.label}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {(block.data?.rows || []).map((row: any[], rowIdx: number) => (
+                    {rows.map((row: any[], rowIdx: number) => (
                       <tr key={`${block.id}-r-${rowIdx}`} className="border-b last:border-none">
-                        {(block.data?.headers || []).map((_h: any, colIdx: number) => (
-                          <td key={`${block.id}-r-${rowIdx}-${colIdx}`} className="px-4 py-3 text-gray-600">
-                            {pick(row[colIdx], lang) || '—'}
+                        {columns.map((column: { index: number }) => (
+                          <td key={`${block.id}-r-${rowIdx}-${column.index}`} className="px-4 py-3 text-gray-600">
+                            {pick(row[column.index], lang)}
                           </td>
                         ))}
                       </tr>
@@ -238,18 +242,21 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
           );
         }
         if (block.type === 'cards') {
+          const cards = (block.data?.cards || [])
+            .filter((card: any) => hasText(card.title, lang) || hasText(card.label, lang) || hasText(card.note, lang));
+          if (!cards.length) return null;
           return (
             <div key={block.id} className="space-y-4">
               {block.data?.title && <div className="text-2xl font-black text-[#111827]">{pick(block.data.title, lang)}</div>}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(block.data?.cards || []).map((card: any, idx: number) => {
+                {cards.map((card: any, idx: number) => {
                   const Icon = iconMap[card.icon] || Star;
                   return (
                     <div key={`${block.id}-card-${idx}`} className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
                       <div className="h-10 w-10 rounded-full bg-[#fff1f1] flex items-center justify-center text-[#b11226] mb-3">
                         <Icon className="w-4 h-4" />
                       </div>
-                      <div className="font-black text-lg text-[#111827]">{pick(card.title, lang) || '—'}</div>
+                      {pick(card.title, lang) && <div className="font-black text-lg text-[#111827]">{pick(card.title, lang)}</div>}
                       {pick(card.label, lang) && <div className="text-[#b11226] font-bold text-sm mt-1">{pick(card.label, lang)}</div>}
                       {pick(card.note, lang) && <div className="text-xs text-gray-500 mt-2">{pick(card.note, lang)}</div>}
                     </div>
@@ -267,12 +274,41 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
             </div>
           );
         }
+        if (block.type === 'internalLinks') {
+          const links = (block.data?.items || [])
+            .map((item: any) => ({
+              label: pick(item?.label, lang).trim(),
+              url: safeLinkUrl(pick(item?.url, lang))
+            }))
+            .filter((item: { label: string; url: string }) => item.label && item.url);
+
+          if (!links.length) return null;
+
+          return (
+            <nav key={block.id} className="rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] p-5" aria-label={pick(block.data?.title, lang)}>
+              <div className="font-black text-[#111827] mb-3">
+                {pick(block.data?.title, lang) || (lang === 'ar' ? 'أدلة ذات صلة' : 'Related guides')}
+              </div>
+              <ul className="space-y-2">
+                {links.map((item: { label: string; url: string }, idx: number) => (
+                  <li key={`${block.id}-link-${idx}`}>
+                    <a className="font-semibold text-[#b11226] hover:underline" href={item.url}>
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          );
+        }
         if (block.type === 'faq') {
+          const faqItems = (block.data?.items || []).filter((item: any) => hasText(item?.q, lang) && hasText(item?.a, lang));
+          if (!faqItems.length) return null;
           return (
             <div key={block.id} className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-sm">
               <h3 className="text-xl font-black mb-4 text-[#111827]">{pick(block.data?.title, lang) || (lang === 'ar' ? 'الأسئلة الشائعة' : 'FAQ')}</h3>
               <div className="space-y-3 text-sm text-gray-600">
-                {(block.data?.items || []).map((item: any, idx: number) => (
+                {faqItems.map((item: any, idx: number) => (
                   <details key={`${block.id}-faq-${idx}`} className="group rounded-xl border border-[#F3F4F6] px-4 py-3">
                     <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-[#111827]">
                       {pick(item.q, lang)}
@@ -287,12 +323,14 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
         }
         if (block.type === 'restaurant') {
           const title = pick(block.data?.name, lang);
+          if (!title) return null;
           const location = pick(block.data?.location, lang);
           const description = pick(block.data?.description, lang);
           const address = pick(block.data?.address, lang);
           const hours = pick(block.data?.hours, lang);
           const distance = pick(block.data?.distance, lang);
           const price = pick(block.data?.price, lang);
+          const lastChecked = pick(block.data?.lastChecked, lang);
           const pros = localizedList(block.data?.pros, lang);
           const cons = localizedList(block.data?.cons, lang);
           const galleryUrls = (Array.isArray(block.data?.galleryUrls) ? block.data.galleryUrls : [])
@@ -320,7 +358,7 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
             .map((button: any) => {
               const url = safeLinkUrl(button?.url);
               return {
-                label: pick(button?.label, lang).trim() || (lang === 'ar' ? 'زر إضافي' : 'Additional action'),
+                label: pick(button?.label, lang).trim(),
                 url,
                 clickable: button?.clickable !== false && Boolean(url),
                 visible: button?.visible !== false
@@ -342,8 +380,9 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                       <BlockImage
                         src={safeResourceUrl(block.data?.coverUrl)}
                         alt={title}
+                        width={800}
+                        height={800}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        fallbackClassName="w-full h-full"
                       />
                     </div>
                     {galleryUrls.length > 0 && (
@@ -353,6 +392,8 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                             key={`${block.id}-gallery-${idx}`}
                             src={url}
                             alt={`${title} ${idx + 1}`}
+                            width={400}
+                            height={400}
                             className="aspect-square object-cover rounded-xl border border-gray-100"
                           />
                         ))}
@@ -369,17 +410,23 @@ const BlogBlocksRenderer: React.FC<BlogBlocksRendererProps> = ({ blocks, lang, f
                       <h2 className="text-2xl md:text-3xl font-black mb-1 text-[#111827] break-words [overflow-wrap:anywhere] leading-tight">
                         {title} {location && <span className="text-gray-400 text-lg font-medium">/ {location}</span>}
                       </h2>
-                      <div className="flex items-center gap-3">
+                      {(block.data?.rating || block.data?.reviews) && <div className="flex items-center gap-3">
                         <RatingStars rating={block.data?.rating} id={block.id} />
                         <span className="text-sm font-bold text-gray-500">
-                          {block.data?.rating ? `${block.data.rating}/5` : '—'} {block.data?.reviews ? `• ${block.data.reviews} ${lang === 'ar' ? 'تقييم' : 'reviews'}` : ''}
+                          {block.data?.rating ? `${block.data.rating}/5` : ''} {block.data?.reviews ? `• ${block.data.reviews} ${lang === 'ar' ? 'تقييم' : 'reviews'}` : ''}
                         </span>
-                      </div>
+                      </div>}
                     </div>
                     {description && (
                       <div className="bg-[#fff1f1] border-s-4 border-[#b11226] p-4 rounded-xl">
                         <h4 className="font-bold text-[#b11226] text-sm mb-1 italic">{lang === 'ar' ? 'لماذا اخترناه؟' : 'Why we picked it'}</h4>
                         <p className="text-sm text-[#0f172a]/80">{description}</p>
+                      </div>
+                    )}
+                    {lastChecked && (
+                      <div className="flex items-center gap-2 text-xs font-bold text-emerald-700">
+                        <CheckCircle className="h-4 w-4" />
+                        {lastChecked}
                       </div>
                     )}
                     {(pros.length > 0 || cons.length > 0) && (

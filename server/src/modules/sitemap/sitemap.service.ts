@@ -15,12 +15,31 @@ export class SitemapService {
   constructor(private prisma: PrismaService) {}
 
   async generate() {
-    const baseUrl = (process.env.PUBLIC_SITE_URL || 'https://best5.com.tr').replace(/\/+$/, '');
+    const configuredBaseUrl = new URL(process.env.PUBLIC_SITE_URL || 'https://best5.com.tr');
+    configuredBaseUrl.protocol = 'https:';
+    configuredBaseUrl.hostname = configuredBaseUrl.hostname.replace(/^www\./i, '');
+    configuredBaseUrl.pathname = '';
+    const baseUrl = configuredBaseUrl.toString().replace(/\/+$/, '');
 
-    const settings = await this.prisma.settings.findUnique({
-      where: { id: 'singleton' },
-      select: { updated_at: true }
-    });
+    const [settings, redirects, authors] = await Promise.all([
+      this.prisma.settings.findUnique({
+        where: { id: 'singleton' },
+        select: { updated_at: true }
+      }),
+      this.prisma.redirect.findMany({
+        where: { active: true },
+        select: { old_path: true }
+      }),
+      this.prisma.user.findMany({
+        where: {
+          is_active: true,
+          show_public_profile: true,
+          author_slug: { not: null }
+        },
+        select: { author_slug: true, updated_at: true }
+      })
+    ]);
+    const redirectedPaths = new Set(redirects.map((item) => item.old_path));
     const staticLastmod = settings?.updated_at?.toISOString();
 
     const staticUrls = [
@@ -49,7 +68,7 @@ export class SitemapService {
     });
 
     const posts = await this.prisma.post.findMany({
-      where: { status: PostStatus.PUBLISHED },
+      where: { status: PostStatus.PUBLISHED, published_at: { not: null } },
       select: { slug_ar: true, slug_en: true, content_reviewed_at: true, published_at: true }
     });
 
@@ -82,10 +101,27 @@ export class SitemapService {
       }
     });
 
+    authors.forEach((author) => {
+      if (!author.author_slug) return;
+      const slug = encodeURIComponent(author.author_slug);
+      const lastmod = author.updated_at.toISOString();
+      urls.push({ loc: `${baseUrl}/ar/author/${slug}`, lastmod });
+      urls.push({ loc: `${baseUrl}/en/author/${slug}`, lastmod });
+    });
+
+    const finalUrls = [...new Map(
+      urls
+        .filter((item) => {
+          const pathname = decodeURIComponent(new URL(item.loc).pathname);
+          return !redirectedPaths.has(pathname);
+        })
+        .map((item) => [item.loc, item])
+    ).values()];
+
     const xml =
       `<?xml version="1.0" encoding="UTF-8"?>` +
       `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
-      urls
+      finalUrls
         .map((u) => {
           const lastmod = u.lastmod ? `<lastmod>${escapeXml(u.lastmod)}</lastmod>` : '';
           return `<url><loc>${escapeXml(u.loc)}</loc>${lastmod}</url>`;
