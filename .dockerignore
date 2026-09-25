@@ -6,6 +6,10 @@ server/node_modules
 server/dist
 server/uploads
 db_raw_data_backup
+/.photoss_staging
+/backups
+/*.dump
+/*.zip
 *.log
 .env
 .secrets
