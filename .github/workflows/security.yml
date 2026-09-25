@@ -52,23 +52,26 @@ jobs:
           docker build --target renderer -t best5-renderer:ci .
           docker build --target web -t best5-web:ci .
       - name: Scan API image
-        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
-        with:
-          image-ref: best5-api:ci
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: '1'
+        run: >-
+          docker run --rm
+          -v /var/run/docker.sock:/var/run/docker.sock
+          -v best5-trivy-cache:/root/.cache
+          aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+          image --scanners vuln --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1
+          best5-api:ci
       - name: Scan renderer image
-        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
-        with:
-          image-ref: best5-renderer:ci
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: '1'
+        run: >-
+          docker run --rm
+          -v /var/run/docker.sock:/var/run/docker.sock
+          -v best5-trivy-cache:/root/.cache
+          aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+          image --scanners vuln --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1
+          best5-renderer:ci
       - name: Scan web image
-        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
-        with:
-          image-ref: best5-web:ci
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: '1'
+        run: >-
+          docker run --rm
+          -v /var/run/docker.sock:/var/run/docker.sock
+          -v best5-trivy-cache:/root/.cache
+          aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+          image --scanners vuln --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1
+          best5-web:ci
