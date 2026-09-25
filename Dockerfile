@@ -1,4 +1,4 @@
-FROM node:20-alpine AS build
+FROM node:25-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,7 +8,7 @@ COPY . .
 RUN npm run build
 RUN npm prune --omit=dev && npm cache clean --force
 
-FROM node:20-alpine AS renderer
+FROM node:25-alpine AS renderer
 WORKDIR /app
 ENV NODE_ENV=production
 RUN apk upgrade --no-cache \
