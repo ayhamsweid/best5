@@ -1,0 +1,133 @@
+services:
+  db-restore:
+    image: alpine:3.20
+    profiles:
+      - restore
+    volumes:
+      - ./db_raw_data_backup:/backup:ro
+      - postgres_data:/var/lib/postgresql/data
+    command: >
+      sh -c '
+        if [ -f /var/lib/postgresql/data/PG_VERSION ]; then
+          echo "Postgres data volume already initialized; skipping restore."
+          exit 0
+        fi
+        cp -a /backup/. /var/lib/postgresql/data/
+        rm -f /var/lib/postgresql/data/postmaster.pid
+        chown -R 999:999 /var/lib/postgresql/data
+        chmod 700 /var/lib/postgresql/data
+      '
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: best5_user
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD:?Set DB_ADMIN_PASSWORD in .env}
+      POSTGRES_DB: besiktas
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD:?Set DB_APP_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deployment/init-db.sh:/docker-entrypoint-initdb.d/10-create-app-role.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U best5_user -d besiktas"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://best5_app:${DB_APP_PASSWORD:?Set DB_APP_PASSWORD in .env}@db:5432/besiktas
+      MIGRATION_DATABASE_URL: postgresql://best5_user:${DB_ADMIN_PASSWORD:?Set DB_ADMIN_PASSWORD in .env}@db:5432/besiktas
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Set JWT_ACCESS_SECRET in .env}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Set JWT_REFRESH_SECRET in .env}
+      SSR_INTERNAL_TOKEN: ${SSR_INTERNAL_TOKEN:?Set SSR_INTERNAL_TOKEN in .env}
+      JWT_ISSUER: best5-api
+      JWT_AUDIENCE: best5-admin
+      JWT_ACCESS_TTL: "900"
+      JWT_REFRESH_TTL: "604800"
+      COOKIE_SECURE: "true"
+      TRUST_PROXY_HOPS: "1"
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8080
+      PUBLIC_SITE_URL: https://best5.com.tr
+      SPA_TEMPLATE_URL: http://web/index.html
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - ./server/uploads:/app/uploads
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/settings/public').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  renderer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: renderer
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      API_INTERNAL_URL: http://api:4000/api
+      PUBLIC_SITE_URL: https://best5.com.tr
+      SSR_INTERNAL_TOKEN: ${SSR_INTERNAL_TOKEN:?Set SSR_INTERNAL_TOKEN in .env}
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      renderer:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
