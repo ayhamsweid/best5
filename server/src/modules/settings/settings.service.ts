@@ -9,7 +9,10 @@ export class SettingsService {
     return this.prisma.settings.upsert({
       where: { id: 'singleton' },
       update: {},
-      create: { id: 'singleton' }
+      create: {
+        id: 'singleton',
+        header_json: { logoImageUrl: '/uploads/favicon.webp' }
+      }
     });
   }
 

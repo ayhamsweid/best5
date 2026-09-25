@@ -459,7 +459,15 @@ export class PostsService {
       slug_en: requestedSlugEn,
       ...postData
     } = data;
-    const relatedPostIds = await this.validateRelatedPostIds(data.related_post_ids, id);
+    const existing = await this.prisma.post.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('Post not found');
+    const relatedPostIdsUnchanged =
+      data.related_post_ids !== undefined &&
+      data.related_post_ids.length === existing.related_post_ids.length &&
+      data.related_post_ids.every((relatedId, index) => relatedId === existing.related_post_ids[index]);
+    const relatedPostIds = relatedPostIdsUnchanged
+      ? existing.related_post_ids
+      : await this.validateRelatedPostIds(data.related_post_ids, id);
     const publishedAt = data.published_at ? new Date(data.published_at) : undefined;
     const contentReviewedAt = content_reviewed_at
       ? new Date(content_reviewed_at)
@@ -468,8 +476,6 @@ export class PostsService {
         : undefined;
     const scheduledAt = data.scheduled_at ? new Date(data.scheduled_at) : undefined;
     const now = new Date();
-    const existing = await this.prisma.post.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Post not found');
     const nextSlugAr = requestedSlugAr !== undefined
       ? slugify(requestedSlugAr)
       : existing.slug_ar.startsWith('draft-ar-') && data.title_ar

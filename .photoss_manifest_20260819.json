@@ -1,0 +1,1393 @@
+{
+  "createdAt": "2026-08-19T19:20:46.761Z",
+  "sourceFiles": 198,
+  "uniqueFiles": 168,
+  "files": [
+    {
+      "original": "001_Ciragan_Palace_Kempinski_Istanbul.jpg",
+      "sha256": "7fbdb66677d5c78b900591420a9009edd66e7292ebbb4205f5b14ccd97021ec7",
+      "file": "photoss-ciragan-palace-kempinski-istanbul-7fbdb66677.jpg",
+      "url": "/uploads/photoss-ciragan-palace-kempinski-istanbul-7fbdb66677.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "002_Mandarin_Oriental_Bosphorus_Istanbul.jpg",
+      "sha256": "1dc8c7e194c6d0e0ddc1673618f9d28c96ff9db7ea157c3258607884e90852e3",
+      "file": "photoss-mandarin-oriental-bosphorus-istanbul-1dc8c7e194.jpg",
+      "url": "/uploads/photoss-mandarin-oriental-bosphorus-istanbul-1dc8c7e194.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "002_solar_beach_therapy.jpg",
+      "sha256": "7cc9cc5b9e63f5bf41cb601469fa2b01ef0e7454191d16007f5ec6937249649e",
+      "file": "photoss-solar-beach-therapy-7cc9cc5b9e.jpg",
+      "url": "/uploads/photoss-solar-beach-therapy-7cc9cc5b9e.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "003_Istanbul_International_School.jpg",
+      "sha256": "9607e44e8df1b99f43e2c73a612ce8c0a2acf92aa2da9d53c22d88792f9fc685",
+      "file": "photoss-istanbul-international-school-9607e44e8d.jpg",
+      "url": "/uploads/photoss-istanbul-international-school-9607e44e8d.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "003_Swisstel_The_Bosphorus_Istanbul.webp",
+      "sha256": "820d205dfcd3a404b0a88e24bd36bdaf25ba059ddfe32203aa00b471659eeff1",
+      "file": "photoss-swisstel-the-bosphorus-istanbul-820d205dfc.webp",
+      "url": "/uploads/photoss-swisstel-the-bosphorus-istanbul-820d205dfc.webp",
+      "duplicate": false
+    },
+    {
+      "original": "003_caddebostan_plaj.jpg",
+      "sha256": "84c3816ccf8f8f03687092646a87185de27a5851b95dff07984a990e56cc9c9f",
+      "file": "photoss-caddebostan-plaj-84c3816ccf.jpg",
+      "url": "/uploads/photoss-caddebostan-plaj-84c3816ccf.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "003_saruja_restaurant.png",
+      "sha256": "2c173baec2b0e7e95c32729ed86c62c4308bc052fe7fdb30a342690cb8095235",
+      "file": "photoss-saruja-restaurant-2c173baec2.png",
+      "url": "/uploads/photoss-saruja-restaurant-2c173baec2.png",
+      "duplicate": false
+    },
+    {
+      "original": "004_Four_Seasons_Hotel_Istanbul_at_the_Bosphorus.jpg",
+      "sha256": "5851359d4c08cfbbc7ae211d96273f5d6521aab356aaefa4ed8fbd6658505745",
+      "file": "photoss-four-seasons-hotel-istanbul-at-the-bosphorus-5851359d4c.jpg",
+      "url": "/uploads/photoss-four-seasons-hotel-istanbul-at-the-bosphorus-5851359d4c.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "004_Gokkusagi_International_Schools.webp",
+      "sha256": "b8ee8c8091fb7b218aff67d12382d823b0619400e614de0027f04e3e8b9316a6",
+      "file": "photoss-gokkusagi-international-schools-b8ee8c8091.webp",
+      "url": "/uploads/photoss-gokkusagi-international-schools-b8ee8c8091.webp",
+      "duplicate": false
+    },
+    {
+      "original": "004_florya_gunes_plaj.jpg",
+      "sha256": "f067fc939f0ac08ef062862e1cd03773efa07136551c4ff0bff34c054f6abb62",
+      "file": "photoss-florya-gunes-plaj-f067fc939f.jpg",
+      "url": "/uploads/photoss-florya-gunes-plaj-f067fc939f.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "004_istiklal_avenue.jpg",
+      "sha256": "970337ab61b3d593188d2c4d2e1caa87388eaec15fcb0165f8ddd71cf451886f",
+      "file": "photoss-istiklal-avenue-970337ab61.jpg",
+      "url": "/uploads/photoss-istiklal-avenue-970337ab61.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "005_Istanbul_American_Schools.jpg",
+      "sha256": "35a4dc36c8f47406e87efa16b3ac23b48a61f5bca189d9aa2e848ce5243eef30",
+      "file": "photoss-istanbul-american-schools-35a4dc36c8.jpg",
+      "url": "/uploads/photoss-istanbul-american-schools-35a4dc36c8.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "005_Shangri-La_Bosphorus_Istanbul.avif",
+      "sha256": "3f804c9d919e480d8674d041413f28ed86bbcc6dd92228961ede2235f7d9afa6",
+      "file": "photoss-shangri-la-bosphorus-istanbul-3f804c9d91.avif",
+      "url": "/uploads/photoss-shangri-la-bosphorus-istanbul-3f804c9d91.avif",
+      "duplicate": false
+    },
+    {
+      "original": "005_abdi_ipekci_street.jpg",
+      "sha256": "e9f86957f2d1cd9c52078f145ba6810a30298de2bf4eff98d6876edb0198a7f3",
+      "file": "photoss-abdi-ipekci-street-e9f86957f2.jpg",
+      "url": "/uploads/photoss-abdi-ipekci-street-e9f86957f2.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "005_uzunya_beach.webp",
+      "sha256": "d67c46f4a98f40d3103cff24773157d4d26f7e24c10f48d504bdac409f7f5593",
+      "file": "photoss-uzunya-beach-d67c46f4a9.webp",
+      "url": "/uploads/photoss-uzunya-beach-d67c46f4a9.webp",
+      "duplicate": false
+    },
+    {
+      "original": "006_Brights_International_School_of_Istanbul.jpg",
+      "sha256": "3bf10196589a25989cfe63fcabc5804a8114bb1df7fe4f609703b4b84ab56713",
+      "file": "photoss-brights-international-school-of-istanbul-3bf1019658.jpg",
+      "url": "/uploads/photoss-brights-international-school-of-istanbul-3bf1019658.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "006_Safir_International_School.webp",
+      "sha256": "345d25885a0799abfc3b8c5e8cb14753c6614244b4a12149e97b86a4689a7113",
+      "file": "photoss-safir-international-school-345d25885a.webp",
+      "url": "/uploads/photoss-safir-international-school-345d25885a.webp",
+      "duplicate": false
+    },
+    {
+      "original": "007_bahariye_street.jpg",
+      "sha256": "c76a8aae7a4518ba76a0146e2d8a61adfb6d25ed17b9120c1cc5d4257fbc70a0",
+      "file": "photoss-bahariye-street-c76a8aae7a.jpg",
+      "url": "/uploads/photoss-bahariye-street-c76a8aae7a.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "008_Al-Jazari_International_Schools.jpg",
+      "sha256": "db8801d08a6adf2e26e5250e4e49c4b958f06554fe190263776a67c1775c6b79",
+      "file": "photoss-al-jazari-international-schools-db8801d08a.jpg",
+      "url": "/uploads/photoss-al-jazari-international-schools-db8801d08a.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "008_nusr-et_steakhouse_etiler.jpg",
+      "sha256": "92f8867a4645c48e0951f85d9b7004285bc9986c80e8797f21890eccb76f907f",
+      "file": "photoss-nusr-et-steakhouse-etiler-92f8867a46.jpg",
+      "url": "/uploads/photoss-nusr-et-steakhouse-etiler-92f8867a46.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "008_serdar-_ekrem_street_galata.jpg",
+      "sha256": "bce6879f44dcb878bfab837b25cf305327d28e4aa47796ff7d10b94947f0069a",
+      "file": "photoss-serdar-ekrem-street-galata-bce6879f44.jpg",
+      "url": "/uploads/photoss-serdar-ekrem-street-galata-bce6879f44.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "009_Ihsan_International_School.jpg",
+      "sha256": "18d45501bb4454cedca917ddc3cd14df8359f636b8ca49466d6cf12c4815a1c8",
+      "file": "photoss-ihsan-international-school-18d45501bb.jpg",
+      "url": "/uploads/photoss-ihsan-international-school-18d45501bb.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "009_gunaydn_kebap_steakhouse.webp",
+      "sha256": "05db3e740bb3a683beb09733f3b792f6038cc0f4d89dff9f992ce6774103f809",
+      "file": "photoss-gunaydn-kebap-steakhouse-05db3e740b.webp",
+      "url": "/uploads/photoss-gunaydn-kebap-steakhouse-05db3e740b.webp",
+      "duplicate": false
+    },
+    {
+      "original": "010_Comfort_Hotel_Taksim.png",
+      "sha256": "9e38c4857bebda2bc7dc82c9b4674b6a6b1a2e607dff1f0adb4a6078f0441764",
+      "file": "photoss-comfort-hotel-taksim-9e38c4857b.png",
+      "url": "/uploads/photoss-comfort-hotel-taksim-9e38c4857b.png",
+      "duplicate": false
+    },
+    {
+      "original": "010_ali_ocakbas.jpg",
+      "sha256": "519071fd2902ed9278a57fecd1715ec8204719cfa415ee9337d7f07374dc4297",
+      "file": "photoss-ali-ocakbas-519071fd29.jpg",
+      "url": "/uploads/photoss-ali-ocakbas-519071fd29.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "011_Radisson_Blu_Hotel_Istanbul_Sisli.jpg",
+      "sha256": "b27ad757f2e0a6ee80f1dc060e201cc98020722735735d71f4beec349e8b018f",
+      "file": "photoss-radisson-blu-hotel-istanbul-sisli-b27ad757f2.jpg",
+      "url": "/uploads/photoss-radisson-blu-hotel-istanbul-sisli-b27ad757f2.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "012_The_Stay_Nisantasi.jpg",
+      "sha256": "46b2dbd21f0df9f7c30803630a42e351fa42517bda15cd9a4dfa78b96a275ab3",
+      "file": "photoss-the-stay-nisantasi-46b2dbd21f.jpg",
+      "url": "/uploads/photoss-the-stay-nisantasi-46b2dbd21f.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "012_degirmencayr_selalesi.jpg",
+      "sha256": "53164646cbbf6a76206319721fd48077934e68c9e99244c59b342cd7a6680ea8",
+      "file": "photoss-degirmencayr-selalesi-53164646cb.jpg",
+      "url": "/uploads/photoss-degirmencayr-selalesi-53164646cb.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "013_Nex_Hotel_Istanbul_Spa.webp",
+      "sha256": "4cdedda3d1182be08740c7ab37725c49c98a00fb74fd9f97c30b5886f0ec4249",
+      "file": "photoss-nex-hotel-istanbul-spa-4cdedda3d1.webp",
+      "url": "/uploads/photoss-nex-hotel-istanbul-spa-4cdedda3d1.webp",
+      "duplicate": false
+    },
+    {
+      "original": "013_Park_Star_Hotel_Taksim.jpg",
+      "sha256": "f25b32537b2c69f2bbafff99b21cf84f7e8e0e95a97677e7768b4bd163e0c5c3",
+      "file": "photoss-park-star-hotel-taksim-f25b32537b.jpg",
+      "url": "/uploads/photoss-park-star-hotel-taksim-f25b32537b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "014_Icon_Bomonti_Hotel.jpg",
+      "sha256": "e96616bdfe986610a89602fda67289773f5f4e89a91764397fd998634991e694",
+      "file": "photoss-icon-bomonti-hotel-e96616bdfe.jpg",
+      "url": "/uploads/photoss-icon-bomonti-hotel-e96616bdfe.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "015_Blisstanbul_Hotel.jpg",
+      "sha256": "94052241f4a6cf0ecef3c06bf54123766cf07610bf410957fc169a57dbf08a84",
+      "file": "photoss-blisstanbul-hotel-94052241f4.jpg",
+      "url": "/uploads/photoss-blisstanbul-hotel-94052241f4.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "015_Ortakoy_Mosque.jpg",
+      "sha256": "0c6bc5f9242ecd1749f19018d8640fe5f45ba1cb2fe11e0193e895ac47efb2ab",
+      "file": "photoss-ortakoy-mosque-0c6bc5f924.jpg",
+      "url": "/uploads/photoss-ortakoy-mosque-0c6bc5f924.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "016_Hampton_by_Hilton_Istanbul_Airport.jpg",
+      "sha256": "c05aa60b5df6071352fa80f1306f72856c0f2758996f8a16a45f8b3fea51c59a",
+      "file": "photoss-hampton-by-hilton-istanbul-airport-c05aa60b5d.jpg",
+      "url": "/uploads/photoss-hampton-by-hilton-istanbul-airport-c05aa60b5d.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "016_arenapark.png",
+      "sha256": "9a7d76854a1de92c8e7aeff8aecd74cba7566fa8326a30e4566983de8e3b8a52",
+      "file": "photoss-arenapark-9a7d76854a.png",
+      "url": "/uploads/photoss-arenapark-9a7d76854a.png",
+      "duplicate": false
+    },
+    {
+      "original": "017_Menalo_Hotel_Premium_Istanbul_Airport.jpg",
+      "sha256": "33739d7ac7f0a4676addc3af7b631c6824ee6c330defe78f4ea5c3f03ced0e39",
+      "file": "photoss-menalo-hotel-premium-istanbul-airport-33739d7ac7.jpg",
+      "url": "/uploads/photoss-menalo-hotel-premium-istanbul-airport-33739d7ac7.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "017_hagia_sophia_grand_mosque.jpg",
+      "sha256": "ba32397bc183c92c8960c39957f90f77509bc5c638614819bae7fecb13b80a47",
+      "file": "photoss-hagia-sophia-grand-mosque-ba32397bc1.jpg",
+      "url": "/uploads/photoss-hagia-sophia-grand-mosque-ba32397bc1.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "018_Radisson_Hotel_Istanbul_Airport.avif",
+      "sha256": "db1ead5fc4961d96e83f0a2ff18376bc5c32442f7433f98e67af54f605b9b656",
+      "file": "photoss-radisson-hotel-istanbul-airport-db1ead5fc4.avif",
+      "url": "/uploads/photoss-radisson-hotel-istanbul-airport-db1ead5fc4.avif",
+      "duplicate": false
+    },
+    {
+      "original": "018_sultan_ahmed_mosque_blue_mosque.jpg",
+      "sha256": "5e63bf81dde8000b2800883b427d97c6c4ad313a30e77d8d8e164f163fc7580f",
+      "file": "photoss-sultan-ahmed-mosque-blue-mosque-5e63bf81dd.jpg",
+      "url": "/uploads/photoss-sultan-ahmed-mosque-blue-mosque-5e63bf81dd.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "01_Cragan_Palace_Kempinski_Istanbul.jpg",
+      "sha256": "cc7c415bbb7785d133883b4e79dd8970ce3f1849f56a31493f3a90d1c4891f98",
+      "file": "photoss-cragan-palace-kempinski-istanbul-cc7c415bbb.jpg",
+      "url": "/uploads/photoss-cragan-palace-kempinski-istanbul-cc7c415bbb.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "01_Emaar_Akvaryum_Sualt_Hayvanat_Bahcesi.jpg",
+      "sha256": "85121f689f5ffa6add8e31b36fcb7af959c56bfffaca702dc6a724d3b38d5bad",
+      "file": "photoss-emaar-akvaryum-sualt-hayvanat-bahcesi-85121f689f.jpg",
+      "url": "/uploads/photoss-emaar-akvaryum-sualt-hayvanat-bahcesi-85121f689f.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "01_Istiklal_Avenue.jpg",
+      "sha256": "d614a2b1c4d61575785d1310fe6d6ef474c193775776772b6521833489d9c6d2",
+      "file": "photoss-istiklal-avenue-d614a2b1c4.jpg",
+      "url": "/uploads/photoss-istiklal-avenue-d614a2b1c4.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "01_Lades_Menemen.jpg",
+      "sha256": "2b431ddc0c4ae126ecd5598fd6335448b8e14764428564cc040e6626cadd93d3",
+      "file": "photoss-lades-menemen-2b431ddc0c.jpg",
+      "url": "/uploads/photoss-lades-menemen-2b431ddc0c.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "01_Radisson_Blu_Hotel_Istanbul_Sisli.jpg",
+      "sha256": "b27ad757f2e0a6ee80f1dc060e201cc98020722735735d71f4beec349e8b018f",
+      "file": "photoss-radisson-blu-hotel-istanbul-sisli-b27ad757f2.jpg",
+      "url": "/uploads/photoss-radisson-blu-hotel-istanbul-sisli-b27ad757f2.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "01_Yldz_Park.jpg",
+      "sha256": "bc2afa9feafa9938e96b06b3e51effbc0e2468b05d6ce30852115eb6e616286b",
+      "file": "photoss-yldz-park-bc2afa9fea.jpg",
+      "url": "/uploads/photoss-yldz-park-bc2afa9fea.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "020_Emirgan_Korusu.jpg",
+      "sha256": "21aee7d3a1896f811e0431613cac4bc9ebc84482573ec6a6d66c01837cf78e06",
+      "file": "photoss-emirgan-korusu-21aee7d3a1.jpg",
+      "url": "/uploads/photoss-emirgan-korusu-21aee7d3a1.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "020_YOTEL_Istanbul_Airport_Landside.jpg",
+      "sha256": "c452df56dd83e0d36817704f3fade41cdd23951104426bb7c7b1ff11eb93758d",
+      "file": "photoss-yotel-istanbul-airport-landside-c452df56dd.jpg",
+      "url": "/uploads/photoss-yotel-istanbul-airport-landside-c452df56dd.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "020_eyup_sultan_mosque.jpg",
+      "sha256": "fe464f4e3a28e03a67c3ce1e3032e3fdf257d1a3b1022e8d3f70141b0e8079c2",
+      "file": "photoss-eyup-sultan-mosque-fe464f4e3a.jpg",
+      "url": "/uploads/photoss-eyup-sultan-mosque-fe464f4e3a.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "02_Abdi_Ipekci_Street.jpg",
+      "sha256": "868ebeb70aee54db4af037882af0c31182e7dddbff885c0a5ad3c23c0c0185e5",
+      "file": "photoss-abdi-ipekci-street-868ebeb70a.jpg",
+      "url": "/uploads/photoss-abdi-ipekci-street-868ebeb70a.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "02_BIS_Schools_Bahcesehir_Garden_Campus.jpg",
+      "sha256": "c7475d530c2f2d480cf208acde11ec2e8afff23e975af08a6abd5b078dc42e07",
+      "file": "photoss-bis-schools-bahcesehir-garden-campus-c7475d530c.jpg",
+      "url": "/uploads/photoss-bis-schools-bahcesehir-garden-campus-c7475d530c.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "02_Durumzade.webp",
+      "sha256": "be2707659ba1b1a5995418599e144615f2e07e60816b3cc67d54addc6744794a",
+      "file": "photoss-durumzade-be2707659b.webp",
+      "url": "/uploads/photoss-durumzade-be2707659b.webp",
+      "duplicate": false
+    },
+    {
+      "original": "02_LWIS_Istanbul_International_School.webp",
+      "sha256": "4f3dec36fa4845b793ef3dd463db099795785a03284b1e6e954d3956cec3a4af",
+      "file": "photoss-lwis-istanbul-international-school-4f3dec36fa.webp",
+      "url": "/uploads/photoss-lwis-istanbul-international-school-4f3dec36fa.webp",
+      "duplicate": false
+    },
+    {
+      "original": "02_Macka_Demokrasi_Park.jpg",
+      "sha256": "a16f2fd5d4b7ad05fc69811bddb8578fc489bfbd3477c5a68af0359acfb98c28",
+      "file": "photoss-macka-demokrasi-park-a16f2fd5d4.jpg",
+      "url": "/uploads/photoss-macka-demokrasi-park-a16f2fd5d4.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "02_Mandarin_Oriental_Bosphorus_Istanbul.jpg",
+      "sha256": "d71c06e7c274dda417f901e2ad87d9f2a097e2d3a622e749835632753966f2d3",
+      "file": "photoss-mandarin-oriental-bosphorus-istanbul-d71c06e7c2.jpg",
+      "url": "/uploads/photoss-mandarin-oriental-bosphorus-istanbul-d71c06e7c2.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "02_Solar_Beach_Therapy.jpg",
+      "sha256": "e2452427e699e1c4fc4be124bf6af97159fbf65c1bdb886b9dc3276e49f2effb",
+      "file": "photoss-solar-beach-therapy-e2452427e6.jpg",
+      "url": "/uploads/photoss-solar-beach-therapy-e2452427e6.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "02_The_Stay_Nisantas.jpg",
+      "sha256": "46b2dbd21f0df9f7c30803630a42e351fa42517bda15cd9a4dfa78b96a275ab3",
+      "file": "photoss-the-stay-nisantasi-46b2dbd21f.jpg",
+      "url": "/uploads/photoss-the-stay-nisantasi-46b2dbd21f.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "03_Al-Fanar_Palestinian_International_Schools_Beylikduzu.jpg",
+      "sha256": "dc674cefbed8c62733ea51f9bcbb24626b36ec12661b75e20040d5bab5d1cd5c",
+      "file": "photoss-al-fanar-palestinian-international-schools-beylikduzu-dc674cefbe.jpg",
+      "url": "/uploads/photoss-al-fanar-palestinian-international-schools-beylikduzu-dc674cefbe.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "03_Bahariye_Street.jpg",
+      "sha256": "c76a8aae7a4518ba76a0146e2d8a61adfb6d25ed17b9120c1cc5d4257fbc70a0",
+      "file": "photoss-bahariye-street-c76a8aae7a.jpg",
+      "url": "/uploads/photoss-bahariye-street-c76a8aae7a.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "03_Balkan_Lokantas_Taksim.jpg",
+      "sha256": "25d9623b9103e0c7b2b183d3a63d594bcaf3af7cbefc9eb7b49d64ecdb0047e3",
+      "file": "photoss-balkan-lokantas-taksim-25d9623b91.jpg",
+      "url": "/uploads/photoss-balkan-lokantas-taksim-25d9623b91.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "03_Bebek_Park.jpg",
+      "sha256": "a4e41e202011e76ae007f642b2f0a0eb78d61b082cc2f3980f762dc3fb82eb39",
+      "file": "photoss-bebek-park-a4e41e2020.jpg",
+      "url": "/uploads/photoss-bebek-park-a4e41e2020.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "03_Degirmencayr_Selalesi.jpg",
+      "sha256": "31f50a1ffbf6564e08821b0e1c78e7e06142d8eefdd7ce2c3c8a80bda5c6aff4",
+      "file": "photoss-degirmencayr-selalesi-31f50a1ffb.jpg",
+      "url": "/uploads/photoss-degirmencayr-selalesi-31f50a1ffb.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "03_Nex_Hotel_Istanbul_Spa.webp",
+      "sha256": "4cdedda3d1182be08740c7ab37725c49c98a00fb74fd9f97c30b5886f0ec4249",
+      "file": "photoss-nex-hotel-istanbul-spa-4cdedda3d1.webp",
+      "url": "/uploads/photoss-nex-hotel-istanbul-spa-4cdedda3d1.webp",
+      "duplicate": true
+    },
+    {
+      "original": "03_Saruja_Restaurant.jpg",
+      "sha256": "130f10d65760c7e786af30ee2f01c2f5f87cff0003370658286246014e30acdb",
+      "file": "photoss-saruja-restaurant-130f10d657.jpg",
+      "url": "/uploads/photoss-saruja-restaurant-130f10d657.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "03_Swissotel_The_Bosphorus_Istanbul.webp",
+      "sha256": "820d205dfcd3a404b0a88e24bd36bdaf25ba059ddfe32203aa00b471659eeff1",
+      "file": "photoss-swisstel-the-bosphorus-istanbul-820d205dfc.webp",
+      "url": "/uploads/photoss-swisstel-the-bosphorus-istanbul-820d205dfc.webp",
+      "duplicate": true
+    },
+    {
+      "original": "04_Alnoor_International_School_Basaksehir.jpg",
+      "sha256": "53ead42263f6efdb2e97a7487a6fcf9e6dc49f3a91c00ee0278e862cd8ec5434",
+      "file": "photoss-alnoor-international-school-basaksehir-53ead42263.jpg",
+      "url": "/uploads/photoss-alnoor-international-school-basaksehir-53ead42263.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "04_Bostanc_Lunapark.jpg",
+      "sha256": "9ae5f87d921ff96bd77922e1aac2182dbb4c320cecdff97513aa0f38f311d24a",
+      "file": "photoss-bostanc-lunapark-9ae5f87d92.jpg",
+      "url": "/uploads/photoss-bostanc-lunapark-9ae5f87d92.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "04_Four_Seasons_Hotel_Istanbul_at_the_Bosphorus.jpg",
+      "sha256": "5851359d4c08cfbbc7ae211d96273f5d6521aab356aaefa4ed8fbd6658505745",
+      "file": "photoss-four-seasons-hotel-istanbul-at-the-bosphorus-5851359d4c.jpg",
+      "url": "/uploads/photoss-four-seasons-hotel-istanbul-at-the-bosphorus-5851359d4c.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "04_Icon_Bomonti_Hotel.jpg",
+      "sha256": "e96616bdfe986610a89602fda67289773f5f4e89a91764397fd998634991e694",
+      "file": "photoss-icon-bomonti-hotel-e96616bdfe.jpg",
+      "url": "/uploads/photoss-icon-bomonti-hotel-e96616bdfe.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "04_Istanbul_Sapphire_Seyir_Teras.webp",
+      "sha256": "8cf154f228161e909d9453e56e6f31468220acf9957577b1bf3b74a67fbaffaa",
+      "file": "photoss-istanbul-sapphire-seyir-teras-8cf154f228.webp",
+      "url": "/uploads/photoss-istanbul-sapphire-seyir-teras-8cf154f228.webp",
+      "duplicate": false
+    },
+    {
+      "original": "04_Serdar-_Ekrem_Street_Galata.jpg",
+      "sha256": "bce6879f44dcb878bfab837b25cf305327d28e4aa47796ff7d10b94947f0069a",
+      "file": "photoss-serdar-ekrem-street-galata-bce6879f44.jpg",
+      "url": "/uploads/photoss-serdar-ekrem-street-galata-bce6879f44.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "04_Tarihi_Sultanahmet_Koftecisi_Selim_Usta.jpg",
+      "sha256": "0dd69c0e09b3b0439e29effae406a391d09fb32c7b05883d59189c984e4dbe63",
+      "file": "photoss-tarihi-sultanahmet-koftecisi-selim-usta-0dd69c0e09.jpg",
+      "url": "/uploads/photoss-tarihi-sultanahmet-koftecisi-selim-usta-0dd69c0e09.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "05_212_Outlet.png",
+      "sha256": "3456985ba462bdcf5be5b623e641c4d6959bde2bc588f3c06a70f894cbec4e7e",
+      "file": "photoss-212-outlet-3456985ba4.png",
+      "url": "/uploads/photoss-212-outlet-3456985ba4.png",
+      "duplicate": false
+    },
+    {
+      "original": "05_Hampton_by_Hilton_Istanbul_Airport.jpg",
+      "sha256": "1cb7ecec2a3b32458e29a2c99af6c6bfc33a0186fb5d43222971ea138a72d05a",
+      "file": "photoss-hampton-by-hilton-istanbul-airport-1cb7ecec2a.jpg",
+      "url": "/uploads/photoss-hampton-by-hilton-istanbul-airport-1cb7ecec2a.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "05_Isl_Garden_Sultanahmet.jpg",
+      "sha256": "0ae2c7e16f9d25361cfefaf5ba41e5fa65ea90a1a2088f29984630febd26cd33",
+      "file": "photoss-isl-garden-sultanahmet-0ae2c7e16f.jpg",
+      "url": "/uploads/photoss-isl-garden-sultanahmet-0ae2c7e16f.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "05_Nakkastepe_Millet_Bahcesi.jpg",
+      "sha256": "26f5d5931022c95394aba5e9d8294f18ff31fe54ee877d9f8b68bc7a8bbfb08f",
+      "file": "photoss-nakkastepe-millet-bahcesi-26f5d59310.jpg",
+      "url": "/uploads/photoss-nakkastepe-millet-bahcesi-26f5d59310.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "05_Shangri-La_Bosphorus_Istanbul.avif",
+      "sha256": "f8fb09a2f1ac54a0a5ae9fb5b11b7abde4457d0c1da7ca99d695ab624a384c53",
+      "file": "photoss-shangri-la-bosphorus-istanbul-f8fb09a2f1.avif",
+      "url": "/uploads/photoss-shangri-la-bosphorus-istanbul-f8fb09a2f1.avif",
+      "duplicate": false
+    },
+    {
+      "original": "05_Suleymaniye_Mosque.jpg",
+      "sha256": "f12a7ddc7ba55d6da6abad3a0936c66c562d4e3ad23cd3b37e7541c1e2b046cd",
+      "file": "photoss-suleymaniye-mosque-f12a7ddc7b.jpg",
+      "url": "/uploads/photoss-suleymaniye-mosque-f12a7ddc7b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "05_Tihama_Restaurant.webp",
+      "sha256": "6473cd803e2e653ea4df29ffe295fe10b2169808858aa09f92b93a2b6ba3b369",
+      "file": "photoss-tihama-restaurant-6473cd803e.webp",
+      "url": "/uploads/photoss-tihama-restaurant-6473cd803e.webp",
+      "duplicate": false
+    },
+    {
+      "original": "06_Hac_Abdullah_Lokantas.jpg",
+      "sha256": "d57f5d63a06745af18fb4bf6b1bbc584801078d089cb549a906a14f764f10b80",
+      "file": "photoss-hac-abdullah-lokantas-d57f5d63a0.jpg",
+      "url": "/uploads/photoss-hac-abdullah-lokantas-d57f5d63a0.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "06_Istanbul_International_Community_School_IICS.jpg",
+      "sha256": "d4789fa658766bb587b8329d2d11c612c97944409ee2be68c86ca8b84b870703",
+      "file": "photoss-istanbul-international-community-school-iics-d4789fa658.jpg",
+      "url": "/uploads/photoss-istanbul-international-community-school-iics-d4789fa658.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "06_Menalo_Hotel_Premium_Istanbul_Airport.jpg",
+      "sha256": "d3c00a7c0e98092b5902a5391cb5d251541a01fad9cd1aa5f319417ffd886f24",
+      "file": "photoss-menalo-hotel-premium-istanbul-airport-d3c00a7c0e.jpg",
+      "url": "/uploads/photoss-menalo-hotel-premium-istanbul-airport-d3c00a7c0e.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "06_Venezia_Mega_Outlet.webp",
+      "sha256": "719b00bd3f95a3c6ec7f2cc63aa4bb5ccf548de03c7f4609c34e95967ccd8af8",
+      "file": "photoss-venezia-mega-outlet-719b00bd3f.webp",
+      "url": "/uploads/photoss-venezia-mega-outlet-719b00bd3f.webp",
+      "duplicate": false
+    },
+    {
+      "original": "06_ZEMAS_International_College.jpg",
+      "sha256": "b85a023f369bd5675dc7a843e8bb64e4f49ffa0438df27c3d3bdac7eb709d0e9",
+      "file": "photoss-zemas-international-college-b85a023f36.jpg",
+      "url": "/uploads/photoss-zemas-international-college-b85a023f36.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "07_Florya_Gunes_Plaj.webp",
+      "sha256": "c1fc547e68ab07eb5abe6d73636be440d1d791805685d404221c7f7c29dd75c0",
+      "file": "photoss-florya-gunes-plaj-c1fc547e68.webp",
+      "url": "/uploads/photoss-florya-gunes-plaj-c1fc547e68.webp",
+      "duplicate": false
+    },
+    {
+      "original": "07_Hidden_Hills_Hotel_Istanbul_Airport.jpg",
+      "sha256": "02de55932489f6b9279f524a8b5391f6a075bbaab8f306be32235c9be461752f",
+      "file": "photoss-hidden-hills-hotel-istanbul-airport-02de559324.jpg",
+      "url": "/uploads/photoss-hidden-hills-hotel-istanbul-airport-02de559324.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "07_Huda_International_Schools.webp",
+      "sha256": "53bdcfd9be8aa0f3a3a33e7fa5de9cc44cc0149c958348c497c561851b7e42c8",
+      "file": "photoss-huda-international-schools-53bdcfd9be.webp",
+      "url": "/uploads/photoss-huda-international-schools-53bdcfd9be.webp",
+      "duplicate": false
+    },
+    {
+      "original": "07_Matbah_Ottoman_Palace_Cuisine.jpg",
+      "sha256": "931eb1771fac79090cf44069cb540c56cf65dad33b680e153e1435e52ccf175a",
+      "file": "photoss-matbah-ottoman-palace-cuisine-931eb1771f.jpg",
+      "url": "/uploads/photoss-matbah-ottoman-palace-cuisine-931eb1771f.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "08_Balkc_Sabahattin.webp",
+      "sha256": "39f859e41a48749cbdb4c622f2ae7f8f4934ab28dc232f8021c6dd22ea652661",
+      "file": "photoss-balkc-sabahattin-39f859e41a.webp",
+      "url": "/uploads/photoss-balkc-sabahattin-39f859e41a.webp",
+      "duplicate": false
+    },
+    {
+      "original": "08_Capitol.jpg",
+      "sha256": "b28e5340ddf5afd7d1c87b8690ce656580f3664b4afbc3c926fe9c07bf428740",
+      "file": "photoss-capitol-b28e5340dd.jpg",
+      "url": "/uploads/photoss-capitol-b28e5340dd.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "08_Uzunya_Beach.jpg",
+      "sha256": "452ac762462c0bbb2039dbc4141ce8b9ec63d1afb1dcb3e78bd493f851d9e02d",
+      "file": "photoss-uzunya-beach-452ac76246.jpg",
+      "url": "/uploads/photoss-uzunya-beach-452ac76246.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "08_YOTEL_Istanbul_Airport_Landside.jpg",
+      "sha256": "86a22b1913e33ebea4f325085d6dca27212fc8039ca744d051fd288e3a406e2a",
+      "file": "photoss-yotel-istanbul-airport-landside-86a22b1913.jpg",
+      "url": "/uploads/photoss-yotel-istanbul-airport-landside-86a22b1913.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "09_Bahariye_Street.jpg",
+      "sha256": "c76a8aae7a4518ba76a0146e2d8a61adfb6d25ed17b9120c1cc5d4257fbc70a0",
+      "file": "photoss-bahariye-street-c76a8aae7a.jpg",
+      "url": "/uploads/photoss-bahariye-street-c76a8aae7a.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "09_Nizam_Pide_Sutlac_Taksim.png",
+      "sha256": "0f0560d8d756a56fd5cfb57875ad9dbc4888894d4af3399637ea777f1dd846c6",
+      "file": "photoss-nizam-pide-sutlac-taksim-0f0560d8d7.png",
+      "url": "/uploads/photoss-nizam-pide-sutlac-taksim-0f0560d8d7.png",
+      "duplicate": false
+    },
+    {
+      "original": "09_Spice_Bazaar_Msr_Carss.jpg",
+      "sha256": "6112c8875e520e7fe0b4e7c17ccb36e0fd34b51a2f92f6adad27eab91f2b73e7",
+      "file": "photoss-spice-bazaar-msr-carss-6112c8875e.jpg",
+      "url": "/uploads/photoss-spice-bazaar-msr-carss-6112c8875e.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "09_Zubeyir_Ocakbas.jpg",
+      "sha256": "4a6a22e53265a36084e6f41525511779fbcae00ead840d2ad2f78be1a811a7d5",
+      "file": "photoss-zubeyir-ocakbas-4a6a22e532.jpg",
+      "url": "/uploads/photoss-zubeyir-ocakbas-4a6a22e532.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "10_Hayvore.webp",
+      "sha256": "a92e6c11b88ae70290a8f7e8bd283b86d0b97d7f32e92e211e2d7df7547289eb",
+      "file": "photoss-hayvore-a92e6c11b8.webp",
+      "url": "/uploads/photoss-hayvore-a92e6c11b8.webp",
+      "duplicate": false
+    },
+    {
+      "original": "10_Sazeli_Florya.jpg",
+      "sha256": "b2f3f843b028428d3817b266694d72708d26255b86860d4f39c9688151507497",
+      "file": "photoss-sazeli-florya-b2f3f843b0.jpg",
+      "url": "/uploads/photoss-sazeli-florya-b2f3f843b0.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "10_Sehzade_Cag_Kebap.jpg",
+      "sha256": "6ad108b06b426baf955dd806a65b23c7acdd59edcb751a508f501fa9d76452fa",
+      "file": "photoss-sehzade-cag-kebap-6ad108b06b.jpg",
+      "url": "/uploads/photoss-sehzade-cag-kebap-6ad108b06b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "10_Serdar-_Ekrem_Street_Galata.jpg",
+      "sha256": "bce6879f44dcb878bfab837b25cf305327d28e4aa47796ff7d10b94947f0069a",
+      "file": "photoss-serdar-ekrem-street-galata-bce6879f44.jpg",
+      "url": "/uploads/photoss-serdar-ekrem-street-galata-bce6879f44.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "11_Al-Jazari_International_Schools.jpg",
+      "sha256": "32611ba3e18a0cfd07a0910f3a84126bbb117769e819e572308bb4a8cf1f3a21",
+      "file": "photoss-al-jazari-international-schools-32611ba3e1.jpg",
+      "url": "/uploads/photoss-al-jazari-international-schools-32611ba3e1.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "11_Emirgan_Korusu.jpg",
+      "sha256": "58b6707aecb0502eaa7666d0a1f0a39060703a9f7a48003439a269c823bdd232",
+      "file": "photoss-emirgan-korusu-58b6707aec.jpg",
+      "url": "/uploads/photoss-emirgan-korusu-58b6707aec.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "11_Nusr-Et_Steakhouse_Etiler.jpg",
+      "sha256": "bb0052b3db385246f0936a7385ec8646687d042ca16cc9ea3613709f7342de7f",
+      "file": "photoss-nusr-et-steakhouse-etiler-bb0052b3db.jpg",
+      "url": "/uploads/photoss-nusr-et-steakhouse-etiler-bb0052b3db.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "11_Suleymaniye_Mosque.jpg",
+      "sha256": "f12a7ddc7ba55d6da6abad3a0936c66c562d4e3ad23cd3b37e7541c1e2b046cd",
+      "file": "photoss-suleymaniye-mosque-f12a7ddc7b.jpg",
+      "url": "/uploads/photoss-suleymaniye-mosque-f12a7ddc7b.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "12_Burc_Beach.jpg",
+      "sha256": "77a3fa0da148f7cfda40dd49a8a9046742c9e7f55a693a51837430aabc609e51",
+      "file": "photoss-burc-beach-77a3fa0da1.jpg",
+      "url": "/uploads/photoss-burc-beach-77a3fa0da1.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "12_Gunaydn_Kebap_Steakhouse.jpg",
+      "sha256": "f9293f8aaf8b55918bf08b0d4cbf2e92a8821f3b67602b09dcd7290a36cf511d",
+      "file": "photoss-gunaydn-kebap-steakhouse-f9293f8aaf.jpg",
+      "url": "/uploads/photoss-gunaydn-kebap-steakhouse-f9293f8aaf.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "12_Ihsan_International_School.jpg",
+      "sha256": "18d45501bb4454cedca917ddc3cd14df8359f636b8ca49466d6cf12c4815a1c8",
+      "file": "photoss-ihsan-international-school-18d45501bb.jpg",
+      "url": "/uploads/photoss-ihsan-international-school-18d45501bb.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "12_Ortakoy_Mosque.jpg",
+      "sha256": "d480aefd3b612ff9c64596b71ba0796c830dbe79442e0390a37d389feb42d8f4",
+      "file": "photoss-ortakoy-mosque-d480aefd3b.jpg",
+      "url": "/uploads/photoss-ortakoy-mosque-d480aefd3b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "13_Caddebostan_Plaj.jpg",
+      "sha256": "86d64f1458df6f3b2edc0f291df6b55c92260b505c1e8650d1da3cc5d4d74c5c",
+      "file": "photoss-caddebostan-plaj-86d64f1458.jpg",
+      "url": "/uploads/photoss-caddebostan-plaj-86d64f1458.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "13_Galata_Tower.jpg",
+      "sha256": "571e8b67b7b058fdfa0fd9a3a0b72f7dfc825bdbe7c258d44b8f61d2eb8e9973",
+      "file": "photoss-galata-tower-571e8b67b7.jpg",
+      "url": "/uploads/photoss-galata-tower-571e8b67b7.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "13_Hacll_Selalesi.jpg",
+      "sha256": "39908effc519cb94a63da27700d9b2344bda76a35f2b10ea0a917d0b59baecb6",
+      "file": "photoss-hacll-selalesi-39908effc5.jpg",
+      "url": "/uploads/photoss-hacll-selalesi-39908effc5.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "14_Akasya.png",
+      "sha256": "ab9b816bc0dcc3c60cb1ec99f5fa61fb8964154576a6de38205f2047e9c099c3",
+      "file": "photoss-akasya-ab9b816bc0.png",
+      "url": "/uploads/photoss-akasya-ab9b816bc0.png",
+      "duplicate": false
+    },
+    {
+      "original": "14_Basilica_Cistern.jpg",
+      "sha256": "2edc3a8a5e6f69a4a948cced5d53ad8daaa56fb6b629230f9d534417447ec218",
+      "file": "photoss-basilica-cistern-2edc3a8a5e.jpg",
+      "url": "/uploads/photoss-basilica-cistern-2edc3a8a5e.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "15_Balat_Colorful_Houses.jpg",
+      "sha256": "fbea4ae8a7cdfe9ad5c49ea748528a87515cac346793af806b2e724c69cc627a",
+      "file": "photoss-balat-colorful-houses-fbea4ae8a7.jpg",
+      "url": "/uploads/photoss-balat-colorful-houses-fbea4ae8a7.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "15_Tarabya_British_Schools.jpg",
+      "sha256": "ed710f5680649f58e88e5a19629ecc705c5959695f66f4345c6f847ea47e09a6",
+      "file": "photoss-tarabya-british-schools-ed710f5680.jpg",
+      "url": "/uploads/photoss-tarabya-british-schools-ed710f5680.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "15_Vialand_Tema_Park.webp",
+      "sha256": "c302c51179c928f10fab3490a830cecb1eebf3ce62afb2a74160d2e9e67222da",
+      "file": "photoss-vialand-tema-park-c302c51179.webp",
+      "url": "/uploads/photoss-vialand-tema-park-c302c51179.webp",
+      "duplicate": false
+    },
+    {
+      "original": "16_Gulhane_Park.jpg",
+      "sha256": "59c805ad04af6332c3286588a4402d899f81f51220679c0ab435028d19dcfc03",
+      "file": "photoss-gulhane-park-59c805ad04.jpg",
+      "url": "/uploads/photoss-gulhane-park-59c805ad04.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "16_Heybeliada.jpg",
+      "sha256": "29d60bafdf83b37a7e0609d6a5037b89f849d4e2ee6589889f0a22b163eb8bf6",
+      "file": "photoss-heybeliada-29d60bafdf.jpg",
+      "url": "/uploads/photoss-heybeliada-29d60bafdf.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "16_Moipark.jpg",
+      "sha256": "94875d8067280fb0ba46ef74c8e60e54408dc02fadea26cf084cd1a31da40e08",
+      "file": "photoss-moipark-94875d8067.jpg",
+      "url": "/uploads/photoss-moipark-94875d8067.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "17_Elite_Academy.webp",
+      "sha256": "f45244e7643149e8f42f50eef1512b40c8af35a0d5898927c17c7b6fb5811ca0",
+      "file": "photoss-elite-academy-f45244e764.webp",
+      "url": "/uploads/photoss-elite-academy-f45244e764.webp",
+      "duplicate": false
+    },
+    {
+      "original": "17_Emirgan_Korusu.jpg",
+      "sha256": "58b6707aecb0502eaa7666d0a1f0a39060703a9f7a48003439a269c823bdd232",
+      "file": "photoss-emirgan-korusu-58b6707aec.jpg",
+      "url": "/uploads/photoss-emirgan-korusu-58b6707aec.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "17_Korsan_Adas_Theme_Park.webp",
+      "sha256": "f4e20e32b5c80c0122ff9e8fe722ece957593795941c193813211db9110eef81",
+      "file": "photoss-korsan-adas-theme-park-f4e20e32b5.webp",
+      "url": "/uploads/photoss-korsan-adas-theme-park-f4e20e32b5.webp",
+      "duplicate": false
+    },
+    {
+      "original": "18_Caddebostan_Plaj.jpg",
+      "sha256": "86d64f1458df6f3b2edc0f291df6b55c92260b505c1e8650d1da3cc5d4d74c5c",
+      "file": "photoss-caddebostan-plaj-86d64f1458.jpg",
+      "url": "/uploads/photoss-caddebostan-plaj-86d64f1458.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "18_Knalada.jpg",
+      "sha256": "36e765c86d57113102d09080e23e5abef794a678ad7a9508f2a437befc9cd62f",
+      "file": "photoss-knalada-36e765c86d.jpg",
+      "url": "/uploads/photoss-knalada-36e765c86d.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "19_Akasya.png",
+      "sha256": "ab9b816bc0dcc3c60cb1ec99f5fa61fb8964154576a6de38205f2047e9c099c3",
+      "file": "photoss-akasya-ab9b816bc0.png",
+      "url": "/uploads/photoss-akasya-ab9b816bc0.png",
+      "duplicate": true
+    },
+    {
+      "original": "19_Istanbul_Akvaryum.webp",
+      "sha256": "ea093601f9aa560e75c8e521e4bfea2aeda8ea13d73953b8ed2c56ba5eacb397",
+      "file": "photoss-istanbul-akvaryum-ea093601f9.webp",
+      "url": "/uploads/photoss-istanbul-akvaryum-ea093601f9.webp",
+      "duplicate": false
+    },
+    {
+      "original": "19_Istanbul_American_Schools.jpg",
+      "sha256": "9b5a7f4b857f6a915a53bf5bd537fbf8d933072a544bb2c91283c6f6bfce46ef",
+      "file": "photoss-istanbul-american-schools-9b5a7f4b85.jpg",
+      "url": "/uploads/photoss-istanbul-american-schools-9b5a7f4b85.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "20_Aslan_Park.jpg",
+      "sha256": "a33b85571c164a08da6cb7f7c94ee80b98138205ea80234464a9f0d3f91b61b0",
+      "file": "photoss-aslan-park-a33b85571c.jpg",
+      "url": "/uploads/photoss-aslan-park-a33b85571c.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "20_Buyukada.jpg",
+      "sha256": "69df943af235db206f8c01c1258a84d0912a19f1751a7d9041ca0e1447d3e0aa",
+      "file": "photoss-buyukada-69df943af2.jpg",
+      "url": "/uploads/photoss-buyukada-69df943af2.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "20_Comfort_Hotel_Taksim.avif",
+      "sha256": "b5f8d8e2d78d7ecb1aa4944f6d48800c9df0a3643d7c3a31783fcbe73894ed3c",
+      "file": "photoss-comfort-hotel-taksim-b5f8d8e2d7.avif",
+      "url": "/uploads/photoss-comfort-hotel-taksim-b5f8d8e2d7.avif",
+      "duplicate": false
+    },
+    {
+      "original": "20_Sultan_Ahmed_Mosque_Blue_Mosque.jpg",
+      "sha256": "43a8a5e9eacecd914307652d8b76d4706cba5f2add68f23107b63541496b5a94",
+      "file": "photoss-sultan-ahmed-mosque-blue-mosque-43a8a5e9ea.jpg",
+      "url": "/uploads/photoss-sultan-ahmed-mosque-blue-mosque-43a8a5e9ea.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "21_Burgazada.jpg",
+      "sha256": "f992901a5b09fb17670500c5295448bd632b6df88e528ecdecae469425a49cf8",
+      "file": "photoss-burgazada-f992901a5b.jpg",
+      "url": "/uploads/photoss-burgazada-f992901a5b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "21_Fatih_Mosque.jpg",
+      "sha256": "541dcc38e6413adb75d8d130104287e5fcb5dd77b9a8338ad9794b746f0cdf6c",
+      "file": "photoss-fatih-mosque-541dcc38e6.jpg",
+      "url": "/uploads/photoss-fatih-mosque-541dcc38e6.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "21_Santa_Ottoman_Hotel.jpg",
+      "sha256": "1b13bbf10bb478e102b885d247304307a87ea9c6334936c2181b85c2a7021af2",
+      "file": "photoss-santa-ottoman-hotel-1b13bbf10b.jpg",
+      "url": "/uploads/photoss-santa-ottoman-hotel-1b13bbf10b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "21_Viasea_Aquarium.webp",
+      "sha256": "8db68ddad3379f06ff5b30b08ad47e33d4c4fe0555560eb9a93f15367e7e1359",
+      "file": "photoss-viasea-aquarium-8db68ddad3.webp",
+      "url": "/uploads/photoss-viasea-aquarium-8db68ddad3.webp",
+      "duplicate": false
+    },
+    {
+      "original": "22_Citys_Nisantas.jpg",
+      "sha256": "2b1cbcffe6ddc55dbc27170fb1fb50842099008fb245c537ce0cd379bf288aeb",
+      "file": "photoss-citys-nisantas-2b1cbcffe6.jpg",
+      "url": "/uploads/photoss-citys-nisantas-2b1cbcffe6.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "22_Hagia_Sophia_Grand_Mosque.jpg",
+      "sha256": "65f3e6789a070df05e0b1eb906822c8c2eeb9831cebbf2a0e078292ae9145430",
+      "file": "photoss-hagia-sophia-grand-mosque-65f3e6789a.jpg",
+      "url": "/uploads/photoss-hagia-sophia-grand-mosque-65f3e6789a.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "23_Eyup_Sultan_Mosque.jpg",
+      "sha256": "f95088a2f349527d0c8feae396a37994ead4d305f3f4b5fdc23367f2b79df6ea",
+      "file": "photoss-eyup-sultan-mosque-f95088a2f3.jpg",
+      "url": "/uploads/photoss-eyup-sultan-mosque-f95088a2f3.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "23_IstinyePark.png",
+      "sha256": "282e41952e541516de61272c294942e174b043c39a5da7d5d722b710390264a5",
+      "file": "photoss-istinyepark-282e41952e.png",
+      "url": "/uploads/photoss-istinyepark-282e41952e.png",
+      "duplicate": false
+    },
+    {
+      "original": "23_Park_Star_Hotel_Taksim.jpg",
+      "sha256": "252316e48e9af233bddf7941da0690ab708526fb5b90a17c5816486e40d76015",
+      "file": "photoss-park-star-hotel-taksim-252316e48e.jpg",
+      "url": "/uploads/photoss-park-star-hotel-taksim-252316e48e.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "23_SALT_Galata.jpg",
+      "sha256": "6b6d7dbe5799c0a9f33e626ff41654c25a5895d5f701a390099c533095eb097c",
+      "file": "photoss-salt-galata-6b6d7dbe57.jpg",
+      "url": "/uploads/photoss-salt-galata-6b6d7dbe57.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "24_Ataturk_Kitaplg.jpg",
+      "sha256": "74abda66c3d4d6dd38b443da890b88b6167ce9de81660fd82a98c4f1f750723c",
+      "file": "photoss-ataturk-kitaplg-74abda66c3.jpg",
+      "url": "/uploads/photoss-ataturk-kitaplg-74abda66c3.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "24_Avlu34.jpg",
+      "sha256": "d8f8f7a1d8125e1009494f290889beee8235b1dd6e886604805b6523dd4fcaa3",
+      "file": "photoss-avlu34-d8f8f7a1d8.jpg",
+      "url": "/uploads/photoss-avlu34-d8f8f7a1d8.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "24_Taksim_Trust_Hotel.jpg",
+      "sha256": "9ac7e194721ba8019d99cf9813a6f1b7eafc834b053dff4722dda026e13426d1",
+      "file": "photoss-taksim-trust-hotel-9ac7e19472.jpg",
+      "url": "/uploads/photoss-taksim-trust-hotel-9ac7e19472.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "25_ArenaPark.jpg",
+      "sha256": "9499c4d1e3aa223a44d3e2966a21e4b832f2ce549d7284f48117f7c3dc272369",
+      "file": "photoss-arenapark-9499c4d1e3.jpg",
+      "url": "/uploads/photoss-arenapark-9499c4d1e3.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "25_Beyazt_Devlet_Kutuphanesi.jpg",
+      "sha256": "2d4edc735c85e9e33770c9036255faec309c8c0b235851e5e6d9544186af7a4f",
+      "file": "photoss-beyazt-devlet-kutuphanesi-2d4edc735c.jpg",
+      "url": "/uploads/photoss-beyazt-devlet-kutuphanesi-2d4edc735c.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "25_Blisstanbul_Hotel.jpg",
+      "sha256": "b58155828045ae16dc7c38732fb92d0954ca490f7801aeec8e58761c36df8ebc",
+      "file": "photoss-blisstanbul-hotel-b581558280.jpg",
+      "url": "/uploads/photoss-blisstanbul-hotel-b581558280.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "26_Pierre_Loti_Tepesi.jpg",
+      "sha256": "a4329b737d7ead4c684e37b9e06a374d43a5f27ac0800095b7434d7f5be72875",
+      "file": "photoss-pierre-loti-tepesi-a4329b737d.jpg",
+      "url": "/uploads/photoss-pierre-loti-tepesi-a4329b737d.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "26_Topkap_Palace.webp",
+      "sha256": "10f07112cbeebafcdfe960f55f46b706af4f974c537d1d9558ce9654712c1a50",
+      "file": "photoss-topkap-palace-10f07112cb.webp",
+      "url": "/uploads/photoss-topkap-palace-10f07112cb.webp",
+      "duplicate": false
+    },
+    {
+      "original": "27_Dolmabahce_Palace.jpg",
+      "sha256": "09ce67778295e709f530b79b2a3cff1f2cc4788d957c8f613691f1ee0a1dd6a7",
+      "file": "photoss-dolmabahce-palace-09ce677782.jpg",
+      "url": "/uploads/photoss-dolmabahce-palace-09ce677782.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "27_Emaar_Square_Mall.jpg",
+      "sha256": "f36de351bea421f0a3e2d6c22b53afe191add29b8e8ef62f94e9d0b1dc9f89c0",
+      "file": "photoss-emaar-square-mall-f36de351be.jpg",
+      "url": "/uploads/photoss-emaar-square-mall-f36de351be.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "27_Kanyon.jpg",
+      "sha256": "fee34858d194f60c0ab4288fa65f8bbc92711da3d78da74c8876bbed7f01851d",
+      "file": "photoss-kanyon-fee34858d1.jpg",
+      "url": "/uploads/photoss-kanyon-fee34858d1.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "27_Zorlu_Center.jpg",
+      "sha256": "3969647cb5e83db3d3f72e7d841e5f35d3844b955133202e27be277b3f970aa0",
+      "file": "photoss-zorlu-center-3969647cb5.jpg",
+      "url": "/uploads/photoss-zorlu-center-3969647cb5.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "28_Grand_Bazaar.webp",
+      "sha256": "0e6a4b2398040cc7c29b727995fde18f46879222b05f3d4ce6f19e50fecdab75",
+      "file": "photoss-grand-bazaar-0e6a4b2398.webp",
+      "url": "/uploads/photoss-grand-bazaar-0e6a4b2398.webp",
+      "duplicate": false
+    },
+    {
+      "original": "28_Mall_of_Istanbul.jpg",
+      "sha256": "c951e7e71d4714585444657fcd1b62b945e6bd0a3effacb97a54781b846f5d78",
+      "file": "photoss-mall-of-istanbul-c951e7e71d.jpg",
+      "url": "/uploads/photoss-mall-of-istanbul-c951e7e71d.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "28_Watergarden_Istanbul.jpg",
+      "sha256": "9f26b6fcf7cabfb10304b29b7cee161068229c817be4d2f7d4bedd855ca33ad0",
+      "file": "photoss-watergarden-istanbul-9f26b6fcf7.jpg",
+      "url": "/uploads/photoss-watergarden-istanbul-9f26b6fcf7.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "29_Istanbul_Cevahir.jpg",
+      "sha256": "6fe86298f716d9a104635a7689bdec96c1d18259dc91bcb2e3742ead36440c38",
+      "file": "photoss-istanbul-cevahir-6fe86298f7.jpg",
+      "url": "/uploads/photoss-istanbul-cevahir-6fe86298f7.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "29_Rami_Kutuphanesi.jpg",
+      "sha256": "8b8b07080019e77637df2e91492bc94b17f247d8b2d892826c301ce41fbaa0b7",
+      "file": "photoss-rami-kutuphanesi-8b8b070800.jpg",
+      "url": "/uploads/photoss-rami-kutuphanesi-8b8b070800.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "30_Camlca_Kulesi.jpg",
+      "sha256": "37402057252cf15cb22e0b43d82714b49a12dc11794945081cdc36c5aaa06ecc",
+      "file": "photoss-camlca-kulesi-3740205725.jpg",
+      "url": "/uploads/photoss-camlca-kulesi-3740205725.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "30_ENKA_Schools_Istanbul.jpg",
+      "sha256": "12a27b624c56a8d6aea46764cd51b46ce77fa3dd35c1235c19535561662fca57",
+      "file": "photoss-enka-schools-istanbul-12a27b624c.jpg",
+      "url": "/uploads/photoss-enka-schools-istanbul-12a27b624c.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "30_Safir_International_School.png",
+      "sha256": "63a29238df8811a93740b6ab979c4af1fe09ab2fdcba606a2adb8f85c2e5633c",
+      "file": "photoss-safir-international-school-63a29238df.png",
+      "url": "/uploads/photoss-safir-international-school-63a29238df.png",
+      "duplicate": false
+    },
+    {
+      "original": "31_Irmak_Schools.jpg",
+      "sha256": "c78174ce3965419091f8dc918246e5155994e102114441f25cb3496dd56b2607",
+      "file": "photoss-irmak-schools-c78174ce39.jpg",
+      "url": "/uploads/photoss-irmak-schools-c78174ce39.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "32_British_International_School_Istanbul.jpg",
+      "sha256": "e34bae0a91f85b5ed22371d951a625e2d374e70dadf842441f66231aea2e71c5",
+      "file": "photoss-british-international-school-istanbul-e34bae0a91.jpg",
+      "url": "/uploads/photoss-british-international-school-istanbul-e34bae0a91.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "32_Eyuboglu_Schools.webp",
+      "sha256": "d022337bffc5af55e6623682e4e60eb929d4356e0ea12c63eacd1dc7191990da",
+      "file": "photoss-eyuboglu-schools-d022337bff.webp",
+      "url": "/uploads/photoss-eyuboglu-schools-d022337bff.webp",
+      "duplicate": false
+    },
+    {
+      "original": "33_Think_International_Schools.webp",
+      "sha256": "869c3c28d0a11ad6195d99bd579bf5984cea43b7f4f462871d1ffbdffdd54daa",
+      "file": "photoss-think-international-schools-869c3c28d0.webp",
+      "url": "/uploads/photoss-think-international-schools-869c3c28d0.webp",
+      "duplicate": false
+    },
+    {
+      "original": "34_Brights_International_School_of_Istanbul.jpg",
+      "sha256": "86069465d71b395e994f52017c11fd81f31fe56bd736ec7cdc599d38068e20d3",
+      "file": "photoss-brights-international-school-of-istanbul-86069465d7.jpg",
+      "url": "/uploads/photoss-brights-international-school-of-istanbul-86069465d7.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "34_Gokkusag_International_Schools.jpg",
+      "sha256": "a92d4afc2e8f39ddf14b7ab25417145710cf55dbccaf8b64d0e3214329b0f619",
+      "file": "photoss-gokkusag-international-schools-a92d4afc2e.jpg",
+      "url": "/uploads/photoss-gokkusag-international-schools-a92d4afc2e.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "35_MEF_International_School_Istanbul.jpg",
+      "sha256": "1812d500be26507c1ffaa15c82df751ed620a959b0fd4a5e265a55d64fbcb292",
+      "file": "photoss-mef-international-school-istanbul-1812d500be.jpg",
+      "url": "/uploads/photoss-mef-international-school-istanbul-1812d500be.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "35_New_Taksim_Hotel.jpg",
+      "sha256": "d6b6cc438837401b79e83572bc5dccb2332579616b232df74f33d1463a09d139",
+      "file": "photoss-new-taksim-hotel-d6b6cc4388.jpg",
+      "url": "/uploads/photoss-new-taksim-hotel-d6b6cc4388.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "37_Hilltown_Kucukyal.jpg",
+      "sha256": "67dbdeda4e0e628ab593642dadd24e2c54bea01dc7a390fe7fefc78ec89abbec",
+      "file": "photoss-hilltown-kucukyal-67dbdeda4e.jpg",
+      "url": "/uploads/photoss-hilltown-kucukyal-67dbdeda4e.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "37_Suleymaniye_Manuscript_Library.jpg",
+      "sha256": "c39a2b5b8b4c92f2dc69298734c62ca802c10c64e632e06840448fa83c9104f3",
+      "file": "photoss-suleymaniye-manuscript-library-c39a2b5b8b.jpg",
+      "url": "/uploads/photoss-suleymaniye-manuscript-library-c39a2b5b8b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "38_Hadramout_Yemen_Restaurant.jpg",
+      "sha256": "f4c48c5458c187879ee7863f4dbb98c2c485b272d3f502b6c27e315bf8d0d7c3",
+      "file": "photoss-hadramout-yemen-restaurant-f4c48c5458.jpg",
+      "url": "/uploads/photoss-hadramout-yemen-restaurant-f4c48c5458.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "38_LEGOLAND_Discovery_Centre_Istanbul.jpg",
+      "sha256": "eb2e86f64b67c05285bf74a78defbc6b4a8c26404575dd795d40610d888213af",
+      "file": "photoss-legoland-discovery-centre-istanbul-eb2e86f64b.jpg",
+      "url": "/uploads/photoss-legoland-discovery-centre-istanbul-eb2e86f64b.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "39_Citys_Nisantas.jpg",
+      "sha256": "2b1cbcffe6ddc55dbc27170fb1fb50842099008fb245c537ce0cd379bf288aeb",
+      "file": "photoss-citys-nisantas-2b1cbcffe6.jpg",
+      "url": "/uploads/photoss-citys-nisantas-2b1cbcffe6.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "39_SEA_LIFE_Istanbul.jpg",
+      "sha256": "60584f6d3ffe12d9d134c9460b57b850a005873d0cfcf7d6ef37d023eea0b059",
+      "file": "photoss-sea-life-istanbul-60584f6d3f.jpg",
+      "url": "/uploads/photoss-sea-life-istanbul-60584f6d3f.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "40_Avlu34.jpg",
+      "sha256": "d8f8f7a1d8125e1009494f290889beee8235b1dd6e886604805b6523dd4fcaa3",
+      "file": "photoss-avlu34-d8f8f7a1d8.jpg",
+      "url": "/uploads/photoss-avlu34-d8f8f7a1d8.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "40_Bagdat_Avenue.webp",
+      "sha256": "74556a508f72538e29593b47c65b9b344e4b203962e34680978ddb68350807cc",
+      "file": "photoss-bagdat-avenue-74556a508f.webp",
+      "url": "/uploads/photoss-bagdat-avenue-74556a508f.webp",
+      "duplicate": false
+    },
+    {
+      "original": "41_Chef_Eyad_Taksim.webp",
+      "sha256": "55521ba84ce3eb10af814505bdbada90b5d8dd7af3dc2e6fd6d0b81f5d41f77b",
+      "file": "photoss-chef-eyad-taksim-55521ba84c.webp",
+      "url": "/uploads/photoss-chef-eyad-taksim-55521ba84c.webp",
+      "duplicate": false
+    },
+    {
+      "original": "41_Watergarden_Istanbul.jpg",
+      "sha256": "9f26b6fcf7cabfb10304b29b7cee161068229c817be4d2f7d4bedd855ca33ad0",
+      "file": "photoss-watergarden-istanbul-9f26b6fcf7.jpg",
+      "url": "/uploads/photoss-watergarden-istanbul-9f26b6fcf7.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "42_Faros_Restaurant_Taksim.jpg",
+      "sha256": "19dc9d69b7d5a8029f8c932dc9197fe5761e9dab6473fb221b21bac95d518e7d",
+      "file": "photoss-faros-restaurant-taksim-19dc9d69b7.jpg",
+      "url": "/uploads/photoss-faros-restaurant-taksim-19dc9d69b7.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "42_Zorlu_Center.jpg",
+      "sha256": "3969647cb5e83db3d3f72e7d841e5f35d3844b955133202e27be277b3f970aa0",
+      "file": "photoss-zorlu-center-3969647cb5.jpg",
+      "url": "/uploads/photoss-zorlu-center-3969647cb5.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "43_Burc_Beach.jpg",
+      "sha256": "77a3fa0da148f7cfda40dd49a8a9046742c9e7f55a693a51837430aabc609e51",
+      "file": "photoss-burc-beach-77a3fa0da1.jpg",
+      "url": "/uploads/photoss-burc-beach-77a3fa0da1.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "43_Kzlkayalar_Taksim.webp",
+      "sha256": "cac7c5536835abcabe61fd740e1d5f5ec707cb1616f7bd9223bbafd06ba68147",
+      "file": "photoss-kzlkayalar-taksim-cac7c55368.webp",
+      "url": "/uploads/photoss-kzlkayalar-taksim-cac7c55368.webp",
+      "duplicate": false
+    },
+    {
+      "original": "44_Hadramout_Yemen_Restaurant.jpg",
+      "sha256": "f4c48c5458c187879ee7863f4dbb98c2c485b272d3f502b6c27e315bf8d0d7c3",
+      "file": "photoss-hadramout-yemen-restaurant-f4c48c5458.jpg",
+      "url": "/uploads/photoss-hadramout-yemen-restaurant-f4c48c5458.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "44_Sazeli_Florya.jpg",
+      "sha256": "b2f3f843b028428d3817b266694d72708d26255b86860d4f39c9688151507497",
+      "file": "photoss-sazeli-florya-b2f3f843b0.jpg",
+      "url": "/uploads/photoss-sazeli-florya-b2f3f843b0.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "45_Hacll_Selalesi.jpg",
+      "sha256": "39908effc519cb94a63da27700d9b2344bda76a35f2b10ea0a917d0b59baecb6",
+      "file": "photoss-hacll-selalesi-39908effc5.jpg",
+      "url": "/uploads/photoss-hacll-selalesi-39908effc5.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "45_Tarboush_Restaurant.jpg",
+      "sha256": "0dc9525f0408a7f75e83b3d92c5fa6f7e14f9b8791aad7bd0dff8d5e7899692b",
+      "file": "photoss-tarboush-restaurant-0dc9525f04.jpg",
+      "url": "/uploads/photoss-tarboush-restaurant-0dc9525f04.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "46_Heybeliada.jpg",
+      "sha256": "29d60bafdf83b37a7e0609d6a5037b89f849d4e2ee6589889f0a22b163eb8bf6",
+      "file": "photoss-heybeliada-29d60bafdf.jpg",
+      "url": "/uploads/photoss-heybeliada-29d60bafdf.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "46_Layali_Shamiya.jpg",
+      "sha256": "ceddbe14c9aeccbf8338308ef89882bf22237f6dfd2cf301c7513a625b8851ca",
+      "file": "photoss-layali-shamiya-ceddbe14c9.jpg",
+      "url": "/uploads/photoss-layali-shamiya-ceddbe14c9.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "47_Knalada.jpg",
+      "sha256": "36e765c86d57113102d09080e23e5abef794a678ad7a9508f2a437befc9cd62f",
+      "file": "photoss-knalada-36e765c86d.jpg",
+      "url": "/uploads/photoss-knalada-36e765c86d.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "48_Al_Aqsa_International_Schools_Beylikduzu.jpg",
+      "sha256": "1d638e9169020d424836c3a2170a0c96b1449ca3a082f1bd05221e7eed29356d",
+      "file": "photoss-al-aqsa-international-schools-beylikduzu-1d638e9169.jpg",
+      "url": "/uploads/photoss-al-aqsa-international-schools-beylikduzu-1d638e9169.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "48_Fatih_Mosque.jpg",
+      "sha256": "541dcc38e6413adb75d8d130104287e5fcb5dd77b9a8338ad9794b746f0cdf6c",
+      "file": "photoss-fatih-mosque-541dcc38e6.jpg",
+      "url": "/uploads/photoss-fatih-mosque-541dcc38e6.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "49_Gokkusag_Schools_Beylikduzu_Campus.jpg",
+      "sha256": "ba2c6c0e691accc171238a0a777e493d15a80ada11f3cd9a6e35207b42013256",
+      "file": "photoss-gokkusag-schools-beylikduzu-campus-ba2c6c0e69.jpg",
+      "url": "/uploads/photoss-gokkusag-schools-beylikduzu-campus-ba2c6c0e69.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "49_Zubeyir_Ocakbas.jpg",
+      "sha256": "4a6a22e53265a36084e6f41525511779fbcae00ead840d2ad2f78be1a811a7d5",
+      "file": "photoss-zubeyir-ocakbas-4a6a22e532.jpg",
+      "url": "/uploads/photoss-zubeyir-ocakbas-4a6a22e532.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "50_Buz_Al_Jaddi.jpg",
+      "sha256": "2313ca53210fe4ba824185e5b33672e5fa942587af91bc5f79d0709c5b740cef",
+      "file": "photoss-buz-al-jaddi-2313ca5321.jpg",
+      "url": "/uploads/photoss-buz-al-jaddi-2313ca5321.jpg",
+      "duplicate": false
+    },
+    {
+      "original": "50_Elite_International_School_Istanbul.webp",
+      "sha256": "8bf701d3eb8419a89583e73da7abfa3f0be0acc75c3c1b429bcb1e6c24d42e9f",
+      "file": "photoss-elite-international-school-istanbul-8bf701d3eb.webp",
+      "url": "/uploads/photoss-elite-international-school-istanbul-8bf701d3eb.webp",
+      "duplicate": false
+    },
+    {
+      "original": "51_Taksim_Trust_Hotel.jpg",
+      "sha256": "9ac7e194721ba8019d99cf9813a6f1b7eafc834b053dff4722dda026e13426d1",
+      "file": "photoss-taksim-trust-hotel-9ac7e19472.jpg",
+      "url": "/uploads/photoss-taksim-trust-hotel-9ac7e19472.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "52_Santa_Ottoman_Hotel.jpg",
+      "sha256": "1b13bbf10bb478e102b885d247304307a87ea9c6334936c2181b85c2a7021af2",
+      "file": "photoss-santa-ottoman-hotel-1b13bbf10b.jpg",
+      "url": "/uploads/photoss-santa-ottoman-hotel-1b13bbf10b.jpg",
+      "duplicate": true
+    },
+    {
+      "original": "53_Hidden_Hills_Hotel_Istanbul_Airport.jpg",
+      "sha256": "02de55932489f6b9279f524a8b5391f6a075bbaab8f306be32235c9be461752f",
+      "file": "photoss-hidden-hills-hotel-istanbul-airport-02de559324.jpg",
+      "url": "/uploads/photoss-hidden-hills-hotel-istanbul-airport-02de559324.jpg",
+      "duplicate": true
+    }
+  ]
+}
