@@ -1,0 +1,16 @@
+title = "Best5 Gitleaks configuration"
+minVersion = "v8.25.0"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Generated content item identifiers are slugs, not API keys"
+targetRules = ["generic-api-key"]
+condition = "AND"
+regexTarget = "line"
+regexes = ['''["']item_key["']\s*:''']
+paths = [
+  '''^image-db-update-map\.json$''',
+  '''^(?:reapply-image-items|apply-image-map)\.sql$''',
+]
