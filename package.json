@@ -11,6 +11,7 @@
     "test:seo-parity": "node scripts/seo-route-parity.mjs",
     "test:seo-audit": "node scripts/seo-audit.mjs",
     "test:site-quality": "node scripts/site-quality-audit.mjs",
+    "security:check": "npm audit --omit=dev --audit-level=high && npm --prefix server audit --omit=dev --audit-level=high && npm --prefix server run test:security",
     "preview": "vite preview",
     "start:ssr": "node ssr-server.mjs"
   },
@@ -19,7 +20,8 @@
     "lucide-react": "^0.563.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^6.30.4"
+    "react-router": "^7.18.4",
+    "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

@@ -6,6 +6,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { getPostReadiness } from '../../common/post-readiness';
 import { randomUUID } from 'crypto';
 import { normalizeRedirectPath } from '../redirects/redirects.service';
+import { sanitizePostPayload } from '../../common/content-security';
 
 const slugify = (value: string) =>
   value
@@ -400,6 +401,7 @@ export class PostsService {
   }
 
   async create(authorId: string, data: CreatePostDto) {
+    data = sanitizePostPayload(data);
     const { tag_ids, content_reviewed_at, ...postData } = data;
     const relatedPostIds = await this.validateRelatedPostIds(data.related_post_ids);
     const draftSuffix = randomUUID();
@@ -452,6 +454,7 @@ export class PostsService {
   }
 
   async update(id: string, data: UpdatePostDto) {
+    data = sanitizePostPayload(data);
     const {
       tag_ids,
       content_reviewed_at,

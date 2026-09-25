@@ -67,6 +67,25 @@ model User {
   audit_logs     AuditLog[]     @relation("ActorLogs")
   post_revisions PostRevision[] @relation("PostRevisionEditor")
   notifications  Notification[]
+  refresh_sessions RefreshSession[]
+}
+
+model RefreshSession {
+  id             String    @id
+  family_id      String
+  user_id        String
+  token_hash     String    @unique
+  expires_at     DateTime
+  revoked_at     DateTime?
+  replaced_by_id String?
+  created_at     DateTime  @default(now())
+  last_used_at   DateTime?
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([family_id])
+  @@index([expires_at])
 }
 
 model Post {

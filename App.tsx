@@ -35,7 +35,6 @@ const TagsPage = lazy(() => import('./admin/TagsPage'));
 const SettingsPage = lazy(() => import('./admin/SettingsPage'));
 const HeaderFooterSettingsPage = lazy(() => import('./admin/HeaderFooterSettingsPage'));
 const PagesSettingsPage = lazy(() => import('./admin/PagesSettingsPage'));
-const DatabaseToolsPage = lazy(() => import('./admin/DatabaseToolsPage'));
 const NotificationsPage = lazy(() => import('./admin/NotificationsPage'));
 const BotAnalyticsPage = lazy(() => import('./admin/BotAnalyticsPage'));
 const SearchConsolePage = lazy(() => import('./admin/SearchConsolePage'));
@@ -79,7 +78,6 @@ export const AppRoutes: React.FC = () => {
               <Route path="header-footer" element={<HeaderFooterSettingsPage />} />
               <Route path="pages" element={<PagesSettingsPage />} />
               <Route path="settings" element={<SettingsPage />} />
-              <Route path="db-tools" element={<DatabaseToolsPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="crawlers" element={<BotAnalyticsPage />} />
               <Route path="search-console" element={<SearchConsolePage />} />

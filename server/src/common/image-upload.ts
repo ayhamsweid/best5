@@ -1,66 +1,25 @@
 import { BadRequestException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { diskStorage } from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
+const sharp = require('sharp');
 
-const extensionAliases: Record<string, string[]> = {
-  '.gif': ['gif'],
-  '.jpeg': ['jpeg'],
-  '.jpg': ['jpeg'],
-  '.png': ['png'],
-  '.webp': ['webp']
-};
-
-const detectImageType = (header: Buffer) => {
-  if (header.length >= 8 && header.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
-    return 'png';
-  }
-  if (header.length >= 3 && header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff) {
-    return 'jpeg';
-  }
-  const prefix = header.subarray(0, 6).toString('ascii');
-  if (prefix === 'GIF87a' || prefix === 'GIF89a') {
-    return 'gif';
-  }
-  if (
-    header.length >= 12 &&
-    header.subarray(0, 4).toString('ascii') === 'RIFF' &&
-    header.subarray(8, 12).toString('ascii') === 'WEBP'
-  ) {
-    return 'webp';
-  }
-  return null;
-};
-
-const availableFilename = (uploadDir: string, originalName: string) => {
-  const extension = path.extname(originalName).toLowerCase();
-  const rawBase = path.basename(originalName, path.extname(originalName));
-  const safeBase = rawBase
-    .normalize('NFKC')
-    .replace(/[^\p{L}\p{N}._-]+/gu, '-')
-    .replace(/^[._-]+|[._-]+$/g, '')
-    .slice(0, 120) || 'image';
-
-  let candidate = `${safeBase}${extension}`;
-  let suffix = 1;
-  while (fs.existsSync(path.join(uploadDir, candidate))) {
-    candidate = `${safeBase}_${suffix}${extension}`;
-    suffix += 1;
-  }
-  return candidate;
-};
+const allowedMimeTypes = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif']);
+const allowedExtensions = new Set(['.gif', '.jpeg', '.jpg', '.png', '.webp']);
 
 export const imageUploadOptions = () => ({
   limits: {
     fileSize: 1024 * 1024 * Math.max(1, Number(process.env.MAX_UPLOAD_MB || 5)),
     files: 1,
     fields: 5,
-    parts: 6
+    parts: 6,
+    fieldNameSize: 100,
+    fieldSize: 16 * 1024
   },
   fileFilter: (_req: unknown, file: Express.Multer.File, cb: (error: Error | null, acceptFile: boolean) => void) => {
     const extension = path.extname(file.originalname).toLowerCase();
-    const mimeAllowed = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.mimetype);
-    if (!mimeAllowed || !extensionAliases[extension]) {
+    if (!allowedMimeTypes.has(file.mimetype) || !allowedExtensions.has(extension)) {
       cb(new BadRequestException('Unsupported image type'), false);
       return;
     }
@@ -72,31 +31,37 @@ export const imageUploadOptions = () => ({
       fs.mkdirSync(uploadDir, { recursive: true });
       cb(null, uploadDir);
     },
-    filename: (_req, file, cb) => {
-      const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-      cb(null, availableFilename(uploadDir, file.originalname));
-    }
+    filename: (_req, _file, cb) => cb(null, `${randomUUID()}.upload`)
   })
 });
 
-export const assertSafeUploadedImage = (file?: Express.Multer.File) => {
-  if (!file?.path) {
-    throw new BadRequestException('Image file is required');
-  }
+export const processUploadedImage = async (file?: Express.Multer.File) => {
+  if (!file?.path) throw new BadRequestException('Image file is required');
+  const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+  const outputName = `${randomUUID()}.webp`;
+  const outputPath = path.join(uploadDir, outputName);
 
-  const descriptor = fs.openSync(file.path, 'r');
-  const header = Buffer.alloc(16);
-  let bytesRead = 0;
   try {
-    bytesRead = fs.readSync(descriptor, header, 0, header.length, 0);
-  } finally {
-    fs.closeSync(descriptor);
-  }
-
-  const detected = detectImageType(header.subarray(0, bytesRead));
-  const extension = path.extname(file.filename).toLowerCase();
-  if (!detected || !extensionAliases[extension]?.includes(detected)) {
+    const image = sharp(file.path, {
+      failOn: 'warning',
+      limitInputPixels: Math.max(1, Number(process.env.MAX_IMAGE_PIXELS || 40_000_000)),
+      animated: false
+    });
+    const metadata = await image.metadata();
+    if (!metadata.format || !['jpeg', 'png', 'webp', 'gif'].includes(metadata.format)) {
+      throw new BadRequestException('File content is not a supported image');
+    }
+    await image.rotate().webp({ quality: 84, effort: 4 }).toFile(outputPath);
     fs.rmSync(file.path, { force: true });
-    throw new BadRequestException('File content does not match an allowed image type');
+    file.path = outputPath;
+    file.filename = outputName;
+    file.mimetype = 'image/webp';
+    file.size = fs.statSync(outputPath).size;
+    return file;
+  } catch (error) {
+    fs.rmSync(file.path, { force: true });
+    fs.rmSync(outputPath, { force: true });
+    if (error instanceof BadRequestException) throw error;
+    throw new BadRequestException('Invalid or unsafe image');
   }
 };

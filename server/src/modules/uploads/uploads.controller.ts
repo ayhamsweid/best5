@@ -7,7 +7,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { assertSafeUploadedImage, imageUploadOptions } from '../../common/image-upload';
+import { imageUploadOptions, processUploadedImage } from '../../common/image-upload';
 
 @Controller('uploads')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -142,7 +142,7 @@ export class UploadsController {
   @Post('images')
   @UseInterceptors(FileInterceptor('file', imageUploadOptions()))
   async upload(@UploadedFile() file: Express.Multer.File) {
-    assertSafeUploadedImage(file);
+    await processUploadedImage(file);
     await this.ensureUniqueAssetFilename(file);
     try {
       await this.prisma.mediaAsset.create({

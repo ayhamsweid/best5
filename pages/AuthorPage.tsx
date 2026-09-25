@@ -5,7 +5,7 @@ import { useInitialData, useSiteUrl } from '../context/InitialDataContext';
 import { useLanguageSwitch } from '../context/LanguageSwitchContext';
 import { useLang } from '../hooks/useLang';
 import { fetchPublicAuthor } from '../services/api';
-import { safeJsonForScript } from '../utils/contentSecurity';
+import { safeJsonForScript, safeLinkUrl, safeResourceUrl } from '../utils/contentSecurity';
 
 const AuthorPage: React.FC = () => {
   const { slug = '' } = useParams();
@@ -63,7 +63,10 @@ const AuthorPage: React.FC = () => {
       ? `تعرف على مقالات ${author.full_name} المنشورة في Best5.`
       : `Explore articles by ${author.full_name} published on Best5.`
   );
-  const sameAs = [author.author_website_url, author.author_social_url].filter(Boolean);
+  const authorImage = safeResourceUrl(author.author_image_url);
+  const authorWebsite = safeLinkUrl(author.author_website_url);
+  const authorSocial = safeLinkUrl(author.author_social_url);
+  const sameAs = [authorWebsite, authorSocial].filter(Boolean);
 
   return (
     <main className="bg-[#F9FAFB] text-[#111827]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
@@ -71,7 +74,7 @@ const AuthorPage: React.FC = () => {
         title={`${author.full_name} | Best5`}
         description={description}
         canonical={canonical}
-        image={author.author_image_url || undefined}
+        image={authorImage || undefined}
         url={canonical}
         alternates={{ ar: arUrl, en: enUrl, xDefault: enUrl }}
       />
@@ -84,7 +87,7 @@ const AuthorPage: React.FC = () => {
             name: author.full_name,
             jobTitle: title || undefined,
             description: bio || undefined,
-            image: author.author_image_url || undefined,
+            image: authorImage || undefined,
             url: canonical,
             sameAs: sameAs.length ? sameAs : undefined
           })
@@ -94,9 +97,9 @@ const AuthorPage: React.FC = () => {
       <section className="mx-auto max-w-5xl px-6 py-12 md:py-20">
         <div className="rounded-3xl border border-[#E5E7EB] bg-white p-7 shadow-sm md:p-10">
           <div className="flex flex-col gap-7 sm:flex-row sm:items-start">
-            {author.author_image_url ? (
+            {authorImage ? (
               <img
-                src={author.author_image_url}
+                src={authorImage}
                 alt={author.full_name}
                 width={160}
                 height={160}
@@ -135,15 +138,15 @@ const AuthorPage: React.FC = () => {
                   </div>
                 </div>
               )}
-              {(author.author_website_url || author.author_social_url) && (
+              {(authorWebsite || authorSocial) && (
                 <div className="mt-6 flex flex-wrap gap-4 text-sm font-bold text-[#b11226]">
-                  {author.author_website_url && (
-                    <a href={author.author_website_url} rel="noopener noreferrer" target="_blank">
+                  {authorWebsite && (
+                    <a href={authorWebsite} rel="noopener noreferrer" target="_blank">
                       {lang === 'ar' ? 'الموقع الشخصي' : 'Website'}
                     </a>
                   )}
-                  {author.author_social_url && (
-                    <a href={author.author_social_url} rel="noopener noreferrer" target="_blank">
+                  {authorSocial && (
+                    <a href={authorSocial} rel="noopener noreferrer" target="_blank">
                       {lang === 'ar' ? 'الحساب المهني' : 'Professional profile'}
                     </a>
                   )}

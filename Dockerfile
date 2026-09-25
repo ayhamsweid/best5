@@ -19,8 +19,8 @@ USER node
 EXPOSE 3001
 CMD ["node", "ssr-server.mjs"]
 
-FROM nginx:1.27-alpine AS web
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS web
 COPY deployment/container-nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --chown=101:101 --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080

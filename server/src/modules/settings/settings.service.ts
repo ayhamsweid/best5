@@ -11,7 +11,7 @@ export class SettingsService {
       update: {},
       create: {
         id: 'singleton',
-        header_json: { logoImageUrl: '/uploads/favicon.webp' }
+        header_json: { logoImageUrl: '/favicon.png' }
       }
     });
   }

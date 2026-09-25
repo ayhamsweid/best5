@@ -61,7 +61,10 @@ const getJson = async (endpoint, fallback, cacheTtlMs = apiCacheTtlMs) => {
   const promise = (async () => {
   try {
     const response = await fetch(`${apiBase}${endpoint}`, {
-      headers: { Accept: 'application/json' }
+      headers: {
+        Accept: 'application/json',
+        ...(process.env.SSR_INTERNAL_TOKEN ? { 'x-ssr-internal-token': process.env.SSR_INTERNAL_TOKEN } : {})
+      }
     });
       if (response.status === 404) return fallback;
       if (!response.ok) {

@@ -23,6 +23,7 @@ export const sanitizeContentHtml = (html: unknown) =>
     ],
     ALLOW_DATA_ATTR: false,
     ALLOW_UNKNOWN_PROTOCOLS: false,
+    ALLOWED_URI_REGEXP: /^(?:(?:https|mailto|tel):|\/(?!\/)|#)/i,
     FORBID_TAGS: ['embed', 'form', 'iframe', 'input', 'link', 'meta', 'object', 'script', 'style']
   });
 
@@ -42,7 +43,7 @@ export const safeLinkUrl = (value: unknown, allowRelative = true) => {
 
   try {
     const url = new URL(candidate);
-    return ['http:', 'https:', 'mailto:', 'tel:'].includes(url.protocol) ? url.toString() : '';
+    return ['https:', 'mailto:', 'tel:'].includes(url.protocol) ? url.toString() : '';
   } catch {
     return '';
   }
@@ -55,7 +56,7 @@ export const safeResourceUrl = (value: unknown) => {
 
   try {
     const url = new URL(candidate);
-    return ['http:', 'https:'].includes(url.protocol) ? url.toString() : '';
+    return url.protocol === 'https:' ? url.toString() : '';
   } catch {
     return '';
   }

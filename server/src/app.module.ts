@@ -10,7 +10,6 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { SitemapModule } from './modules/sitemap/sitemap.module';
-import { DbToolsModule } from './modules/db-tools/db-tools.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SeoRenderModule } from './modules/seo-render/seo-render.module';
 import { RedirectsModule } from './modules/redirects/redirects.module';
@@ -28,7 +27,6 @@ import { RedirectsModule } from './modules/redirects/redirects.module';
     AnalyticsModule,
     UploadsModule,
     SitemapModule,
-    DbToolsModule,
     NotificationsModule,
     RedirectsModule,
     SeoRenderModule

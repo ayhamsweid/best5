@@ -8,10 +8,21 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
 import { PrismaService } from './prisma/prisma.service';
+import { timingSafeEqual } from 'crypto';
+
+const secureEqual = (left: string, right: string) => {
+  const leftBuffer = Buffer.from(left);
+  const rightBuffer = Buffer.from(right);
+  return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
+};
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const trustProxyHops = Number(process.env.TRUST_PROXY_HOPS || 0);
+  const ssrInternalToken = process.env.SSR_INTERNAL_TOKEN?.trim() || '';
+  if (process.env.NODE_ENV === 'production' && ssrInternalToken.length < 32) {
+    throw new Error('SSR_INTERNAL_TOKEN must contain at least 32 characters in production');
+  }
   app.set('trust proxy', Number.isInteger(trustProxyHops) && trustProxyHops > 0 ? trustProxyHops : false);
   app.use(helmet());
   const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000')
@@ -42,6 +53,15 @@ async function bootstrap() {
     })
   );
   app.use(
+    '/api/seo/render',
+    rateLimit({
+      windowMs: 1000 * 60,
+      max: Number(process.env.RATE_LIMIT_SEO_MAX || 30),
+      standardHeaders: true,
+      legacyHeaders: false
+    })
+  );
+  app.use(
     rateLimit({
       windowMs: 1000 * Number(process.env.RATE_LIMIT_WINDOW_SEC || 60),
       max: Number(process.env.RATE_LIMIT_MAX || 120),
@@ -55,8 +75,10 @@ async function bootstrap() {
           remoteAddress.startsWith('::ffff:172.') ||
           remoteAddress.startsWith('::ffff:10.') ||
           remoteAddress.startsWith('::ffff:192.168.');
-        const hasForwardedClient = Boolean(req.headers['x-forwarded-for']);
-        return req.method === 'GET' && isPrivateDockerAddress && !hasForwardedClient;
+        const suppliedToken = typeof req.headers['x-ssr-internal-token'] === 'string'
+          ? req.headers['x-ssr-internal-token']
+          : '';
+        return req.method === 'GET' && isPrivateDockerAddress && Boolean(ssrInternalToken) && secureEqual(suppliedToken, ssrInternalToken);
       }
     })
   );

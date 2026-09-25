@@ -28,7 +28,7 @@ const normalizeMapUrl = (value: unknown, fallbackQuery: string) => {
 
   try {
     const url = new URL(candidate);
-    if (url.protocol === 'http:' || url.protocol === 'https:') return url.toString();
+    if (url.protocol === 'https:') return url.toString();
   } catch {
     // Fall back to a Google Maps search instead of treating malformed input as an internal URL.
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom/server';
+import { StaticRouter } from 'react-router';
 import { AppContent } from './App';
 import { InitialData } from './context/InitialDataContext';
 import { SeoCollectorContext, SeoData } from './context/SeoContext';

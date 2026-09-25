@@ -4,6 +4,7 @@ import { useLang } from '../hooks/useLang';
 import { fetchPublicPosts, fetchPublicSettings } from '../services/api';
 import { Link } from 'react-router-dom';
 import { useInitialData } from '../context/InitialDataContext';
+import { safeLinkUrl, safeResourceUrl } from '../utils/contentSecurity';
 
 const Footer: React.FC = () => {
   const { lang } = useLang();
@@ -63,7 +64,7 @@ const Footer: React.FC = () => {
         <div>
         <div className="flex items-center gap-3 mb-6">
           {copy.logoImageUrl ? (
-            <img src={copy.logoImageUrl} alt={copy.brand} className="block h-10 w-10 shrink-0 rounded-lg object-contain" />
+            <img src={safeResourceUrl(copy.logoImageUrl)} alt={copy.brand} className="block h-10 w-10 shrink-0 rounded-lg object-contain" />
           ) : (
             <div className="bg-primary p-1.5 rounded-lg">
               <Compass className="text-white w-5 h-5" />
@@ -108,9 +109,11 @@ const Footer: React.FC = () => {
                 const label = item.label?.[lang] || item.label?.ar || item.label?.en || '—';
                 const path = item.path || '#';
                 if (item.external) {
+                  const externalUrl = safeLinkUrl(path, false);
+                  if (!externalUrl) return null;
                   return (
                     <li key={`${label}-${idx}`}>
-                      <a href={path} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                      <a href={externalUrl} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
                         {label}
                       </a>
                     </li>
@@ -147,11 +150,14 @@ const Footer: React.FC = () => {
         <p>{copy.copyright}</p>
         <div className="flex gap-4 mt-4 md:mt-0 items-center">
           {copy.credit && <span>{copy.credit}</span>}
-          {(copy.socials || []).map((item: any, idx: number) => (
-            <a key={`${item.label}-${idx}`} href={item.url} target="_blank" rel="noreferrer" className="hover:text-white">
-              {item.label || item.icon || 'social'}
-            </a>
-          ))}
+          {(copy.socials || []).map((item: any, idx: number) => {
+            const url = safeLinkUrl(item.url, false);
+            return url ? (
+              <a key={`${item.label}-${idx}`} href={url} target="_blank" rel="noreferrer" className="hover:text-white">
+                {item.label || item.icon || 'social'}
+              </a>
+            ) : null;
+          })}
         </div>
       </div>
     </footer>

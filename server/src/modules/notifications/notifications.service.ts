@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserRole } from '@prisma/client';
 
@@ -17,11 +17,13 @@ export class NotificationsService {
     return this.prisma.notification.count({ where: { user_id: userId, is_read: false } });
   }
 
-  markRead(userId: string, id: string) {
-    return this.prisma.notification.updateMany({
+  async markRead(userId: string, id: string) {
+    const result = await this.prisma.notification.updateMany({
       where: { id, user_id: userId },
       data: { is_read: true }
     });
+    if (result.count !== 1) throw new NotFoundException('Notification not found');
+    return { ok: true };
   }
 
   markAllRead(userId: string) {

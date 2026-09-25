@@ -10,7 +10,8 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { assertSafeUploadedImage, imageUploadOptions } from '../../common/image-upload';
+import { imageUploadOptions, processUploadedImage } from '../../common/image-upload';
+import * as fs from 'fs';
 
 @Controller('posts')
 export class PostsController {
@@ -91,13 +92,17 @@ export class PostsController {
   @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() dto: UpdatePostDto, @CurrentUser() user: any) {
+    const before = await this.posts.findOne(id);
+    const canManagePublished = [UserRole.ADMIN, UserRole.CHIEF_EDITOR].includes(user.role);
+    if (before?.status === PostStatus.PUBLISHED && !canManagePublished) {
+      throw new ForbiddenException('Only admin or chief editor can edit a published post');
+    }
     if ((dto.status === PostStatus.PUBLISHED || dto.status === PostStatus.SCHEDULED) && ![UserRole.ADMIN, UserRole.CHIEF_EDITOR].includes(user.role)) {
       throw new ForbiddenException('Only admin or chief editor can publish');
     }
     if (dto.status === PostStatus.SCHEDULED && !dto.scheduled_at) {
       throw new BadRequestException('scheduled_at is required for scheduled posts');
     }
-    const before = await this.posts.findOne(id);
     if (before) {
       await this.posts.createRevision(before, user.id);
     }
@@ -121,7 +126,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
+  @Roles(UserRole.ADMIN, UserRole.CHIEF_EDITOR)
   @Delete(':id')
   async remove(@Param('id') id: string, @CurrentUser() user: any) {
     const deleted = await this.posts.remove(id);
@@ -130,15 +135,28 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER)
+  @Roles(UserRole.ADMIN, UserRole.CONTENT_WRITER, UserRole.EDITOR, UserRole.CHIEF_EDITOR)
   @Post(':id/cover')
   @UseInterceptors(FileInterceptor('file', imageUploadOptions()))
   async uploadCover(@Param('id') id: string, @UploadedFile() file: Express.Multer.File, @CurrentUser() user: any) {
-    assertSafeUploadedImage(file);
     const before = await this.posts.findOne(id);
-    const updated = await this.posts.update(id, { cover_image_url: `/uploads/${file.filename}` });
-    await this.logs.log(user.id, 'UPDATE', 'POST', id, before, updated);
-    return updated;
+    if (!before) {
+      if (file?.path) fs.rmSync(file.path, { force: true });
+      throw new NotFoundException('Post not found');
+    }
+    if (before?.status === PostStatus.PUBLISHED && ![UserRole.ADMIN, UserRole.CHIEF_EDITOR].includes(user.role)) {
+      if (file?.path) fs.rmSync(file.path, { force: true });
+      throw new ForbiddenException('Only admin or chief editor can edit a published post');
+    }
+    await processUploadedImage(file);
+    try {
+      const updated = await this.posts.update(id, { cover_image_url: `/uploads/${file.filename}` });
+      await this.logs.log(user.id, 'UPDATE', 'POST', id, before, updated);
+      return updated;
+    } catch (error) {
+      if (file?.path) fs.rmSync(file.path, { force: true });
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
