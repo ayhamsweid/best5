@@ -1,36 +1,22 @@
 services:
-  db-restore:
-    image: alpine:3.20
-    profiles:
-      - restore
-    volumes:
-      - ./db_raw_data_backup:/backup:ro
-      - postgres_data:/var/lib/postgresql/data
-    command: >
-      sh -c '
-        if [ -f /var/lib/postgresql/data/PG_VERSION ]; then
-          echo "Postgres data volume already initialized; skipping restore."
-          exit 0
-        fi
-        cp -a /backup/. /var/lib/postgresql/data/
-        rm -f /var/lib/postgresql/data/postmaster.pid
-        chown -R 999:999 /var/lib/postgresql/data
-        chmod 700 /var/lib/postgresql/data
-      '
-
   db:
     image: postgres:16
     restart: unless-stopped
     environment:
-      POSTGRES_USER: best5_user
-      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD:?Set DB_ADMIN_PASSWORD in .env}
+      POSTGRES_USER: best5_admin
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
       POSTGRES_DB: besiktas
-      DB_APP_PASSWORD: ${DB_APP_PASSWORD:?Set DB_APP_PASSWORD in .env}
+      DB_MIGRATION_PASSWORD_FILE: /run/secrets/db_migration_password
+      DB_APP_PASSWORD_FILE: /run/secrets/db_app_password
+    secrets:
+      - db_admin_password
+      - db_migration_password
+      - db_app_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./deployment/init-db.sh:/docker-entrypoint-initdb.d/10-create-app-role.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U best5_user -d besiktas"]
+      test: ["CMD-SHELL", "pg_isready -U best5_admin -d besiktas"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -44,11 +30,16 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://best5_app:${DB_APP_PASSWORD:?Set DB_APP_PASSWORD in .env}@db:5432/besiktas
-      MIGRATION_DATABASE_URL: postgresql://best5_user:${DB_ADMIN_PASSWORD:?Set DB_ADMIN_PASSWORD in .env}@db:5432/besiktas
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Set JWT_ACCESS_SECRET in .env}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Set JWT_REFRESH_SECRET in .env}
-      SSR_INTERNAL_TOKEN: ${SSR_INTERNAL_TOKEN:?Set SSR_INTERNAL_TOKEN in .env}
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: besiktas
+      DB_APP_USER: best5_app
+      DB_MIGRATION_USER: best5_user
+      DB_MIGRATION_PASSWORD_FILE: /run/secrets/db_migration_password
+      DB_APP_PASSWORD_FILE: /run/secrets/db_app_password
+      JWT_ACCESS_SECRET_FILE: /run/secrets/jwt_access_secret
+      JWT_REFRESH_SECRET_FILE: /run/secrets/jwt_refresh_secret
+      SSR_INTERNAL_TOKEN_FILE: /run/secrets/ssr_internal_token
       JWT_ISSUER: best5-api
       JWT_AUDIENCE: best5-admin
       JWT_ACCESS_TTL: "900"
@@ -59,6 +50,12 @@ services:
       PUBLIC_SITE_URL: https://best5.com.tr
       SPA_TEMPLATE_URL: http://web/index.html
       UPLOAD_DIR: /app/uploads
+    secrets:
+      - db_migration_password
+      - db_app_password
+      - jwt_access_secret
+      - jwt_refresh_secret
+      - ssr_internal_token
     volumes:
       - ./server/uploads:/app/uploads
     read_only: true
@@ -88,7 +85,13 @@ services:
       PORT: "3001"
       API_INTERNAL_URL: http://api:4000/api
       PUBLIC_SITE_URL: https://best5.com.tr
-      SSR_INTERNAL_TOKEN: ${SSR_INTERNAL_TOKEN:?Set SSR_INTERNAL_TOKEN in .env}
+      SSR_INTERNAL_TOKEN_FILE: /run/secrets/ssr_internal_token
+    secrets:
+      - ssr_internal_token
+    command:
+      - sh
+      - -c
+      - export SSR_INTERNAL_TOKEN="$$(cat "$$SSR_INTERNAL_TOKEN_FILE")"; exec node ssr-server.mjs
     read_only: true
     tmpfs:
       - /tmp
@@ -131,3 +134,17 @@ services:
 
 volumes:
   postgres_data:
+
+secrets:
+  db_admin_password:
+    file: ./.secrets/db_admin_password
+  db_app_password:
+    file: ./.secrets/db_app_password
+  db_migration_password:
+    file: ./.secrets/db_migration_password
+  jwt_access_secret:
+    file: ./.secrets/jwt_access_secret
+  jwt_refresh_secret:
+    file: ./.secrets/jwt_refresh_secret
+  ssr_internal_token:
+    file: ./.secrets/ssr_internal_token

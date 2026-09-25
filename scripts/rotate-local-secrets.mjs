@@ -1,21 +1,40 @@
 import { randomBytes } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 const secret = (bytes = 48) => randomBytes(bytes).toString('base64url');
 const databaseAdminPassword = secret(32);
+const databaseMigrationPassword = secret(32);
 const databaseAppPassword = secret(32);
 const accessSecret = secret();
 const refreshSecret = secret();
+const ssrInternalToken = secret();
+
+const secretsDirectory = new URL('../.secrets/', import.meta.url);
+await mkdir(secretsDirectory, { recursive: true, mode: 0o700 });
+await Promise.all([
+  ['db_admin_password', databaseAdminPassword],
+  ['db_migration_password', databaseMigrationPassword],
+  ['db_app_password', databaseAppPassword],
+  ['jwt_access_secret', accessSecret],
+  ['jwt_refresh_secret', refreshSecret],
+  ['ssr_internal_token', ssrInternalToken]
+].map(([name, value]) => writeFile(
+  new URL(name, secretsDirectory),
+  `${value}\n`,
+  { encoding: 'utf8', mode: 0o600 }
+)));
 
 await writeFile(
   new URL('../.env', import.meta.url),
   [
     `DB_ADMIN_PASSWORD=${databaseAdminPassword}`,
+    `DB_MIGRATION_PASSWORD=${databaseMigrationPassword}`,
     `DB_APP_PASSWORD=${databaseAppPassword}`,
     `JWT_ACCESS_SECRET=${accessSecret}`,
     `JWT_REFRESH_SECRET=${refreshSecret}`,
-    'COOKIE_SECURE=false',
+    `SSR_INTERNAL_TOKEN=${ssrInternalToken}`,
+    'COOKIE_SECURE=true',
     ''
   ].join('\n'),
   { encoding: 'utf8', mode: 0o600 }
@@ -25,9 +44,10 @@ await writeFile(
   new URL('../server/.env', import.meta.url),
   [
     `DATABASE_URL=postgresql://best5_app:${encodeURIComponent(databaseAppPassword)}@127.0.0.1:5432/besiktas`,
-    `MIGRATION_DATABASE_URL=postgresql://best5_user:${encodeURIComponent(databaseAdminPassword)}@127.0.0.1:5432/besiktas`,
+    `MIGRATION_DATABASE_URL=postgresql://best5_user:${encodeURIComponent(databaseMigrationPassword)}@127.0.0.1:5432/besiktas`,
     `JWT_ACCESS_SECRET=${accessSecret}`,
     `JWT_REFRESH_SECRET=${refreshSecret}`,
+    `SSR_INTERNAL_TOKEN=${ssrInternalToken}`,
     'JWT_ISSUER=best5-api',
     'JWT_AUDIENCE=best5-admin',
     'JWT_ACCESS_TTL=900',
@@ -37,7 +57,6 @@ await writeFile(
     'CORS_ORIGINS=http://localhost:3000',
     'TRUST_PROXY_HOPS=0',
     'UPLOAD_DIR=uploads',
-    'ENABLE_DB_TOOLS=0',
     ''
   ].join('\n'),
   { encoding: 'utf8', mode: 0o600 }
@@ -66,11 +85,12 @@ ALTER DEFAULT PRIVILEGES FOR ROLE best5_user IN SCHEMA public
   GRANT USAGE, SELECT ON SEQUENCES TO best5_app;
 ALTER DEFAULT PRIVILEGES FOR ROLE best5_user IN SCHEMA public
   GRANT EXECUTE ON FUNCTIONS TO best5_app;
-ALTER ROLE best5_user PASSWORD '${databaseAdminPassword}';
+ALTER ROLE best5_user LOGIN PASSWORD '${databaseMigrationPassword}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
+ALTER ROLE best5_admin LOGIN PASSWORD '${databaseAdminPassword}' SUPERUSER CREATEDB CREATEROLE;
 `;
   const applied = spawnSync(
     'docker',
-    ['exec', '-i', containerName, 'psql', '-v', 'ON_ERROR_STOP=1', '-U', 'best5_user', '-d', 'besiktas'],
+    ['exec', '-i', containerName, 'psql', '-v', 'ON_ERROR_STOP=1', '-U', 'best5_admin', '-d', 'besiktas'],
     { input: sql, encoding: 'utf8', stdio: ['pipe', 'inherit', 'inherit'] }
   );
   if (applied.status !== 0) {

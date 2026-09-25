@@ -9,6 +9,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
 import { PrismaService } from './prisma/prisma.service';
 import { timingSafeEqual } from 'crypto';
+import { csrfProtection } from './common/csrf-protection';
 
 const secureEqual = (left: string, right: string) => {
   const leftBuffer = Buffer.from(left);
@@ -113,21 +114,7 @@ async function bootstrap() {
     }
     return next();
   });
-  app.use((req: any, res: any, next: any) => {
-    if (!req.path.startsWith('/api')) return next();
-    const method = req.method?.toUpperCase?.() || 'GET';
-    if (['GET', 'HEAD', 'OPTIONS'].includes(method)) return next();
-    const allowList = ['/api/auth/login'];
-    if (allowList.includes(req.path)) return next();
-    const hasAuthCookie = req.cookies?.access_token || req.cookies?.refresh_token;
-    if (!hasAuthCookie) return next();
-    const csrfCookie = req.cookies?.csrf_token;
-    const csrfHeader = req.headers['x-csrf-token'];
-    if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
-      return res.status(403).json({ message: 'CSRF token invalid' });
-    }
-    return next();
-  });
+  app.use(csrfProtection);
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,

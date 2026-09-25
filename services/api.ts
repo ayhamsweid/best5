@@ -185,30 +185,3 @@ export const markNotificationRead = (id: string) =>
   request(`/notifications/${id}/read`, { method: 'PATCH' });
 export const markAllNotificationsRead = () =>
   request('/notifications/read-all', { method: 'PATCH' });
-
-export const downloadDbBackup = async () => {
-  const csrf = getCsrfToken();
-  const res = await fetch(`${API_BASE}/db-tools/backup`, { method: 'POST', credentials: 'include' });
-  if (!res.ok) {
-    const message = await res.text();
-    throw new Error(message || res.statusText);
-  }
-  return res.blob();
-};
-
-export const restoreDbBackup = async (file: File) => {
-  const csrf = getCsrfToken();
-  const form = new FormData();
-  form.append('file', file);
-  const res = await fetch(`${API_BASE}/db-tools/restore`, {
-    method: 'POST',
-    credentials: 'include',
-    body: form,
-    headers: csrf ? { 'x-csrf-token': csrf } : undefined
-  });
-  if (!res.ok) {
-    const message = await res.text();
-    throw new Error(message || res.statusText);
-  }
-  return res.json();
-};

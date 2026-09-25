@@ -346,7 +346,7 @@ createServer(async (request, response) => {
     const status = result.seo?.status || initialData.status || 200;
     const lang = initialData.lang;
     const head = renderHead(result.seo, status, url, initialData);
-    const initialScript = `<script>window.__INITIAL_DATA__=${safeJson(initialData)}</script>`;
+    const initialScript = `<script id="__INITIAL_DATA__" type="application/json">${safeJson(initialData)}</script>`;
     const html = template
       .replace(/<html[^>]*>/i, `<html lang="${lang}" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">`)
       .replace(/<title>[\s\S]*?<\/title>/i, '')

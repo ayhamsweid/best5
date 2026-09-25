@@ -11,6 +11,7 @@
     "test:seo-parity": "node scripts/seo-route-parity.mjs",
     "test:seo-audit": "node scripts/seo-audit.mjs",
     "test:site-quality": "node scripts/site-quality-audit.mjs",
+    "security:rotate-local": "node scripts/rotate-local-secrets.mjs",
     "security:check": "npm audit --omit=dev --audit-level=high && npm --prefix server audit --omit=dev --audit-level=high && npm --prefix server run test:security",
     "preview": "vite preview",
     "start:ssr": "node ssr-server.mjs"

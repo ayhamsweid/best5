@@ -84,7 +84,6 @@ const AdminLayout: React.FC = () => {
               <NavLink to="/admin/users" className={navItem()}>Users</NavLink>
               <NavLink to="/admin/logs" className={navItem()}>Audit Logs</NavLink>
               <NavLink to="/admin/settings" className={navItem()}>Settings</NavLink>
-              <NavLink to="/admin/db-tools" className={navItem()}>Database Tools</NavLink>
             </nav>
           </div>
         </aside>

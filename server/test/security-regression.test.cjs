@@ -4,10 +4,15 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const { JwtService } = require('@nestjs/jwt');
+const { Reflector } = require('@nestjs/core');
 const sharp = require('sharp');
 const { AuthService } = require('../dist/modules/auth/auth.service');
 const { sanitizePostPayload } = require('../dist/common/content-security');
 const { processUploadedImage } = require('../dist/common/image-upload');
+const { csrfProtection } = require('../dist/common/csrf-protection');
+const { JwtStrategy } = require('../dist/modules/auth/jwt.strategy');
+const { RolesGuard } = require('../dist/modules/auth/guards/roles.guard');
+const { ROLES_KEY } = require('../dist/modules/auth/decorators/roles.decorator');
 
 process.env.JWT_ACCESS_SECRET = 'a'.repeat(64);
 process.env.JWT_REFRESH_SECRET = 'b'.repeat(64);
@@ -84,4 +89,78 @@ test('uploaded images are decoded and re-encoded as metadata-free webp', async (
     sharp.cache(false);
     fs.rmSync(uploadDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }
+});
+
+test('cookie-authenticated unsafe requests require a matching CSRF token', () => {
+  const invoke = (overrides = {}) => {
+    let nextCalled = false;
+    let statusCode = 200;
+    let body;
+    const req = {
+      path: '/api/posts',
+      method: 'POST',
+      headers: {},
+      cookies: { access_token: 'access', csrf_token: 'csrf-value' },
+      ...overrides
+    };
+    const res = {
+      status(code) {
+        statusCode = code;
+        return this;
+      },
+      json(value) {
+        body = value;
+        return this;
+      }
+    };
+    csrfProtection(req, res, () => {
+      nextCalled = true;
+    });
+    return { nextCalled, statusCode, body };
+  };
+
+  assert.equal(invoke().statusCode, 403);
+  assert.equal(invoke({ headers: { 'x-csrf-token': 'wrong' } }).statusCode, 403);
+  assert.equal(invoke({ headers: { 'x-csrf-token': 'csrf-value' } }).nextCalled, true);
+  assert.equal(invoke({ method: 'GET' }).nextCalled, true);
+  assert.equal(invoke({ path: '/api/auth/login' }).nextCalled, true);
+});
+
+test('RBAC uses the authenticated database role', async () => {
+  const databaseUser = {
+    id: 'user-2',
+    email: 'editor@example.test',
+    full_name: 'Editor',
+    role: 'EDITOR',
+    is_active: true
+  };
+  const strategy = new JwtStrategy({
+    user: { findUnique: async () => databaseUser }
+  });
+  const authenticated = await strategy.validate({
+    sub: databaseUser.id,
+    role: 'ADMIN',
+    token_type: 'access'
+  });
+  assert.equal(authenticated.role, 'EDITOR');
+
+  const reflector = new Reflector();
+  const adminHandler = () => undefined;
+  Reflect.defineMetadata(ROLES_KEY, ['ADMIN'], adminHandler);
+  const guard = new RolesGuard(reflector);
+  const contextFor = (user) => ({
+    getHandler: () => adminHandler,
+    getClass: () => class TestController {},
+    switchToHttp: () => ({ getRequest: () => ({ user }) })
+  });
+  assert.equal(guard.canActivate(contextFor(authenticated)), false);
+  assert.equal(guard.canActivate(contextFor({ ...authenticated, role: 'ADMIN' })), true);
+
+  const inactiveStrategy = new JwtStrategy({
+    user: { findUnique: async () => ({ ...databaseUser, is_active: false }) }
+  });
+  await assert.rejects(
+    () => inactiveStrategy.validate({ sub: databaseUser.id, token_type: 'access' }),
+    /Account is inactive/
+  );
 });

@@ -10,7 +10,9 @@ RUN npm run prisma:generate
 RUN npm run build
 RUN npm prune --omit=dev && npm cache clean --force
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
-RUN mkdir -p /app/uploads && chown -R node:node /app
+RUN chmod 755 /app/docker-entrypoint.sh \
+  && mkdir -p /app/uploads \
+  && chown -R node:node /app
 USER node
 EXPOSE 4000
-CMD ["sh", "-c", "DATABASE_URL=\"$MIGRATION_DATABASE_URL\" node node_modules/prisma/build/index.js migrate deploy && node dist/main.js"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

@@ -14,12 +14,6 @@ export type InitialData = {
   siteUrl?: string;
 };
 
-declare global {
-  interface Window {
-    __INITIAL_DATA__?: InitialData;
-  }
-}
-
 const InitialDataContext = createContext<InitialData>({});
 
 export const InitialDataProvider: React.FC<{

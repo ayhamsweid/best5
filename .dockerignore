@@ -8,4 +8,5 @@ server/uploads
 db_raw_data_backup
 *.log
 .env
+.secrets
 server/.env
