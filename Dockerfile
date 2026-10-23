@@ -21,7 +21,7 @@ USER node
 EXPOSE 3001
 CMD ["node", "ssr-server.mjs"]
 
-FROM nginxinc/nginx-unprivileged:1.31.6-alpine3.24@sha256:6a23acdfca2b9cfbcec61419e3f1426bcbedb91362f2f19306a8567423bb4612 AS web
+FROM nginxinc/nginx-unprivileged:1.31.7-alpine3.24@sha256:b5047b9b76845eac124358373c6852377c52e4b05834a47647e955dd91cb8f1e AS web
 USER root
 RUN apk upgrade --no-cache
 COPY deployment/container-nginx.conf /etc/nginx/conf.d/default.conf
